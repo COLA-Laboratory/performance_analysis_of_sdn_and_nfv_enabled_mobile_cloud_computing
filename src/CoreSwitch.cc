@@ -23,7 +23,7 @@ Define_Module(CoreSwitch);
 void CoreSwitch::initialize() {
     cModule* network = getParentModule();
 
-    num_ports = network->par("num_ports");
+    num_ports = network->par("k");
 
     received_cnt_signal = registerSignal("core_received_count");
     processed_signal = registerSignal("core_msg_processed");
@@ -47,7 +47,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 
         int destination = dmsg->getDestination();
 
-        int k = floor(destination / num_ports);
+        int k = floor(destination / ((num_ports/2) * (num_ports/2)));
 
         send(dmsg, "gate$o", k);
 

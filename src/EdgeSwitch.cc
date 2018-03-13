@@ -25,7 +25,7 @@ void EdgeSwitch::initialize() {
 
     cModule* network = getParentModule();
 
-    num_ports = network->par("num_ports");
+    num_ports = network->par("k");
     num_core = network->par("num_core");
     num_servers = network->par("num_servers");
 

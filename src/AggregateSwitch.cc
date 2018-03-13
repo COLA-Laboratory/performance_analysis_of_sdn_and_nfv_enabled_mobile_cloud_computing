@@ -25,9 +25,9 @@ void AggregateSwitch::initialize() {
 
     cModule* network = getParentModule();
 
-    num_ports = network->par("num_ports");
+    num_ports = network->par("k");
     num_core = network->par("num_core");
-    int num_in_pod = network->par("num_in_pod");
+    int num_in_pod = (num_ports / 2) * (num_ports / 2);
 
     lb = floor(id / (num_ports / 2)) * num_in_pod;
     ub = lb + num_in_pod - 1;
@@ -57,8 +57,8 @@ void AggregateSwitch::handleMessage(cMessage *msg)
         int destination = dmsg->getDestination();
 
         if(destination < lb || destination > ub){
-            int k = floor((destination / 2) / num_ports);
-            k += (num_ports / 2); // First half num_ports are for the servers
+            int k = floor((destination / (num_ports / 2)) / num_ports);
+            k += (num_ports / 2); // First half num_ports are towards the servers
             send(dmsg, "gate$o", k);
         } else {
             int k = floor((destination - lb) / (num_ports / 2));

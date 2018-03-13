@@ -22,7 +22,9 @@ Define_Module(Server);
 
 void Server::initialize()
 {
-    number_servers = getVectorSize();
+    cModule* network = getParentModule();
+    number_servers = network->par("num_servers");
+
     queue = cQueue();
 
     completed_signal = registerSignal("completed");
@@ -32,10 +34,10 @@ void Server::initialize()
 
     simtime_t production_rate = par("production_rate");
 
-   // if(getIndex() == 1) {
+    //if(getIndex() == 0) {
         cMessage *send_msg_evt = new cMessage("send", 1);
         scheduleAt(simTime() + production_rate, send_msg_evt);
-   // }
+    //}
 }
 
 void Server::handleMessage(cMessage *msg)
@@ -50,6 +52,8 @@ void Server::handleMessage(cMessage *msg)
         while (target == getIndex()) {
             target = intuniform(0, number_servers - 1);
         }
+
+        EV << number_servers - 1 << " " << target;
 
         dmsg->setDestination(target);
         send(dmsg, "gate$o");

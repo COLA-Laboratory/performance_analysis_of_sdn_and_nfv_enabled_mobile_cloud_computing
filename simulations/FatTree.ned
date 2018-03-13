@@ -24,13 +24,12 @@ network FatTree
 {
     parameters:
         // m-port n-tree
-        int num_ports;
-        int num_core = num_ports;
-        int half_ports = num_ports / 2;
-        int num_agg = num_core * half_ports;
-        int num_edge = num_agg;
-        int num_servers = num_edge * half_ports;
-        int num_in_pod = half_ports * half_ports;
+        int k; // num_ports
+        int num_core = (k / 2) * (k / 2);
+        int num_pods = k;
+        int num_agg = num_pods * (k / 2);
+        int num_edge = num_pods * (k / 2);
+        int num_servers = num_edge * (k / 2);
 
         @statistic[Time_In_System](title="Time in System"; source="completed"; record=stats; interpolationmode=none);
         
@@ -59,15 +58,14 @@ network FatTree
 
     connections:        
         for i=0..num_servers-1 {
-	  		servers[i].gate <--> Channel <--> edge[floor(i/half_ports)].gate++;
+            servers[i].gate <--> Channel <--> edge[floor(i/(k/2))].gate++;
         }
-         
+        
         for i=0..num_edge - 1, for j=0..num_agg - 1 {
-            edge[i].gate++ <--> Channel <--> aggregate[j].gate++ if j >= floor(i/half_ports) * half_ports && j < floor(i/half_ports) * half_ports + half_ports;
+            edge[i].gate++ <--> Channel <--> aggregate[j].gate++ if j >= floor(i/(k /2)) * (k/2) && j < floor(i/(k/2)) * (k/2) + (k/2);
         }
         
         for i=0..num_agg - 1, for j=0..num_core - 1 { 
-            aggregate[i].gate++ <--> Channel <--> core[j].gate++ if (i % 2 == 0) && (j < num_ports / 2) || (i % 2 != 0) && (j >= num_ports / 2);
-            // aggregate[i].gate++ <--> Channel <--> core[j].gate++ if (i % 2 == 0) && (j < num_ports / 2) || (i % 2 != 0) && (j >= num_ports / 2);
+            aggregate[i].gate++ <--> Channel <--> core[j].gate++ if j >= ((i % (k / 2)) * (k / 2)) && j < ((i % (k / 2)) * (k / 2) + (k/2));
         }
 }
