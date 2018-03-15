@@ -24,6 +24,7 @@ void Server::initialize()
 {
     cModule* network = getParentModule();
     number_servers = network->par("num_servers");
+    num_vnfs = network->par("num_vnfs");
 
     queue = cQueue();
 
@@ -34,10 +35,8 @@ void Server::initialize()
 
     simtime_t production_rate = par("production_rate");
 
-    //if(getIndex() == 0) {
-        cMessage *send_msg_evt = new cMessage("send", 1);
-        scheduleAt(simTime() + production_rate, send_msg_evt);
-    //}
+    cMessage *send_msg_evt = new cMessage("send", 1);
+    scheduleAt(simTime() + production_rate, send_msg_evt);
 }
 
 void Server::handleMessage(cMessage *msg)
@@ -53,9 +52,9 @@ void Server::handleMessage(cMessage *msg)
             target = intuniform(0, number_servers - 1);
         }
 
-        EV << number_servers - 1 << " " << target;
-
         dmsg->setDestination(target);
+        dmsg->setVnfCount(num_vnfs - 1);
+
         send(dmsg, "gate$o");
 
         simtime_t production_rate = par("production_rate");
@@ -67,19 +66,31 @@ void Server::handleMessage(cMessage *msg)
         delete msg;
 
         DestMessage *dmsg = check_and_cast<DestMessage *>(queue.pop());
-        emit(completed_signal, simTime() - dmsg->getProduced());
-        emit(msg_hop_cnt_signal, dmsg->getHopCount());
-        emit(processed_signal, simTime() - dmsg->getArrivalTime());
+        emit(processed_signal, simTime() - dmsg->getQueued());
 
-        delete dmsg;
+        if(dmsg->getVnfCount() <= 1) {
+            emit(completed_signal, simTime() - dmsg->getProduced());
+            emit(msg_hop_cnt_signal, dmsg->getHopCount());
+
+            delete dmsg;
+        } else {
+            int target = getIndex();
+
+            while (target == getIndex()) {
+                target = intuniform(0, number_servers - 1);
+            }
+
+            dmsg->setDestination(target);
+            dmsg->setVnfCount(dmsg->getVnfCount() - 1);
+
+            send(dmsg, "gate$o");
+        }
 
         if(!queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
-
-        //        dmsg->setHopCount(dmsg->getHopCount() - 1);
 
     } else if (!msg->isSelfMessage()) {
 
@@ -96,10 +107,6 @@ void Server::handleMessage(cMessage *msg)
 
         dmsg->setQueued(simTime());
         dmsg->setHopCount(dmsg->getHopCount() + 1);
-
-        if(dmsg->getDestination() != getIndex()) {
-            EV_ERROR << "FALSE " << dmsg->getDestination() << " vs " << getIndex();
-        }
     }
 }
 

@@ -31,7 +31,9 @@ class Server : public cSimpleModule
 
   private:
     int number_servers;
+    int num_vnfs;
     int num_msg_received = 0;
+
     cQueue queue;
 
     simsignal_t received_cnt_signal;

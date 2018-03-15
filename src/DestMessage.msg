@@ -18,6 +18,7 @@ namespace nfv_fattree;
 message DestMessage {
     int destination;
     int hopCount = 0;
+    int vnfCount = 0;
     
     simtime_t produced;
     simtime_t queued;

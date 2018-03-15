@@ -30,7 +30,9 @@ network FatTree
         int num_agg = num_pods * (k / 2);
         int num_edge = num_pods * (k / 2);
         int num_servers = num_edge * (k / 2);
-
+        
+        int num_vnfs;
+        
         @statistic[Time_In_System](title="Time in System"; source="completed"; record=stats; interpolationmode=none);
         
         @statistic[Rec_Server](title="Arrival Rate - Server"; source="server_received_count"; record=stats; interpolationmode=none);

@@ -26,6 +26,7 @@ namespace nfv_fattree {
  * {
  *     int destination;
  *     int hopCount = 0;
+ *     int vnfCount = 0;
  * 
  *     simtime_t produced;
  *     simtime_t queued;
@@ -37,6 +38,7 @@ class DestMessage : public ::omnetpp::cMessage
   protected:
     int destination;
     int hopCount;
+    int vnfCount;
     ::omnetpp::simtime_t produced;
     ::omnetpp::simtime_t queued;
 
@@ -61,6 +63,8 @@ class DestMessage : public ::omnetpp::cMessage
     virtual void setDestination(int destination);
     virtual int getHopCount() const;
     virtual void setHopCount(int hopCount);
+    virtual int getVnfCount() const;
+    virtual void setVnfCount(int vnfCount);
     virtual ::omnetpp::simtime_t getProduced() const;
     virtual void setProduced(::omnetpp::simtime_t produced);
     virtual ::omnetpp::simtime_t getQueued() const;

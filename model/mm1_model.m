@@ -1,10 +1,13 @@
-k = 6;
-prod_rate = 1/2;
+k = 8;
+num_vnfs = 5;
+prod_rate = 1/4;
 
-srv_server = 4;
-srv_tor = 4;
-srv_agg = 4;
-srv_core = 4;
+prod_rate = prod_rate * (num_vnfs - 1);
+
+srv_server = 10;
+srv_tor = 10;
+srv_agg = 10;
+srv_core = 10;
 
 num_core = (k / 2)^2;
 num_pods = k;
@@ -31,6 +34,8 @@ proc_core = MM1(arv_core, srv_core);
 waiting_time = (proc_tor + proc_server) * p_tor ...
              + (proc_agg + 2 * proc_tor + proc_server) * p_agg ...
              + (proc_core + 2 * proc_agg + 2 * proc_tor + proc_server) * p_core;
+
+waiting_time = waiting_time * (num_vnfs - 1);
 
 waiting_time
         
