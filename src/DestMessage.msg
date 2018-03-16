@@ -17,7 +17,8 @@ namespace nfv_fattree;
 
 message DestMessage {
     int destination;
-    int source_server;
+    int srcServer;
+    bool knowsPath;
     
     int hopCount = 0;
     int vnfCount = 0;

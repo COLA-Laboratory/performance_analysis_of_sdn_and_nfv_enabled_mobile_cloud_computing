@@ -25,7 +25,8 @@ namespace nfv_fattree {
  * message DestMessage
  * {
  *     int destination;
- *     int source;
+ *     int srcServer;
+ *     bool knowsPath;
  * 
  *     int hopCount = 0;
  *     int vnfCount = 0;
@@ -39,7 +40,8 @@ class DestMessage : public ::omnetpp::cMessage
 {
   protected:
     int destination;
-    int source;
+    int srcServer;
+    bool knowsPath;
     int hopCount;
     int vnfCount;
     ::omnetpp::simtime_t produced;
@@ -64,8 +66,10 @@ class DestMessage : public ::omnetpp::cMessage
     // field getter/setter methods
     virtual int getDestination() const;
     virtual void setDestination(int destination);
-    virtual int getSource() const;
-    virtual void setSource(int source);
+    virtual int getSrcServer() const;
+    virtual void setSrcServer(int srcServer);
+    virtual bool getKnowsPath() const;
+    virtual void setKnowsPath(bool knowsPath);
     virtual int getHopCount() const;
     virtual void setHopCount(int hopCount);
     virtual int getVnfCount() const;

@@ -41,7 +41,7 @@ void SDN_Controller::handleMessage(cMessage *msg) {
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-        int port = dmsg->getSource();
+        int port = dmsg->getSrcServer();
         send(dmsg, "gate$o", port);
 
     } else {
@@ -59,7 +59,6 @@ void SDN_Controller::handleMessage(cMessage *msg) {
 
         dmsg->setQueued(simTime());
         dmsg->setHopCount(dmsg->getHopCount() + 1);
-
     }
 }
 

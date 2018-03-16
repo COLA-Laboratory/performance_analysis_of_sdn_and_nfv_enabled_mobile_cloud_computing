@@ -58,10 +58,12 @@ void Server::handleMessage(cMessage *msg)
         // Decide if message should be forwarded to SDN controller
         int rng = intuniform(1, 100);
 
-        if(rng <= p_sdn) {
-            dmsg->setSource(id);
+        if(!dmsg->getKnowsPath() && rng <= p_sdn) {
+            dmsg->setKnowsPath(true);
             send(dmsg, "sdn_gate$o");
         } else {
+            dmsg->setKnowsPath(true);
+
             int destination = dmsg->getDestination();
 
             if (destination < lb || destination > ub) {
@@ -88,6 +90,7 @@ void Server::handleMessage(cMessage *msg)
 
         dmsg->setQueued(simTime());
         dmsg->setHopCount(dmsg->getHopCount() + 1);
+        dmsg->setSrcServer(id);
     }
 }
 

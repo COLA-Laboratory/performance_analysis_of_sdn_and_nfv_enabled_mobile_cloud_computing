@@ -22,9 +22,6 @@ using namespace omnetpp;
 
 namespace nfv_fattree {
 
-/**
- * TODO - Generated class
- */
 class SDN_Controller : public cSimpleModule
 {
   protected:

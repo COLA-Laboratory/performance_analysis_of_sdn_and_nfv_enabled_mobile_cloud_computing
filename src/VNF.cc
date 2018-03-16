@@ -93,6 +93,7 @@ void VNF::handleMessage(cMessage *msg) {
 
             dmsg->setDestination(target);
             dmsg->setVnfCount(dmsg->getVnfCount() - 1);
+            dmsg->setKnowsPath(false);
 
             send(dmsg, "gate$o");
         }
