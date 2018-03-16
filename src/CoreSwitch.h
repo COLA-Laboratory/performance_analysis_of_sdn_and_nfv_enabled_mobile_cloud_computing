@@ -25,7 +25,7 @@ namespace nfv_fattree {
 class CoreSwitch : public cSimpleModule
 {
   private:
-    int num_ports;
+    int num_ports, num_vm_ports;
     int num_msg_received = 0;
 
     cQueue queue;

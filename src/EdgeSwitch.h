@@ -26,7 +26,7 @@ class EdgeSwitch : public cSimpleModule
 {
   private:
     int id, lb, ub;
-    int num_ports, num_core, num_servers;
+    int num_ports, num_vm_ports;
     int num_msg_received = 0;
 
     cQueue queue;

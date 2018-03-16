@@ -13,32 +13,15 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#ifndef AGGREGATESWITCH_H_
-#define AGGREGATESWITCH_H_
+package nfv_fattree;
 
-#include <omnetpp.h>
-
-using namespace omnetpp;
-
-namespace nfv_fattree {
-
-class AggregateSwitch : public cSimpleModule
+//
+// TODO auto-generated module
+//
+simple SDN_Controller
 {
-  private:
-    int id, lb, ub;
-    int num_ports, num_vm_ports, num_vms;
-    int num_msg_received = 0;
-
-    cQueue queue;
-    simsignal_t received_cnt_signal;
-    simsignal_t processed_signal;
-
-  protected:
-    virtual void initialize();
-    virtual void handleMessage(cMessage *msg);
-    virtual void finish();
-};
-
-} //namespace
-
-#endif /* AGGREGATESWITCH_H_ */
+    parameters:
+        volatile double service_rate @unit(s);
+    gates:
+        inout gate[];
+}

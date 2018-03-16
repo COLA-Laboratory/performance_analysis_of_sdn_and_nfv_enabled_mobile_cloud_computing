@@ -22,81 +22,62 @@ Define_Module(Server);
 
 void Server::initialize()
 {
+    id = getIndex();
+
     cModule* network = getParentModule();
-    number_servers = network->par("num_servers");
-    num_vnfs = network->par("num_vnfs");
+
+    num_ports = network->par("k");
+    num_vm_ports = network->par("vm_k");
+
+    p_sdn = network->par("p_sdn");
+
+    lb = id * num_vm_ports;
+    ub = lb + num_vm_ports - 1;
 
     queue = cQueue();
 
-    completed_signal = registerSignal("completed");
-    msg_hop_cnt_signal = registerSignal("msg_hop_count");
     received_cnt_signal = registerSignal("server_received_count");
     processed_signal = registerSignal("server_msg_processed");
-
-    simtime_t production_rate = par("production_rate");
-
-    cMessage *send_msg_evt = new cMessage("send", 1);
-    scheduleAt(simTime() + production_rate, send_msg_evt);
 }
 
 void Server::handleMessage(cMessage *msg)
 {
-    if (msg->isSelfMessage() && msg->getKind() == 1) {
-        delete msg;
-
-        auto dmsg = new DestMessage();
-        dmsg->setProduced(simTime());
-
-        int target = getIndex();
-        while (target == getIndex()) {
-            target = intuniform(0, number_servers - 1);
-        }
-
-        dmsg->setDestination(target);
-        dmsg->setVnfCount(num_vnfs - 1);
-
-        send(dmsg, "gate$o");
-
-        simtime_t production_rate = par("production_rate");
-        cMessage *send_msg_evt = new cMessage("send", 1);
-        scheduleAt(simTime() + production_rate, send_msg_evt);
-
-    } else if (msg->isSelfMessage() && msg->getKind() == 2) {
+    if (msg->isSelfMessage()) {
 
         delete msg;
 
         DestMessage *dmsg = check_and_cast<DestMessage *>(queue.pop());
         emit(processed_signal, simTime() - dmsg->getQueued());
 
-        if(dmsg->getVnfCount() <= 1) {
-            emit(completed_signal, simTime() - dmsg->getProduced());
-            emit(msg_hop_cnt_signal, dmsg->getHopCount());
-
-            delete dmsg;
-        } else {
-            int target = getIndex();
-
-            while (target == getIndex()) {
-                target = intuniform(0, number_servers - 1);
-            }
-
-            dmsg->setDestination(target);
-            dmsg->setVnfCount(dmsg->getVnfCount() - 1);
-
-            send(dmsg, "gate$o");
-        }
-
-        if(!queue.isEmpty()) {
+        if (!queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-    } else if (!msg->isSelfMessage()) {
+        // Decide if message should be forwarded to SDN controller
+        int rng = intuniform(1, 100);
+
+        if(rng <= p_sdn) {
+            dmsg->setSource(id);
+            send(dmsg, "sdn_gate$o");
+        } else {
+            int destination = dmsg->getDestination();
+
+            if (destination < lb || destination > ub) {
+                int port = num_vm_ports;
+                send(dmsg, "gate$o", port);
+            } else {
+                int port = destination - lb;
+                send(dmsg, "gate$o", port);
+            }
+        }
+
+    } else {
 
         num_msg_received ++;
 
-        if(queue.isEmpty()) {
+        if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);

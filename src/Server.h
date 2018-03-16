@@ -30,16 +30,14 @@ class Server : public cSimpleModule
     virtual void finish();
 
   private:
-    int number_servers;
-    int num_vnfs;
+    int num_ports, num_vm_ports, p_sdn;
     int num_msg_received = 0;
+    int id, lb, ub;
 
     cQueue queue;
 
     simsignal_t received_cnt_signal;
     simsignal_t processed_signal;
-    simsignal_t completed_signal;
-    simsignal_t msg_hop_cnt_signal;
 };
 
 } //namespace

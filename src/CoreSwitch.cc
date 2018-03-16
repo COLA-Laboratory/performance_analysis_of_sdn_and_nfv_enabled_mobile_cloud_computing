@@ -24,6 +24,7 @@ void CoreSwitch::initialize() {
     cModule* network = getParentModule();
 
     num_ports = network->par("k");
+    num_vm_ports = network->par("vm_k");
 
     received_cnt_signal = registerSignal("core_received_count");
     processed_signal = registerSignal("core_msg_processed");
@@ -37,7 +38,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
         delete msg;
 
         DestMessage *dmsg = check_and_cast<DestMessage *>(queue.pop());
-        emit(processed_signal, simTime() - dmsg->getArrivalTime());
+        emit(processed_signal, simTime() - dmsg->getQueued());
 
         if (!queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -47,9 +48,9 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 
         int destination = dmsg->getDestination();
 
-        int k = floor(destination / ((num_ports/2) * (num_ports/2)));
+        int port = floor(destination / ((num_ports / 2) * (num_ports / 2) * num_vm_ports));
 
-        send(dmsg, "gate$o", k);
+        send(dmsg, "gate$o", port);
 
     } else {
 

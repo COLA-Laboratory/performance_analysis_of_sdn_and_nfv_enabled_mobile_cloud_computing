@@ -18,8 +18,8 @@ package nfv_fattree;
 simple Server
 {
     parameters:
-        volatile double service_rate @unit(s); 
-        volatile double production_rate @unit(s); 
+        volatile double service_rate @unit(s);
     gates:
-        inout gate;
+        inout sdn_gate;
+        inout gate[];
 }

@@ -30,7 +30,14 @@ PROJECTRELATIVE_PATH = src
 O = $(PROJECT_OUTPUT_DIR)/$(CONFIGNAME)/$(PROJECTRELATIVE_PATH)
 
 # Object files for local .cc, .msg and .sm files
-OBJS = $O/AggregateSwitch.o $O/CoreSwitch.o $O/EdgeSwitch.o $O/Server.o $O/DestMessage_m.o
+OBJS = \
+    $O/AggregateSwitch.o \
+    $O/CoreSwitch.o \
+    $O/EdgeSwitch.o \
+    $O/SDN_Controller.o \
+    $O/Server.o \
+    $O/VNF.o \
+    $O/DestMessage_m.o
 
 # Message files
 MSGFILES = \

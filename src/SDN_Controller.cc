@@ -13,31 +13,21 @@
 // along with this program.  If not, see http://www.gnu.org/licenses/.
 // 
 
-#include "EdgeSwitch.h"
+#include "SDN_Controller.h"
 #include "DestMessage_m.h"
 
 namespace nfv_fattree {
 
-Define_Module(EdgeSwitch);
+Define_Module(SDN_Controller);
 
-void EdgeSwitch::initialize() {
-    id = getIndex();
-
-    cModule* network = getParentModule();
-
-    num_ports = network->par("k");
-    num_vm_ports = network->par("vm_k");
-
-    lb = id * (num_ports / 2) * num_vm_ports;
-    ub = lb + (num_ports / 2) * num_vm_ports - 1;
-
+void SDN_Controller::initialize() {
     queue = cQueue();
 
-    received_cnt_signal = registerSignal("edge_received_count");
-    processed_signal = registerSignal("edge_msg_processed");
+    received_cnt_signal = registerSignal("sdn_received_count");
+    processed_signal = registerSignal("sdn_msg_processed");
 }
 
-void EdgeSwitch::handleMessage(cMessage *msg) {
+void SDN_Controller::handleMessage(cMessage *msg) {
     if (msg->isSelfMessage()) {
 
         delete msg;
@@ -48,25 +38,15 @@ void EdgeSwitch::handleMessage(cMessage *msg) {
         if (!queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
             cMessage *process_msg_evt = new cMessage("process", 2);
-
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-        int destination = dmsg->getDestination();
-
-        if (destination < lb || destination > ub) {
-            int port = id - (floor(id / (num_ports / 2)) * (num_ports / 2));
-            port += (num_ports / 2);
-
-            send(dmsg, "gate$o", port);
-        } else {
-            int port = floor((destination - lb) / num_vm_ports);
-            send(dmsg, "gate$o", port);
-        }
+        int port = dmsg->getSource();
+        send(dmsg, "gate$o", port);
 
     } else {
 
-        num_msg_received ++;
+        num_msg_received++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -79,10 +59,11 @@ void EdgeSwitch::handleMessage(cMessage *msg) {
 
         dmsg->setQueued(simTime());
         dmsg->setHopCount(dmsg->getHopCount() + 1);
+
     }
 }
 
-void EdgeSwitch::finish() {
+void SDN_Controller::finish() {
     emit(received_cnt_signal, num_msg_received / simTime());
 }
 

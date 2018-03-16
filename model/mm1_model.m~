@@ -1,7 +1,7 @@
 k = 4;
 k_vm = 2;
 
-num_vnfs = 4;
+num_vnfs = 3;
 prod_rate = 1/4;
 
 prod_rate = prod_rate * (num_vnfs - 1);
@@ -27,10 +27,11 @@ p_core = (num_vms - (k/2)^2 * k_vm) / (num_vms - 1);
 
 arv_vm = ((num_vms - 1) / (num_vms - 1)) * prod_rate;
 arv_server = k_vm * prod_rate + (num_vms - k_vm) * (1 / (num_vms - 1)) * k_vm * prod_rate;
-arv_tor = ((k/2) * k_vm) * ((num_vms - (k_vm)) / (num_vms - 1)) * prod_rate ... 
-        + (num_vms - ((k/2) * k_vm)) * (1 / (num_vms - 1)) * ((k / 2) * k_vm) * prod_rate;   
+arv_tor = ((k/2) * k_vm) * ((num_vms - (k_vm)) / num_vms - 1) * prod_rate ... 
+        + (num_vms - ((k/2) * k_vm)) * (1 / (num_vms - 1)) * ((k / 2) * k_vm) * prod_rate;
 arv_agg = ((k/2)^2 * k_vm) * ((num_vms - (k_vm * (k/2))) / (num_vms - 1)) * prod_rate * (1/(k/2)) ...
         + (num_vms - ((k/2)^2 * k_vm)) * prod_rate * (((k/2)^2 * k_vm) / (num_vms - 1)) * (1/(k/2));
+    
 arv_core = p_core * num_vms * (1 / num_core) * prod_rate;
 
 proc_vm = MM1(arv_vm, srv_vm);
@@ -40,9 +41,10 @@ proc_agg = MM1(arv_agg, srv_agg);
 proc_core = MM1(arv_core, srv_core);
 
 waiting_time = (proc_server + proc_vm) * p_server ...
-             + (proc_tor + 2 * proc_server + proc_vm) * p_tor ...
-             + (proc_agg + 2 * proc_tor + 2 * proc_server + proc_vm) * p_agg ...
-             + (proc_core + 2 * proc_agg + 2 * proc_tor + 2 * proc_server + proc_vm) * p_core;
+             + (proc_tor + proc_s
+             + (proc_tor + proc_server) * p_tor ...
+             + (proc_agg + 2 * proc_tor + proc_server) * p_agg ...
+             + (proc_core + 2 * proc_agg + 2 * proc_tor + proc_server) * p_core;
 
 waiting_time = waiting_time * (num_vnfs - 1);
 

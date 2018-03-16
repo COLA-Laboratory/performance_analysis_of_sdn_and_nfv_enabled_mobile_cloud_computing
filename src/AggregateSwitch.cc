@@ -26,8 +26,10 @@ void AggregateSwitch::initialize() {
     cModule* network = getParentModule();
 
     num_ports = network->par("k");
-    num_core = network->par("num_core");
-    int num_in_pod = (num_ports / 2) * (num_ports / 2);
+    num_vm_ports = network->par("vm_k");
+    num_vms = network->par("num_vms");
+
+    int num_in_pod = (num_ports / 2) * (num_ports / 2) * num_vm_ports;
 
     lb = floor(id / (num_ports / 2)) * num_in_pod;
     ub = lb + num_in_pod - 1;
@@ -40,13 +42,12 @@ void AggregateSwitch::initialize() {
 
 void AggregateSwitch::handleMessage(cMessage *msg)
 {
-
     if (msg->isSelfMessage()) {
 
         delete msg;
 
         DestMessage *dmsg = check_and_cast<DestMessage *>(queue.pop());
-        emit(processed_signal, simTime() - dmsg->getArrivalTime());
+        emit(processed_signal, simTime() - dmsg->getQueued());
 
         if (!queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -57,12 +58,13 @@ void AggregateSwitch::handleMessage(cMessage *msg)
         int destination = dmsg->getDestination();
 
         if(destination < lb || destination > ub){
-            int k = floor((destination / (num_ports / 2)) / num_ports);
-            k += (num_ports / 2); // First half num_ports are towards the servers
-            send(dmsg, "gate$o", k);
+            int port = floor(destination / (num_vms / (num_ports / 2)));
+            port += (num_ports / 2);
+
+            send(dmsg, "gate$o", port);
         } else {
-            int k = floor((destination - lb) / (num_ports / 2));
-            send(dmsg, "gate$o", k);
+            int port = floor((destination - lb) / ((num_ports/2) * num_vm_ports));
+            send(dmsg, "gate$o", port);
         }
 
     } else {

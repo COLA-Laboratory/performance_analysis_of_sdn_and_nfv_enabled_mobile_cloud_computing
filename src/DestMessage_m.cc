@@ -183,6 +183,7 @@ Register_Class(DestMessage)
 DestMessage::DestMessage(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
 {
     this->destination = 0;
+    this->source = 0;
     this->hopCount = 0;
     this->vnfCount = 0;
     this->produced = 0;
@@ -209,6 +210,7 @@ DestMessage& DestMessage::operator=(const DestMessage& other)
 void DestMessage::copy(const DestMessage& other)
 {
     this->destination = other.destination;
+    this->source = other.source;
     this->hopCount = other.hopCount;
     this->vnfCount = other.vnfCount;
     this->produced = other.produced;
@@ -219,6 +221,7 @@ void DestMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
     doParsimPacking(b,this->destination);
+    doParsimPacking(b,this->source);
     doParsimPacking(b,this->hopCount);
     doParsimPacking(b,this->vnfCount);
     doParsimPacking(b,this->produced);
@@ -229,6 +232,7 @@ void DestMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
     doParsimUnpacking(b,this->destination);
+    doParsimUnpacking(b,this->source);
     doParsimUnpacking(b,this->hopCount);
     doParsimUnpacking(b,this->vnfCount);
     doParsimUnpacking(b,this->produced);
@@ -243,6 +247,16 @@ int DestMessage::getDestination() const
 void DestMessage::setDestination(int destination)
 {
     this->destination = destination;
+}
+
+int DestMessage::getSource() const
+{
+    return this->source;
+}
+
+void DestMessage::setSource(int source)
+{
+    this->source = source;
 }
 
 int DestMessage::getHopCount() const
@@ -350,7 +364,7 @@ const char *DestMessageDescriptor::getProperty(const char *propertyname) const
 int DestMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 5+basedesc->getFieldCount() : 5;
+    return basedesc ? 6+basedesc->getFieldCount() : 6;
 }
 
 unsigned int DestMessageDescriptor::getFieldTypeFlags(int field) const
@@ -367,8 +381,9 @@ unsigned int DestMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISEDITABLE,
     };
-    return (field>=0 && field<5) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<6) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DestMessageDescriptor::getFieldName(int field) const
@@ -381,12 +396,13 @@ const char *DestMessageDescriptor::getFieldName(int field) const
     }
     static const char *fieldNames[] = {
         "destination",
+        "source",
         "hopCount",
         "vnfCount",
         "produced",
         "queued",
     };
-    return (field>=0 && field<5) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<6) ? fieldNames[field] : nullptr;
 }
 
 int DestMessageDescriptor::findField(const char *fieldName) const
@@ -394,10 +410,11 @@ int DestMessageDescriptor::findField(const char *fieldName) const
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
     if (fieldName[0]=='d' && strcmp(fieldName, "destination")==0) return base+0;
-    if (fieldName[0]=='h' && strcmp(fieldName, "hopCount")==0) return base+1;
-    if (fieldName[0]=='v' && strcmp(fieldName, "vnfCount")==0) return base+2;
-    if (fieldName[0]=='p' && strcmp(fieldName, "produced")==0) return base+3;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queued")==0) return base+4;
+    if (fieldName[0]=='s' && strcmp(fieldName, "source")==0) return base+1;
+    if (fieldName[0]=='h' && strcmp(fieldName, "hopCount")==0) return base+2;
+    if (fieldName[0]=='v' && strcmp(fieldName, "vnfCount")==0) return base+3;
+    if (fieldName[0]=='p' && strcmp(fieldName, "produced")==0) return base+4;
+    if (fieldName[0]=='q' && strcmp(fieldName, "queued")==0) return base+5;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -413,10 +430,11 @@ const char *DestMessageDescriptor::getFieldTypeString(int field) const
         "int",
         "int",
         "int",
+        "int",
         "simtime_t",
         "simtime_t",
     };
-    return (field>=0 && field<5) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<6) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DestMessageDescriptor::getFieldPropertyNames(int field) const
@@ -484,10 +502,11 @@ std::string DestMessageDescriptor::getFieldValueAsString(void *object, int field
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
         case 0: return long2string(pp->getDestination());
-        case 1: return long2string(pp->getHopCount());
-        case 2: return long2string(pp->getVnfCount());
-        case 3: return simtime2string(pp->getProduced());
-        case 4: return simtime2string(pp->getQueued());
+        case 1: return long2string(pp->getSource());
+        case 2: return long2string(pp->getHopCount());
+        case 3: return long2string(pp->getVnfCount());
+        case 4: return simtime2string(pp->getProduced());
+        case 5: return simtime2string(pp->getQueued());
         default: return "";
     }
 }
@@ -503,10 +522,11 @@ bool DestMessageDescriptor::setFieldValueAsString(void *object, int field, int i
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
         case 0: pp->setDestination(string2long(value)); return true;
-        case 1: pp->setHopCount(string2long(value)); return true;
-        case 2: pp->setVnfCount(string2long(value)); return true;
-        case 3: pp->setProduced(string2simtime(value)); return true;
-        case 4: pp->setQueued(string2simtime(value)); return true;
+        case 1: pp->setSource(string2long(value)); return true;
+        case 2: pp->setHopCount(string2long(value)); return true;
+        case 3: pp->setVnfCount(string2long(value)); return true;
+        case 4: pp->setProduced(string2simtime(value)); return true;
+        case 5: pp->setQueued(string2simtime(value)); return true;
         default: return false;
     }
 }
