@@ -3,9 +3,9 @@ k_vm = 2;
 
 num_vnfs = 4;
 p_sdn = 0.2;
-prod_rate = 1/4;
+init_prod_rate = 1/4;
 
-prod_rate = prod_rate * (num_vnfs - 1);
+prod_rate = init_prod_rate * (num_vnfs - 1);
 
 srv_server = 10;
 srv_tor = 10;
@@ -28,7 +28,9 @@ p_agg = ((k/2)^2 * k_vm - (k/2) * k_vm) / (num_vms - 1);
 p_core = (num_vms - (k/2)^2 * k_vm) / (num_vms - 1);
 
 arv_vm = ((num_vms - 1) / (num_vms - 1)) * prod_rate;
-arv_server = k_vm * prod_rate + (num_vms - k_vm) * (1 / (num_vms - 1)) * k_vm * prod_rate;
+arv_server = k_vm * prod_rate ... 
+           + (num_vms - k_vm) * (1 / (num_vms - 1)) * k_vm * prod_rate ...
+           + k_vm * prod_rate * p_sdn;
 arv_tor = ((k/2) * k_vm) * ((num_vms - (k_vm)) / (num_vms - 1)) * prod_rate ... 
         + (num_vms - ((k/2) * k_vm)) * (1 / (num_vms - 1)) * ((k / 2) * k_vm) * prod_rate;   
 arv_agg = ((k/2)^2 * k_vm) * ((num_vms - (k_vm * (k/2))) / (num_vms - 1)) * prod_rate * (1/(k/2)) ...
