@@ -56,9 +56,9 @@ void Server::handleMessage(cMessage *msg)
         }
 
         // Decide if message should be forwarded to SDN controller
-        int rng = intuniform(1, 100);
+        int rng = intuniform(0, 99);
 
-        if(!dmsg->getKnowsPath() && rng <= p_sdn) {
+        if(!dmsg->getKnowsPath() && rng < p_sdn) {
             dmsg->setKnowsPath(true);
             send(dmsg, "sdn_gate$o");
         } else {

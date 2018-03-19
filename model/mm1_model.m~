@@ -1,8 +1,6 @@
 k = 4;
 k_vm = 2;
 
-p_sdn = 0;
-
 vnf_chains = {[1, .8, .5]};
 num_vnfs = length(vnf_chains{1}) + 1;
 
@@ -10,7 +8,7 @@ init_prod_rate = 1/4;
 
 vnf_chain = vnf_chains{1};
 prod_multiplier = 1; prod_rate = 0;
-for j = 1:length(vnf_chain)
+for j = 1:length(vnf_chain) + 1
     prod_multiplier = prod_multiplier * vnf_chain(j);
     prod_rate = prod_rate + init_prod_rate * prod_multiplier;
 end

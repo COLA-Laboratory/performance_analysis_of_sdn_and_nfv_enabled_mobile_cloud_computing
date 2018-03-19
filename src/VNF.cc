@@ -46,10 +46,8 @@ void VNF::initialize() {
 
     simtime_t production_rate = par("production_rate");
 
-    if(getIndex() == 1) {
-        cMessage *send_msg_evt = new cMessage("send", 1);
-        scheduleAt(simTime() + production_rate, send_msg_evt);
-    }
+    cMessage *send_msg_evt = new cMessage("send", 1);
+    scheduleAt(simTime() + production_rate, send_msg_evt);
 }
 
 void VNF::handleMessage(cMessage *msg) {
@@ -73,9 +71,6 @@ void VNF::handleMessage(cMessage *msg) {
 
         // Set VNF chain for message
         int v_idx = intuniform(0, vnf_chains.size() - 1);
-
-        EV << vnf_chains.size();
-
         auto vnf_chain = vnf_chains[v_idx];
 
         dmsg->setVnfChainArraySize(vnf_chain.size());
@@ -102,6 +97,7 @@ void VNF::handleMessage(cMessage *msg) {
 
             delete dmsg;
         } else {
+
             int target = getIndex();
 
             while (target == getIndex()) {
@@ -112,7 +108,14 @@ void VNF::handleMessage(cMessage *msg) {
             dmsg->setVnfPos(dmsg->getVnfPos() + 1);
             dmsg->setKnowsPath(false);
 
-            send(dmsg, "gate$o");
+            int ratio = dmsg->getVnfChain(dmsg->getVnfPos());
+            int rng = intuniform(1, 100);
+
+            if(ratio < 100 && rng > ratio) {
+                delete dmsg;
+            } else {
+                send(dmsg, "gate$o");
+            }
         }
 
         if (!queue.isEmpty()) {
