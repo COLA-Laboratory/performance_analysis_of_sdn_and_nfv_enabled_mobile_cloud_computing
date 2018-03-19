@@ -3,17 +3,29 @@ k_vm = 2;
 
 p_sdn = 0;
 
-vnf_chains = {[1, .8, .5]};
-num_vnfs = length(vnf_chains{1}) + 1;
+vnf_chains = {[1, .8, .5], [1, .4]};
+
+avg_num_vnfs = 0;
+for i = 1:length(vnf_chains)
+    avg_num_vnfs = avg_num_vnfs + length(vnf_chains{i}) + 1;
+end
+avg_num_vnfs = avg_num_vnfs / length(vnf_chains);
 
 init_prod_rate = 1/4;
 
-vnf_chain = vnf_chains{1};
-prod_multiplier = 1; prod_rate = 0;
-for j = 1:length(vnf_chain)
-    prod_multiplier = prod_multiplier * vnf_chain(j);
-    prod_rate = prod_rate + init_prod_rate * prod_multiplier;
+prod_rate = zeros(length(vnf_chains), 1);
+
+for i = 1:length(vnf_chains)
+    vnf_chain = vnf_chains{i};
+    prod_multiplier = 1;
+    
+    for j = 1:length(vnf_chain)
+        prod_multiplier = prod_multiplier * vnf_chain(j);
+        prod_rate(i) = prod_rate(i) + init_prod_rate * prod_multiplier;
+    end
 end
+
+prod_rate = mean(prod_rate);
 
 srv_server = 10;
 srv_tor = 10;
@@ -51,16 +63,14 @@ proc_server = MM1(arv_server, srv_server);
 proc_tor = MM1(arv_tor, srv_tor);
 proc_agg = MM1(arv_agg, srv_agg);
 proc_core = MM1(arv_core, srv_core);
-proc_sdn = MM1(arv_sdn, srv_sdn);
+proc_sdn = (MM1(arv_sdn, srv_sdn) + proc_server) * p_sdn;
 
-proc_sdn_waiting = (proc_sdn + proc_server) * p_sdn;
+waiting_time = (proc_server + proc_sdn + proc_vm) * p_server ...
+             + (proc_tor + 2 * proc_server + proc_sdn + proc_vm) * p_tor ...
+             + (proc_agg + 2 * proc_tor + 2 * proc_server + proc_sdn + proc_vm) * p_agg ...
+             + (proc_core + 2 * proc_agg + 2 * proc_tor + 2 * proc_server + proc_sdn + proc_vm) * p_core;
 
-waiting_time = (proc_server + proc_sdn_waiting + proc_vm) * p_server ...
-             + (proc_tor + 2 * proc_server + proc_sdn_waiting + proc_vm) * p_tor ...
-             + (proc_agg + 2 * proc_tor + 2 * proc_server + proc_sdn_waiting + proc_vm) * p_agg ...
-             + (proc_core + 2 * proc_agg + 2 * proc_tor + 2 * proc_server + proc_sdn_waiting + proc_vm) * p_core;
-
-waiting_time = waiting_time * (num_vnfs - 1);
+waiting_time = waiting_time * (avg_num_vnfs - 1);
 
 waiting_time
 
