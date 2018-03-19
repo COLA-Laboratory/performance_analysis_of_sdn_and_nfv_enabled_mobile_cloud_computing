@@ -31,7 +31,7 @@ class VNF : public cSimpleModule
 
   private:
     int num_vms;
-    std::vector<int> vnf_lengths;
+    std::vector<std::vector<int>> vnf_chains;
     int num_msg_received = 0;
 
     cQueue queue;

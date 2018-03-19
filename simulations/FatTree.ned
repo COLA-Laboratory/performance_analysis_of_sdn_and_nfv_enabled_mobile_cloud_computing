@@ -38,7 +38,7 @@ network FatTree
         int num_servers = num_edge * (k / 2);
         int num_vms = num_servers * vm_k;
         
-        string vnf_lengths;
+        string vnf_chains;
         
         @statistic[Time_In_System](title="Time in System"; source="completed"; record=stats; interpolationmode=none);
         

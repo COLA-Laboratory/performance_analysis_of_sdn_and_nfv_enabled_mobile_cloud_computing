@@ -1,7 +1,7 @@
 k = 4;
-k_vm = 2;
+k_vm = 4;
 
-num_vnfs = 4;
+num_vnfs = 2;
 p_sdn = 0.2;
 init_prod_rate = 1/4;
 

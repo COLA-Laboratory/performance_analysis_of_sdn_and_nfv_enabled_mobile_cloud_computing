@@ -26,10 +26,13 @@ namespace nfv_fattree {
  * {
  *     int destination;
  *     int srcServer;
+ * 
  *     bool knowsPath;
  * 
+ *     int vnfChain[];
+ *     int vnfPos = 0;
+ * 
  *     int hopCount = 0;
- *     int vnfCount = 0;
  * 
  *     simtime_t produced;
  *     simtime_t queued;
@@ -42,8 +45,10 @@ class DestMessage : public ::omnetpp::cMessage
     int destination;
     int srcServer;
     bool knowsPath;
+    int *vnfChain; // array ptr
+    unsigned int vnfChain_arraysize;
+    int vnfPos;
     int hopCount;
-    int vnfCount;
     ::omnetpp::simtime_t produced;
     ::omnetpp::simtime_t queued;
 
@@ -70,10 +75,14 @@ class DestMessage : public ::omnetpp::cMessage
     virtual void setSrcServer(int srcServer);
     virtual bool getKnowsPath() const;
     virtual void setKnowsPath(bool knowsPath);
+    virtual void setVnfChainArraySize(unsigned int size);
+    virtual unsigned int getVnfChainArraySize() const;
+    virtual int getVnfChain(unsigned int k) const;
+    virtual void setVnfChain(unsigned int k, int vnfChain);
+    virtual int getVnfPos() const;
+    virtual void setVnfPos(int vnfPos);
     virtual int getHopCount() const;
     virtual void setHopCount(int hopCount);
-    virtual int getVnfCount() const;
-    virtual void setVnfCount(int vnfCount);
     virtual ::omnetpp::simtime_t getProduced() const;
     virtual void setProduced(::omnetpp::simtime_t produced);
     virtual ::omnetpp::simtime_t getQueued() const;

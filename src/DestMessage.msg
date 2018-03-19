@@ -18,10 +18,13 @@ namespace nfv_fattree;
 message DestMessage {
     int destination;
     int srcServer;
+    
     bool knowsPath;
     
+    int vnfChain[];
+    int vnfPos = 0;
+    
     int hopCount = 0;
-    int vnfCount = 0;
     
     simtime_t produced;
     simtime_t queued;

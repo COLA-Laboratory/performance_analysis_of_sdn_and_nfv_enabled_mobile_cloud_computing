@@ -27,8 +27,15 @@ void VNF::initialize() {
     cModule* network = getParentModule();
     num_vms = network->par("num_vms");
 
-    cStringTokenizer tokenizer(network->par("vnf_lengths"));
-    vnf_lengths = tokenizer.asIntVector();
+    vnf_chains = std::vector<std::vector<int>>();
+
+    cStringTokenizer tokenizer_chains(network->par("vnf_chains"));
+
+    while(tokenizer_chains.hasMoreTokens()) {
+        cStringTokenizer tokenizer_vnfs(tokenizer_chains.nextToken(), ".");
+        vnf_chains.push_back(
+                tokenizer_vnfs.asIntVector());
+    }
 
     queue = cQueue();
 
@@ -39,8 +46,10 @@ void VNF::initialize() {
 
     simtime_t production_rate = par("production_rate");
 
-    cMessage *send_msg_evt = new cMessage("send", 1);
-    scheduleAt(simTime() + production_rate, send_msg_evt);
+    if(getIndex() == 1) {
+        cMessage *send_msg_evt = new cMessage("send", 1);
+        scheduleAt(simTime() + production_rate, send_msg_evt);
+    }
 }
 
 void VNF::handleMessage(cMessage *msg) {
@@ -62,9 +71,17 @@ void VNF::handleMessage(cMessage *msg) {
 
         dmsg->setDestination(target);
 
-        // Set length of VNF chain
-        int v_idx = intuniform(0, vnf_lengths.size() - 1);
-        dmsg->setVnfCount(vnf_lengths[v_idx] - 1);
+        // Set VNF chain for message
+        int v_idx = intuniform(0, vnf_chains.size() - 1);
+
+        EV << vnf_chains.size();
+
+        auto vnf_chain = vnf_chains[v_idx];
+
+        dmsg->setVnfChainArraySize(vnf_chain.size());
+
+        for (int i = 0; i < vnf_chain.size(); i++)
+            dmsg->setVnfChain(i, vnf_chain[i]);
 
         send(dmsg, "gate$o");
 
@@ -79,7 +96,7 @@ void VNF::handleMessage(cMessage *msg) {
         DestMessage *dmsg = check_and_cast<DestMessage *>(queue.pop());
         emit(processed_signal, simTime() - dmsg->getQueued());
 
-        if (dmsg->getVnfCount() <= 1) {
+        if (dmsg->getVnfPos() == (dmsg->getVnfChainArraySize() - 1)) {
             emit(completed_signal, simTime() - dmsg->getProduced());
             emit(msg_hop_cnt_signal, dmsg->getHopCount());
 
@@ -92,7 +109,7 @@ void VNF::handleMessage(cMessage *msg) {
             }
 
             dmsg->setDestination(target);
-            dmsg->setVnfCount(dmsg->getVnfCount() - 1);
+            dmsg->setVnfPos(dmsg->getVnfPos() + 1);
             dmsg->setKnowsPath(false);
 
             send(dmsg, "gate$o");

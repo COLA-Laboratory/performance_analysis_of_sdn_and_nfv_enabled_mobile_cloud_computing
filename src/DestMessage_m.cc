@@ -185,19 +185,24 @@ DestMessage::DestMessage(const char *name, short kind) : ::omnetpp::cMessage(nam
     this->destination = 0;
     this->srcServer = 0;
     this->knowsPath = false;
+    vnfChain_arraysize = 0;
+    this->vnfChain = 0;
+    this->vnfPos = 0;
     this->hopCount = 0;
-    this->vnfCount = 0;
     this->produced = 0;
     this->queued = 0;
 }
 
 DestMessage::DestMessage(const DestMessage& other) : ::omnetpp::cMessage(other)
 {
+    vnfChain_arraysize = 0;
+    this->vnfChain = 0;
     copy(other);
 }
 
 DestMessage::~DestMessage()
 {
+    delete [] this->vnfChain;
 }
 
 DestMessage& DestMessage::operator=(const DestMessage& other)
@@ -213,8 +218,13 @@ void DestMessage::copy(const DestMessage& other)
     this->destination = other.destination;
     this->srcServer = other.srcServer;
     this->knowsPath = other.knowsPath;
+    delete [] this->vnfChain;
+    this->vnfChain = (other.vnfChain_arraysize==0) ? nullptr : new int[other.vnfChain_arraysize];
+    vnfChain_arraysize = other.vnfChain_arraysize;
+    for (unsigned int i=0; i<vnfChain_arraysize; i++)
+        this->vnfChain[i] = other.vnfChain[i];
+    this->vnfPos = other.vnfPos;
     this->hopCount = other.hopCount;
-    this->vnfCount = other.vnfCount;
     this->produced = other.produced;
     this->queued = other.queued;
 }
@@ -225,8 +235,10 @@ void DestMessage::parsimPack(omnetpp::cCommBuffer *b) const
     doParsimPacking(b,this->destination);
     doParsimPacking(b,this->srcServer);
     doParsimPacking(b,this->knowsPath);
+    b->pack(vnfChain_arraysize);
+    doParsimArrayPacking(b,this->vnfChain,vnfChain_arraysize);
+    doParsimPacking(b,this->vnfPos);
     doParsimPacking(b,this->hopCount);
-    doParsimPacking(b,this->vnfCount);
     doParsimPacking(b,this->produced);
     doParsimPacking(b,this->queued);
 }
@@ -237,8 +249,16 @@ void DestMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->destination);
     doParsimUnpacking(b,this->srcServer);
     doParsimUnpacking(b,this->knowsPath);
+    delete [] this->vnfChain;
+    b->unpack(vnfChain_arraysize);
+    if (vnfChain_arraysize==0) {
+        this->vnfChain = 0;
+    } else {
+        this->vnfChain = new int[vnfChain_arraysize];
+        doParsimArrayUnpacking(b,this->vnfChain,vnfChain_arraysize);
+    }
+    doParsimUnpacking(b,this->vnfPos);
     doParsimUnpacking(b,this->hopCount);
-    doParsimUnpacking(b,this->vnfCount);
     doParsimUnpacking(b,this->produced);
     doParsimUnpacking(b,this->queued);
 }
@@ -273,6 +293,46 @@ void DestMessage::setKnowsPath(bool knowsPath)
     this->knowsPath = knowsPath;
 }
 
+void DestMessage::setVnfChainArraySize(unsigned int size)
+{
+    int *vnfChain2 = (size==0) ? nullptr : new int[size];
+    unsigned int sz = vnfChain_arraysize < size ? vnfChain_arraysize : size;
+    for (unsigned int i=0; i<sz; i++)
+        vnfChain2[i] = this->vnfChain[i];
+    for (unsigned int i=sz; i<size; i++)
+        vnfChain2[i] = 0;
+    vnfChain_arraysize = size;
+    delete [] this->vnfChain;
+    this->vnfChain = vnfChain2;
+}
+
+unsigned int DestMessage::getVnfChainArraySize() const
+{
+    return vnfChain_arraysize;
+}
+
+int DestMessage::getVnfChain(unsigned int k) const
+{
+    if (k>=vnfChain_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", vnfChain_arraysize, k);
+    return this->vnfChain[k];
+}
+
+void DestMessage::setVnfChain(unsigned int k, int vnfChain)
+{
+    if (k>=vnfChain_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", vnfChain_arraysize, k);
+    this->vnfChain[k] = vnfChain;
+}
+
+int DestMessage::getVnfPos() const
+{
+    return this->vnfPos;
+}
+
+void DestMessage::setVnfPos(int vnfPos)
+{
+    this->vnfPos = vnfPos;
+}
+
 int DestMessage::getHopCount() const
 {
     return this->hopCount;
@@ -281,16 +341,6 @@ int DestMessage::getHopCount() const
 void DestMessage::setHopCount(int hopCount)
 {
     this->hopCount = hopCount;
-}
-
-int DestMessage::getVnfCount() const
-{
-    return this->vnfCount;
-}
-
-void DestMessage::setVnfCount(int vnfCount)
-{
-    this->vnfCount = vnfCount;
 }
 
 ::omnetpp::simtime_t DestMessage::getProduced() const
@@ -378,7 +428,7 @@ const char *DestMessageDescriptor::getProperty(const char *propertyname) const
 int DestMessageDescriptor::getFieldCount() const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
-    return basedesc ? 7+basedesc->getFieldCount() : 7;
+    return basedesc ? 8+basedesc->getFieldCount() : 8;
 }
 
 unsigned int DestMessageDescriptor::getFieldTypeFlags(int field) const
@@ -393,12 +443,13 @@ unsigned int DestMessageDescriptor::getFieldTypeFlags(int field) const
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
+        FD_ISARRAY | FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
     };
-    return (field>=0 && field<7) ? fieldTypeFlags[field] : 0;
+    return (field>=0 && field<8) ? fieldTypeFlags[field] : 0;
 }
 
 const char *DestMessageDescriptor::getFieldName(int field) const
@@ -413,12 +464,13 @@ const char *DestMessageDescriptor::getFieldName(int field) const
         "destination",
         "srcServer",
         "knowsPath",
+        "vnfChain",
+        "vnfPos",
         "hopCount",
-        "vnfCount",
         "produced",
         "queued",
     };
-    return (field>=0 && field<7) ? fieldNames[field] : nullptr;
+    return (field>=0 && field<8) ? fieldNames[field] : nullptr;
 }
 
 int DestMessageDescriptor::findField(const char *fieldName) const
@@ -428,10 +480,11 @@ int DestMessageDescriptor::findField(const char *fieldName) const
     if (fieldName[0]=='d' && strcmp(fieldName, "destination")==0) return base+0;
     if (fieldName[0]=='s' && strcmp(fieldName, "srcServer")==0) return base+1;
     if (fieldName[0]=='k' && strcmp(fieldName, "knowsPath")==0) return base+2;
-    if (fieldName[0]=='h' && strcmp(fieldName, "hopCount")==0) return base+3;
-    if (fieldName[0]=='v' && strcmp(fieldName, "vnfCount")==0) return base+4;
-    if (fieldName[0]=='p' && strcmp(fieldName, "produced")==0) return base+5;
-    if (fieldName[0]=='q' && strcmp(fieldName, "queued")==0) return base+6;
+    if (fieldName[0]=='v' && strcmp(fieldName, "vnfChain")==0) return base+3;
+    if (fieldName[0]=='v' && strcmp(fieldName, "vnfPos")==0) return base+4;
+    if (fieldName[0]=='h' && strcmp(fieldName, "hopCount")==0) return base+5;
+    if (fieldName[0]=='p' && strcmp(fieldName, "produced")==0) return base+6;
+    if (fieldName[0]=='q' && strcmp(fieldName, "queued")==0) return base+7;
     return basedesc ? basedesc->findField(fieldName) : -1;
 }
 
@@ -449,10 +502,11 @@ const char *DestMessageDescriptor::getFieldTypeString(int field) const
         "bool",
         "int",
         "int",
+        "int",
         "simtime_t",
         "simtime_t",
     };
-    return (field>=0 && field<7) ? fieldTypeStrings[field] : nullptr;
+    return (field>=0 && field<8) ? fieldTypeStrings[field] : nullptr;
 }
 
 const char **DestMessageDescriptor::getFieldPropertyNames(int field) const
@@ -491,6 +545,7 @@ int DestMessageDescriptor::getFieldArraySize(void *object, int field) const
     }
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
+        case 3: return pp->getVnfChainArraySize();
         default: return 0;
     }
 }
@@ -522,10 +577,11 @@ std::string DestMessageDescriptor::getFieldValueAsString(void *object, int field
         case 0: return long2string(pp->getDestination());
         case 1: return long2string(pp->getSrcServer());
         case 2: return bool2string(pp->getKnowsPath());
-        case 3: return long2string(pp->getHopCount());
-        case 4: return long2string(pp->getVnfCount());
-        case 5: return simtime2string(pp->getProduced());
-        case 6: return simtime2string(pp->getQueued());
+        case 3: return long2string(pp->getVnfChain(i));
+        case 4: return long2string(pp->getVnfPos());
+        case 5: return long2string(pp->getHopCount());
+        case 6: return simtime2string(pp->getProduced());
+        case 7: return simtime2string(pp->getQueued());
         default: return "";
     }
 }
@@ -543,10 +599,11 @@ bool DestMessageDescriptor::setFieldValueAsString(void *object, int field, int i
         case 0: pp->setDestination(string2long(value)); return true;
         case 1: pp->setSrcServer(string2long(value)); return true;
         case 2: pp->setKnowsPath(string2bool(value)); return true;
-        case 3: pp->setHopCount(string2long(value)); return true;
-        case 4: pp->setVnfCount(string2long(value)); return true;
-        case 5: pp->setProduced(string2simtime(value)); return true;
-        case 6: pp->setQueued(string2simtime(value)); return true;
+        case 3: pp->setVnfChain(i,string2long(value)); return true;
+        case 4: pp->setVnfPos(string2long(value)); return true;
+        case 5: pp->setHopCount(string2long(value)); return true;
+        case 6: pp->setProduced(string2simtime(value)); return true;
+        case 7: pp->setQueued(string2simtime(value)); return true;
         default: return false;
     }
 }
