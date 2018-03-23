@@ -20,12 +20,10 @@ namespace nfv_fattree {
 
 Define_Module(VNF);
 
-int total_target = 0;
-int msg_gen = 0;
-
 void VNF::initialize() {
     cModule* network = getParentModule();
     num_vms = network->par("num_vms");
+    p_sdn = network->par("p_sdn");
 
     vnf_chains = std::vector<std::vector<int>>();
 
@@ -46,8 +44,10 @@ void VNF::initialize() {
 
     simtime_t production_rate = par("production_rate");
 
-    cMessage *send_msg_evt = new cMessage("send", 1);
-    scheduleAt(simTime() + production_rate, send_msg_evt);
+//    if(getIndex() == 1) {
+        cMessage *send_msg_evt = new cMessage("send", 1);
+        scheduleAt(simTime() + production_rate, send_msg_evt);
+//    }
 }
 
 void VNF::handleMessage(cMessage *msg) {
@@ -57,18 +57,6 @@ void VNF::handleMessage(cMessage *msg) {
         auto dmsg = new DestMessage();
         dmsg->setProduced(simTime());
 
-        // Find a target VM
-        int target = getIndex();
-
-        while (target == getIndex()) {
-            target = intuniform(0, num_vms - 1);
-        }
-
-        total_target += target;
-        msg_gen ++;
-
-        dmsg->setDestination(target);
-
         // Set VNF chain for message
         int v_idx = intuniform(0, vnf_chains.size() - 1);
         auto vnf_chain = vnf_chains[v_idx];
@@ -77,6 +65,23 @@ void VNF::handleMessage(cMessage *msg) {
 
         for (int i = 0; i < vnf_chain.size(); i++)
             dmsg->setVnfChain(i, vnf_chain[i]);
+
+        dmsg->setPathArraySize(vnf_chain.size());
+        dmsg->setVisitsSDNArraySize(vnf_chain.size());
+
+        for(int i = 0; i < vnf_chain.size(); i++) {
+            int prev_target = i == 0 ? getIndex() : dmsg->getPath(i-1);
+            int target = prev_target;
+
+            while (target == prev_target)
+                target = intuniform(0, num_vms - 1);
+
+            dmsg->setPath(i, target);
+            dmsg->setVisitsSDN(i, false);
+
+            if(intuniform(1, 100) < p_sdn)
+                dmsg->setVisitsSDN(i, true);
+        }
 
         send(dmsg, "gate$o");
 
@@ -98,24 +103,23 @@ void VNF::handleMessage(cMessage *msg) {
             delete dmsg;
         } else {
 
-            int target = getIndex();
-
-            while (target == getIndex()) {
-                target = intuniform(0, num_vms - 1);
-            }
-
-            dmsg->setDestination(target);
             dmsg->setVnfPos(dmsg->getVnfPos() + 1);
-            dmsg->setKnowsPath(false);
 
             int ratio = dmsg->getVnfChain(dmsg->getVnfPos());
-            int rng = intuniform(1, 100);
 
-            if(ratio < 100 && rng > ratio) {
-                delete dmsg;
-            } else {
-                send(dmsg, "gate$o");
+            while (ratio > 0) {
+
+                int rng = intuniform(1, 100);
+
+                if(ratio >= 100 || rng < ratio) {
+                    auto new_msg = dmsg->dup();
+                    send(new_msg, "gate$o");
+                }
+
+                ratio -= 100;
             }
+
+            delete dmsg;
         }
 
         if (!queue.isEmpty()) {
@@ -126,7 +130,7 @@ void VNF::handleMessage(cMessage *msg) {
 
     } else if (!msg->isSelfMessage()) {
 
-        num_msg_received++;
+//        num_msg_received++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -143,7 +147,7 @@ void VNF::handleMessage(cMessage *msg) {
 }
 
 void VNF::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

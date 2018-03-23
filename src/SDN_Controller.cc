@@ -41,12 +41,14 @@ void SDN_Controller::handleMessage(cMessage *msg) {
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
+        dmsg->setVisitsSDN(dmsg->getVnfPos(), false);
+
         int port = dmsg->getSrcServer();
         send(dmsg, "gate$o", port);
 
     } else {
 
-        num_msg_received++;
+//        num_msg_received++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -63,7 +65,7 @@ void SDN_Controller::handleMessage(cMessage *msg) {
 }
 
 void SDN_Controller::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

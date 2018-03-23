@@ -31,6 +31,7 @@ class VNF : public cSimpleModule
 
   private:
     int num_vms;
+    int p_sdn;
     std::vector<std::vector<int>> vnf_chains;
     int num_msg_received = 0;
 

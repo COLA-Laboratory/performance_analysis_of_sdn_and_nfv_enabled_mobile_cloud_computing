@@ -24,10 +24,10 @@ namespace nfv_fattree {
  * <pre>
  * message DestMessage
  * {
- *     int destination;
  *     int srcServer;
  * 
- *     bool knowsPath;
+ *     int path[];
+ *     bool visitsSDN[];
  * 
  *     int vnfChain[];
  *     int vnfPos = 0;
@@ -42,9 +42,11 @@ namespace nfv_fattree {
 class DestMessage : public ::omnetpp::cMessage
 {
   protected:
-    int destination;
     int srcServer;
-    bool knowsPath;
+    int *path; // array ptr
+    unsigned int path_arraysize;
+    bool *visitsSDN; // array ptr
+    unsigned int visitsSDN_arraysize;
     int *vnfChain; // array ptr
     unsigned int vnfChain_arraysize;
     int vnfPos;
@@ -69,12 +71,16 @@ class DestMessage : public ::omnetpp::cMessage
     virtual void parsimUnpack(omnetpp::cCommBuffer *b) override;
 
     // field getter/setter methods
-    virtual int getDestination() const;
-    virtual void setDestination(int destination);
     virtual int getSrcServer() const;
     virtual void setSrcServer(int srcServer);
-    virtual bool getKnowsPath() const;
-    virtual void setKnowsPath(bool knowsPath);
+    virtual void setPathArraySize(unsigned int size);
+    virtual unsigned int getPathArraySize() const;
+    virtual int getPath(unsigned int k) const;
+    virtual void setPath(unsigned int k, int path);
+    virtual void setVisitsSDNArraySize(unsigned int size);
+    virtual unsigned int getVisitsSDNArraySize() const;
+    virtual bool getVisitsSDN(unsigned int k) const;
+    virtual void setVisitsSDN(unsigned int k, bool visitsSDN);
     virtual void setVnfChainArraySize(unsigned int size);
     virtual unsigned int getVnfChainArraySize() const;
     virtual int getVnfChain(unsigned int k) const;

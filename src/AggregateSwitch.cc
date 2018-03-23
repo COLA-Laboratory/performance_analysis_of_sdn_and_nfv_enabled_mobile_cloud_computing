@@ -55,7 +55,7 @@ void AggregateSwitch::handleMessage(cMessage *msg)
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-        int destination = dmsg->getDestination();
+        int destination = dmsg->getPath(dmsg->getVnfPos());
 
         if(destination < lb || destination > ub){
             int port = floor(destination / (num_vms / (num_ports / 2)));
@@ -69,7 +69,7 @@ void AggregateSwitch::handleMessage(cMessage *msg)
 
     } else {
 
-        num_msg_received ++;
+        // num_msg_received ++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -86,7 +86,7 @@ void AggregateSwitch::handleMessage(cMessage *msg)
 }
 
 void AggregateSwitch::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+    // emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

@@ -46,7 +46,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-        int destination = dmsg->getDestination();
+        int destination = dmsg->getPath(dmsg->getVnfPos());
 
         int port = floor(destination / ((num_ports / 2) * (num_ports / 2) * num_vm_ports));
 
@@ -54,7 +54,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 
     } else {
 
-        num_msg_received ++;
+//        num_msg_received ++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -71,7 +71,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 }
 
 void CoreSwitch::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } /* namespace canonical_tree */

@@ -1,0 +1,26 @@
+% !TeX root=main.tex
+
+\section{Preliminaries}
+\label{sec:preliminaries}
+This section first introduces the concepts of Network Function Virtualisation and Software Defined Networking and presents the implications of these changes to the communication network architecture.
+
+\subsection{Network Function Virtualisation}
+In telecommunications networks, services are composed out of several network functions such as load balancers, firewalls and intrusion detection systems. Traditionally these network functions would be provided by specially engineered pieces of network hardware. In a Network Function Virtualisation (NFV) enabled network, these network functions are virtualised and can be run on industry standard servers reducing both capital and operating expenditure \cite{}.
+
+Services can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions such as in \pref{fig:dag_nfv}. Some network functions can affect the data rate. Network functions such as firewalls or can reduce the rate by filtering out packets. Other network functions such as video decoders can increase the data rate by creating more packets for subsequent network functions to process. The task of constructing a 'concrete' service from an abstract DAG is called service composition and has received much interest in optimisation \cite{EXAMPLES}. In \pref{sec:analytical_model} we describe how our model can be used to evaluate the performance of a given concrete service.
+
+\subsection{Software Defined Networking}
+Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network \cite{}. A logically centralised SDN controller exists in the network which maintains a global view of the network. When a packet arrives at a SDN enabled device a flow lookup is performed to determine how the packet should be routed. If an appropriate flow does not exist in the router the device sends a request to the controller requesting an update to the flow table. Depending on the implementation, portions or the entirety of the flow table may be populated in advance.
+
+Depending on the structure of the network there may exist one or more physical controllers. In a centralised SDN solution, a single control entity has a global view of the network. In contrast hierachical and distributed approaches use several control entities and either decompose or share the network information respectively.
+
+\subsection{The Network Architecture}
+Each server has a virtual router
+Each server contains several VMs
+
+Each server can be connected to the SDN controller or each 
+
+Assumptions
+- Uniform routing
+- SDN enables balanced routing throughout the network
+- Poisson arrival rate

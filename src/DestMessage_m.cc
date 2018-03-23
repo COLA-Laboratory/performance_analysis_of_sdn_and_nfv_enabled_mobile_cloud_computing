@@ -182,9 +182,11 @@ Register_Class(DestMessage)
 
 DestMessage::DestMessage(const char *name, short kind) : ::omnetpp::cMessage(name,kind)
 {
-    this->destination = 0;
     this->srcServer = 0;
-    this->knowsPath = false;
+    path_arraysize = 0;
+    this->path = 0;
+    visitsSDN_arraysize = 0;
+    this->visitsSDN = 0;
     vnfChain_arraysize = 0;
     this->vnfChain = 0;
     this->vnfPos = 0;
@@ -195,6 +197,10 @@ DestMessage::DestMessage(const char *name, short kind) : ::omnetpp::cMessage(nam
 
 DestMessage::DestMessage(const DestMessage& other) : ::omnetpp::cMessage(other)
 {
+    path_arraysize = 0;
+    this->path = 0;
+    visitsSDN_arraysize = 0;
+    this->visitsSDN = 0;
     vnfChain_arraysize = 0;
     this->vnfChain = 0;
     copy(other);
@@ -202,6 +208,8 @@ DestMessage::DestMessage(const DestMessage& other) : ::omnetpp::cMessage(other)
 
 DestMessage::~DestMessage()
 {
+    delete [] this->path;
+    delete [] this->visitsSDN;
     delete [] this->vnfChain;
 }
 
@@ -215,9 +223,17 @@ DestMessage& DestMessage::operator=(const DestMessage& other)
 
 void DestMessage::copy(const DestMessage& other)
 {
-    this->destination = other.destination;
     this->srcServer = other.srcServer;
-    this->knowsPath = other.knowsPath;
+    delete [] this->path;
+    this->path = (other.path_arraysize==0) ? nullptr : new int[other.path_arraysize];
+    path_arraysize = other.path_arraysize;
+    for (unsigned int i=0; i<path_arraysize; i++)
+        this->path[i] = other.path[i];
+    delete [] this->visitsSDN;
+    this->visitsSDN = (other.visitsSDN_arraysize==0) ? nullptr : new bool[other.visitsSDN_arraysize];
+    visitsSDN_arraysize = other.visitsSDN_arraysize;
+    for (unsigned int i=0; i<visitsSDN_arraysize; i++)
+        this->visitsSDN[i] = other.visitsSDN[i];
     delete [] this->vnfChain;
     this->vnfChain = (other.vnfChain_arraysize==0) ? nullptr : new int[other.vnfChain_arraysize];
     vnfChain_arraysize = other.vnfChain_arraysize;
@@ -232,9 +248,11 @@ void DestMessage::copy(const DestMessage& other)
 void DestMessage::parsimPack(omnetpp::cCommBuffer *b) const
 {
     ::omnetpp::cMessage::parsimPack(b);
-    doParsimPacking(b,this->destination);
     doParsimPacking(b,this->srcServer);
-    doParsimPacking(b,this->knowsPath);
+    b->pack(path_arraysize);
+    doParsimArrayPacking(b,this->path,path_arraysize);
+    b->pack(visitsSDN_arraysize);
+    doParsimArrayPacking(b,this->visitsSDN,visitsSDN_arraysize);
     b->pack(vnfChain_arraysize);
     doParsimArrayPacking(b,this->vnfChain,vnfChain_arraysize);
     doParsimPacking(b,this->vnfPos);
@@ -246,9 +264,23 @@ void DestMessage::parsimPack(omnetpp::cCommBuffer *b) const
 void DestMessage::parsimUnpack(omnetpp::cCommBuffer *b)
 {
     ::omnetpp::cMessage::parsimUnpack(b);
-    doParsimUnpacking(b,this->destination);
     doParsimUnpacking(b,this->srcServer);
-    doParsimUnpacking(b,this->knowsPath);
+    delete [] this->path;
+    b->unpack(path_arraysize);
+    if (path_arraysize==0) {
+        this->path = 0;
+    } else {
+        this->path = new int[path_arraysize];
+        doParsimArrayUnpacking(b,this->path,path_arraysize);
+    }
+    delete [] this->visitsSDN;
+    b->unpack(visitsSDN_arraysize);
+    if (visitsSDN_arraysize==0) {
+        this->visitsSDN = 0;
+    } else {
+        this->visitsSDN = new bool[visitsSDN_arraysize];
+        doParsimArrayUnpacking(b,this->visitsSDN,visitsSDN_arraysize);
+    }
     delete [] this->vnfChain;
     b->unpack(vnfChain_arraysize);
     if (vnfChain_arraysize==0) {
@@ -263,16 +295,6 @@ void DestMessage::parsimUnpack(omnetpp::cCommBuffer *b)
     doParsimUnpacking(b,this->queued);
 }
 
-int DestMessage::getDestination() const
-{
-    return this->destination;
-}
-
-void DestMessage::setDestination(int destination)
-{
-    this->destination = destination;
-}
-
 int DestMessage::getSrcServer() const
 {
     return this->srcServer;
@@ -283,14 +305,64 @@ void DestMessage::setSrcServer(int srcServer)
     this->srcServer = srcServer;
 }
 
-bool DestMessage::getKnowsPath() const
+void DestMessage::setPathArraySize(unsigned int size)
 {
-    return this->knowsPath;
+    int *path2 = (size==0) ? nullptr : new int[size];
+    unsigned int sz = path_arraysize < size ? path_arraysize : size;
+    for (unsigned int i=0; i<sz; i++)
+        path2[i] = this->path[i];
+    for (unsigned int i=sz; i<size; i++)
+        path2[i] = 0;
+    path_arraysize = size;
+    delete [] this->path;
+    this->path = path2;
 }
 
-void DestMessage::setKnowsPath(bool knowsPath)
+unsigned int DestMessage::getPathArraySize() const
 {
-    this->knowsPath = knowsPath;
+    return path_arraysize;
+}
+
+int DestMessage::getPath(unsigned int k) const
+{
+    if (k>=path_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", path_arraysize, k);
+    return this->path[k];
+}
+
+void DestMessage::setPath(unsigned int k, int path)
+{
+    if (k>=path_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", path_arraysize, k);
+    this->path[k] = path;
+}
+
+void DestMessage::setVisitsSDNArraySize(unsigned int size)
+{
+    bool *visitsSDN2 = (size==0) ? nullptr : new bool[size];
+    unsigned int sz = visitsSDN_arraysize < size ? visitsSDN_arraysize : size;
+    for (unsigned int i=0; i<sz; i++)
+        visitsSDN2[i] = this->visitsSDN[i];
+    for (unsigned int i=sz; i<size; i++)
+        visitsSDN2[i] = 0;
+    visitsSDN_arraysize = size;
+    delete [] this->visitsSDN;
+    this->visitsSDN = visitsSDN2;
+}
+
+unsigned int DestMessage::getVisitsSDNArraySize() const
+{
+    return visitsSDN_arraysize;
+}
+
+bool DestMessage::getVisitsSDN(unsigned int k) const
+{
+    if (k>=visitsSDN_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", visitsSDN_arraysize, k);
+    return this->visitsSDN[k];
+}
+
+void DestMessage::setVisitsSDN(unsigned int k, bool visitsSDN)
+{
+    if (k>=visitsSDN_arraysize) throw omnetpp::cRuntimeError("Array of size %d indexed by %d", visitsSDN_arraysize, k);
+    this->visitsSDN[k] = visitsSDN;
 }
 
 void DestMessage::setVnfChainArraySize(unsigned int size)
@@ -441,8 +513,8 @@ unsigned int DestMessageDescriptor::getFieldTypeFlags(int field) const
     }
     static unsigned int fieldTypeFlags[] = {
         FD_ISEDITABLE,
-        FD_ISEDITABLE,
-        FD_ISEDITABLE,
+        FD_ISARRAY | FD_ISEDITABLE,
+        FD_ISARRAY | FD_ISEDITABLE,
         FD_ISARRAY | FD_ISEDITABLE,
         FD_ISEDITABLE,
         FD_ISEDITABLE,
@@ -461,9 +533,9 @@ const char *DestMessageDescriptor::getFieldName(int field) const
         field -= basedesc->getFieldCount();
     }
     static const char *fieldNames[] = {
-        "destination",
         "srcServer",
-        "knowsPath",
+        "path",
+        "visitsSDN",
         "vnfChain",
         "vnfPos",
         "hopCount",
@@ -477,9 +549,9 @@ int DestMessageDescriptor::findField(const char *fieldName) const
 {
     omnetpp::cClassDescriptor *basedesc = getBaseClassDescriptor();
     int base = basedesc ? basedesc->getFieldCount() : 0;
-    if (fieldName[0]=='d' && strcmp(fieldName, "destination")==0) return base+0;
-    if (fieldName[0]=='s' && strcmp(fieldName, "srcServer")==0) return base+1;
-    if (fieldName[0]=='k' && strcmp(fieldName, "knowsPath")==0) return base+2;
+    if (fieldName[0]=='s' && strcmp(fieldName, "srcServer")==0) return base+0;
+    if (fieldName[0]=='p' && strcmp(fieldName, "path")==0) return base+1;
+    if (fieldName[0]=='v' && strcmp(fieldName, "visitsSDN")==0) return base+2;
     if (fieldName[0]=='v' && strcmp(fieldName, "vnfChain")==0) return base+3;
     if (fieldName[0]=='v' && strcmp(fieldName, "vnfPos")==0) return base+4;
     if (fieldName[0]=='h' && strcmp(fieldName, "hopCount")==0) return base+5;
@@ -545,6 +617,8 @@ int DestMessageDescriptor::getFieldArraySize(void *object, int field) const
     }
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
+        case 1: return pp->getPathArraySize();
+        case 2: return pp->getVisitsSDNArraySize();
         case 3: return pp->getVnfChainArraySize();
         default: return 0;
     }
@@ -574,9 +648,9 @@ std::string DestMessageDescriptor::getFieldValueAsString(void *object, int field
     }
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
-        case 0: return long2string(pp->getDestination());
-        case 1: return long2string(pp->getSrcServer());
-        case 2: return bool2string(pp->getKnowsPath());
+        case 0: return long2string(pp->getSrcServer());
+        case 1: return long2string(pp->getPath(i));
+        case 2: return bool2string(pp->getVisitsSDN(i));
         case 3: return long2string(pp->getVnfChain(i));
         case 4: return long2string(pp->getVnfPos());
         case 5: return long2string(pp->getHopCount());
@@ -596,9 +670,9 @@ bool DestMessageDescriptor::setFieldValueAsString(void *object, int field, int i
     }
     DestMessage *pp = (DestMessage *)object; (void)pp;
     switch (field) {
-        case 0: pp->setDestination(string2long(value)); return true;
-        case 1: pp->setSrcServer(string2long(value)); return true;
-        case 2: pp->setKnowsPath(string2bool(value)); return true;
+        case 0: pp->setSrcServer(string2long(value)); return true;
+        case 1: pp->setPath(i,string2long(value)); return true;
+        case 2: pp->setVisitsSDN(i,string2bool(value)); return true;
         case 3: pp->setVnfChain(i,string2long(value)); return true;
         case 4: pp->setVnfPos(string2long(value)); return true;
         case 5: pp->setHopCount(string2long(value)); return true;

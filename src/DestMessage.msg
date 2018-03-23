@@ -16,10 +16,10 @@
 namespace nfv_fattree;
 
 message DestMessage {
-    int destination;
     int srcServer;
     
-    bool knowsPath;
+    int path[];
+    bool visitsSDN[];
     
     int vnfChain[];
     int vnfPos = 0;

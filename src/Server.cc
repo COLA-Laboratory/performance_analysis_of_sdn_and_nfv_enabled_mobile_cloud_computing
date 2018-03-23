@@ -56,28 +56,24 @@ void Server::handleMessage(cMessage *msg)
         }
 
         // Decide if message should be forwarded to SDN controller
-        int rng = intuniform(0, 99);
-
-        if(!dmsg->getKnowsPath() && rng < p_sdn) {
-            dmsg->setKnowsPath(true);
+        if(dmsg->getVisitsSDN(dmsg->getVnfPos())) {
             send(dmsg, "sdn_gate$o");
+            return;
+        }
+
+        int destination = dmsg->getPath(dmsg->getVnfPos());
+
+        if (destination < lb || destination > ub) {
+            int port = num_vm_ports;
+            send(dmsg, "gate$o", port);
         } else {
-            dmsg->setKnowsPath(true);
-
-            int destination = dmsg->getDestination();
-
-            if (destination < lb || destination > ub) {
-                int port = num_vm_ports;
-                send(dmsg, "gate$o", port);
-            } else {
-                int port = destination - lb;
-                send(dmsg, "gate$o", port);
-            }
+            int port = destination - lb;
+            send(dmsg, "gate$o", port);
         }
 
     } else {
 
-        num_msg_received ++;
+//        num_msg_received ++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -95,7 +91,7 @@ void Server::handleMessage(cMessage *msg)
 }
 
 void Server::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

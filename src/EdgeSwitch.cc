@@ -52,7 +52,7 @@ void EdgeSwitch::handleMessage(cMessage *msg) {
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
-        int destination = dmsg->getDestination();
+        int destination = dmsg->getPath(dmsg->getVnfPos());
 
         if (destination < lb || destination > ub) {
             int port = id - (floor(id / (num_ports / 2)) * (num_ports / 2));
@@ -66,7 +66,7 @@ void EdgeSwitch::handleMessage(cMessage *msg) {
 
     } else {
 
-        num_msg_received ++;
+//        num_msg_received ++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -83,7 +83,7 @@ void EdgeSwitch::handleMessage(cMessage *msg) {
 }
 
 void EdgeSwitch::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

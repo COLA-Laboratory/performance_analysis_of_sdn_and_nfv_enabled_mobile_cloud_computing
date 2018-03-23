@@ -1,0 +1,61 @@
+\documentclass[conference]{IEEEtran}
+
+\usepackage{cite}
+\usepackage{prettyref}
+\usepackage{amsmath}
+\interdisplaylinepenalty=2500
+\usepackage{array}
+
+\newrefformat{fig}{Fig.~\ref{#1}}
+\newrefformat{tab}{Table~\ref{#1}}
+\newrefformat{sec}{Section~\ref{#1}}
+\newrefformat{alg}{Algorithm~\ref{#1}}
+\newrefformat{property}{Property~\ref{#1}}
+\newrefformat{theorem}{Theorem~\ref{#1}}
+\newrefformat{definition}{Definition~\ref{#1}}
+\newrefformat{corollary}{Corollary~\ref{#1}}
+\newrefformat{lemma}{Lemma~\ref{#1}}
+\newrefformat{conj}{Conjecture~\ref{#1}}
+\newrefformat{def}{Definition~\ref{#1}}
+\newrefformat{eq}{equation~(\ref{#1})}
+\newrefformat{app}{Appendix~\ref{#1}}
+
+\newcommand{\pref}{\prettyref}
+
+\hyphenation{}
+
+\begin{document}
+
+\title{Modelling and Analysis of SDN and NFV Enabled Communications Networks}
+
+\author{\IEEEauthorblockN{Joseph Billingsley, Wang Miao and Geyong Min}
+\IEEEauthorblockA{Department of Computer Science\\
+University of Exeter, UK\\
+Email: \{jb931, wang.miao, g.min\}@exeter.ac.uk}}
+
+\maketitle
+
+\begin{abstract}
+TODO:
+What
+Why
+How
+Impact
+\end{abstract}
+
+% no keywords
+
+\input{introduction}
+
+\input{preliminaries}
+
+\input{analytical_model}
+
+\input{validation}
+
+\input{conclusions}
+
+\bibliographystyle{IEEEtran}
+\bibliography{IEEEabrv,bibliography}
+
+\end{document}
