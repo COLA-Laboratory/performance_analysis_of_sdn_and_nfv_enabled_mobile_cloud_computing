@@ -39,22 +39,23 @@ network FatTree
         int num_vms = num_servers * vm_k;
         
         string vnf_chains;
+        string prob_service;
         
         @statistic[Time_In_System](title="Time in System"; source="completed"; record=mean; interpolationmode=none);
         
-//        @statistic[Rec_VNF](title="Arrival Rate - VNF"; source="vnf_received_count"; record=stats; interpolationmode=none);
-//        @statistic[Rec_Server](title="Arrival Rate - Server"; source="server_received_count"; record=stats; interpolationmode=none);
-//        @statistic[Rec_Edge](title="Arrival Rate - Edge"; source="edge_received_count"; record=stats; interpolationmode=none);
-//        @statistic[Rec_Agg](title="Arrival Rate - Aggregate"; source="agg_received_count"; record=stats; interpolationmode=none);
-//        @statistic[Rec_Core](title="Arrival Rate - Core"; source="core_received_count"; record=stats; interpolationmode=none);
-//        @statistic[Rec_SDN](title="Arrival Rate - SDN"; source="sdn_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_VNF](title="Arrival Rate - VNF"; source="vnf_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_Server](title="Arrival Rate - Server"; source="server_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_Edge](title="Arrival Rate - Edge"; source="edge_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_Agg](title="Arrival Rate - Aggregate"; source="agg_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_Core](title="Arrival Rate - Core"; source="core_received_count"; record=stats; interpolationmode=none);
+        @statistic[Rec_SDN](title="Arrival Rate - SDN"; source="sdn_received_count"; record=stats; interpolationmode=none);
         
-//        @statistic[Proc_VNF](title="Queueing Time - VNF"; source="vnf_msg_processed"; record=stats; interpolationmode=none);
-//        @statistic[Proc_Server](title="Queueing Time - Server"; source="server_msg_processed"; record=stats; interpolationmode=none);
-//        @statistic[Proc_Edge](title="Queueing Time - Edge"; source="edge_msg_processed"; record=stats; interpolationmode=none);
-//        @statistic[Proc_Agg](title="Queueing Time - Aggregate"; source="agg_msg_processed"; record=stats; interpolationmode=none);
-//        @statistic[Proc_Core](title="Queueing Time - Core"; source="core_msg_processed"; record=stats; interpolationmode=none);
-//        @statistic[Proc_SDN](title="Queueing Time - SDN"; source="sdn_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_VNF](title="Queueing Time - VNF"; source="vnf_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_Server](title="Queueing Time - Server"; source="server_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_Edge](title="Queueing Time - Edge"; source="edge_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_Agg](title="Queueing Time - Aggregate"; source="agg_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_Core](title="Queueing Time - Core"; source="core_msg_processed"; record=stats; interpolationmode=none);
+        @statistic[Proc_SDN](title="Queueing Time - SDN"; source="sdn_msg_processed"; record=stats; interpolationmode=none);
         
 //        @statistic[Hop_Count](title="Hop Count"; source="msg_hop_count"; record=stats; interpolationmode=none);
         

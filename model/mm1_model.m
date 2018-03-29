@@ -3,10 +3,8 @@ function [waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, i
     avg_num_vnfs = 0;
     
     for i = 1:length(vnf_chains)
-        avg_num_vnfs = avg_num_vnfs + length(vnf_chains{i}) + 1;
+        avg_num_vnfs = avg_num_vnfs + (length(vnf_chains{i}) + 1) * prob_services(i);
     end
-    
-    avg_num_vnfs = avg_num_vnfs / length(vnf_chains);
 
     prod_rate = zeros(length(vnf_chains), 1);
     
@@ -34,7 +32,8 @@ function [waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, i
     p_tor = ((k/2) * k_vm - k_vm) / (num_vms - 1);
     p_agg = ((k/2)^2 * k_vm - (k/2) * k_vm) / (num_vms - 1);
     p_core = (num_vms - (k/2)^2 * k_vm) / (num_vms - 1);
-
+    p_sdn = p_sdn * (1 - p_server);
+    
     arv_vm = ((num_vms - 1) / (num_vms - 1)) * prod_rate;
     
     arv_server = k_vm * prod_rate ... 

@@ -3,6 +3,11 @@ global k; global k_vm; global p_sdn; global prob_services; global vnf_chains;
 global init_prod_rate; global srv_vm; global srv_server; global srv_tor;
 global srv_agg; global srv_core; global srv_sdn;
 
+set_to_large();
+p_sdn = 1;
+init_prod_rate = .25;
+latency = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+
 %% IncreasingArrival_Large
 file = fopen('MODEL_IncreasingArrival_Large.out', 'w');
 

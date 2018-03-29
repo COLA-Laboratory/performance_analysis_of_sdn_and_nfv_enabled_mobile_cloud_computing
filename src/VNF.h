@@ -33,6 +33,7 @@ class VNF : public cSimpleModule
     int num_vms;
     int p_sdn;
     std::vector<std::vector<int>> vnf_chains;
+    std::vector<int> prob_service;
     int num_msg_received = 0;
 
     cQueue queue;

@@ -26,6 +26,7 @@ void VNF::initialize() {
     p_sdn = network->par("p_sdn");
 
     vnf_chains = std::vector<std::vector<int>>();
+    prob_service = std::vector<int>();
 
     cStringTokenizer tokenizer_chains(network->par("vnf_chains"));
 
@@ -34,6 +35,9 @@ void VNF::initialize() {
         vnf_chains.push_back(
                 tokenizer_vnfs.asIntVector());
     }
+
+    cStringTokenizer tokenizer_services(network->par("prob_service"));
+    prob_service = tokenizer_services.asIntVector();
 
     queue = cQueue();
 
@@ -58,7 +62,18 @@ void VNF::handleMessage(cMessage *msg) {
         dmsg->setProduced(simTime());
 
         // Set VNF chain for message
-        int v_idx = intuniform(0, vnf_chains.size() - 1);
+        int v_idx = 0;
+        int rng = intuniform(1, 100);
+
+        int p_sum = 0;
+        for (int i = 0; i < prob_service.size(); i++) {
+            p_sum += prob_service[i];
+            if(rng <= p_sum) {
+                v_idx = i;
+                break;
+            }
+        }
+
         auto vnf_chain = vnf_chains[v_idx];
 
         dmsg->setVnfChainArraySize(vnf_chain.size());
@@ -79,7 +94,7 @@ void VNF::handleMessage(cMessage *msg) {
             dmsg->setPath(i, target);
             dmsg->setVisitsSDN(i, false);
 
-            if(intuniform(1, 100) < p_sdn)
+            if(intuniform(0, 99) < p_sdn)
                 dmsg->setVisitsSDN(i, true);
         }
 
@@ -130,7 +145,7 @@ void VNF::handleMessage(cMessage *msg) {
 
     } else if (!msg->isSelfMessage()) {
 
-//        num_msg_received++;
+        num_msg_received++;
 
         if (queue.isEmpty()) {
             simtime_t service_rate = par("service_rate");
@@ -147,7 +162,7 @@ void VNF::handleMessage(cMessage *msg) {
 }
 
 void VNF::finish() {
-//    emit(received_cnt_signal, num_msg_received / simTime());
+    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

@@ -12,19 +12,19 @@ The analytical model is based on the following assumptions which are commonly ac
 \item The time taken for a message to travel between network components in negligible.
 \item The SDN controller ensures messages take the shortest path between the two destinations and that messages are evenly distributed over the switches in the network.
 \item Queues at each network component have infinite capacity.
-\item Messages sent from a VNF to the virtual switch may need to visit the SDN controller with probability $p_{sdn}$. The same does not apply to messages arriving to the SDN from other sources as the route to the destination will be known.
+\item Messages sent from a VNF to VNFs on other servers, may need to visit the SDN controller with probability $p_{sdn\_user}$. The same does not apply to messages arriving at a server as the route to the destination will be known.
 \end{enumerate}
 
-The mean message latency of the network can be calculated as the sum of the waiting time at each network component a message visits. As a result of the network architecture, messages will take shorter paths to visit VNFs under the same server, edge switch or pod. Consequently, the traffic arriving at servers at each layer in the network will also vary. The mean message latency can hence be calculated as:
+The mean message latency of the network can be calculated as the sum of the waiting time at each network component a message visits. As a result of the network architecture, messages will take shorter paths to visit VNFs under the same server, edge switch or pod. Consequently, the traffic arriving at servers at each layer in the network will also vary. The mean message latency for a single hop service chain can hence be calculated as:
 
 \begin{equation} 
 \label{eq:mean_latency}
 \begin{split}
-L&atency = (w_{vm} + w_{sdn} + w_{srv}) \cdot p_{srv} \\
+L&atency_{base} = ((w_{vm} + w_{sdn} + w_{srv}) \cdot p_{srv} \\
 		&+ (w_{vm} + w_{sdn} + 2w_{srv} + w_{edge}) \cdot p_{edge} \\
 	 	&+ (w_{vm} + w_{sdn} + 2w_{srv} + 2w_{edge} + w_{agg}) \cdot p_{agg} \\
 	 	&+ (w_{vm} + w_{sdn} + 2w_{srv} + 2w_{edge}  \\
-		& \;\;\;\quad\qquad\quad\qquad + 2w_{agg} + 2w_{core})\cdot p_{core}
+		& \;\;\;\quad\qquad\quad\qquad + 2w_{agg} + 2w_{core})\cdot p_{core})
 \end{split}
 \end{equation}
 
@@ -49,6 +49,12 @@ This same techinque can be used to find the remaining probabilities:
 &p_{agg} = \frac{(k/2)^2 \cdot k_{vm} - (k/2) \cdot k_vm}{n - 1} \\ \nonumber \\
 &p_{core} = \frac{n - (k/2)^2 \cdot k_{vm}}{n - 1}
 \end{align}
+
+Finally we can calculate the probability $p_{sdn}$ by excluding all messages that will not leave the server:
+
+\begin{equation}
+p_{sdn} = p_{sdn\_user} \cdot (1 - p_{vm})
+\end{equation}
 
 \subsection{Calculation of Mean Waiting Time}
 To determine the mean waiting time at each network component, we model each component as a M/M/1 queue where the mean waiting time is calculated as \cite{}:
@@ -127,7 +133,7 @@ When a message is sent to the controller it will incurr added latency both waiti
 w_{sdn} = (MM1(\mu, \lambda_{sdn}) + w_{srv}) * p_{sdn}
 \end{equation}
 
-\subsection{Mean Latency of Many Services}
+\subsection{Mean Latency of Long Services and Many Services}
 As discussed in the preliminary section telecommunications services are typically composed from several network functions that pass messages from one to the other. As a result messages persist in the network for a longer period of time. 
 
 Consider a situation where each VNF send a message to an adjacent network function every cycle, under the same server or otherwise, so that all network functions will receive a message each cycle. Consider also that we have a service chain of three network function so that messages will be required to make two hops. 
@@ -150,12 +156,18 @@ We can further extend this to several services, each of which may have different
 
 where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(chain_i) = 1$.
 
+Finally we must also consider that messages that require several hops must also traverse the network several times. We can extend \pref{eq:mean_latency} by multiplying it by the average number of hops in the network considering each service:
+
+\begin{equation}
+Latency = Latency_{base} \cdot \sum_{i=1}^{ns} p(chain_i) \cdot (len(chain_i) - 1)
+\end{equation}
+
 \subsection{Mean Latency with Filtering VNFs}
 We make one final extension for the case where one or more network functions in a service may not forward all of the messages that they receive. As a result subsequent network functions in a service chain have lower production rates. 
 
 We can use the same conceptual model as before to solve this. Consider a situation where we have a service chain with 4 VNFs with 2 filtering VNFs that remove 50\% of the traffic, as illustrated in \ref{}. After the first cycle all VNFs will have sent and received 1 message. After the second cycle all VNFs will have sent at least one message, and half of the VNFs will have forwarded another message bringing the average production rate to 1.5. After the first cycle all VNFs will have produced at least 1 message, another half will have forwarded the message received in the previous cycle and a quarter will have forwarded the message sent in the first cycle bringing the average production rate to 1.75.
 
-We can extend this process to several services in the same manner as before by averaging the poduction rates of each service. The complete algorithm for calculating the production rate is as follows:
+We can extend this process to several services in the same manner as before by averaging the production rates of each service. The complete algorithm for calculating the production rate considering all aspects is as follows:
 
 \begin{algorithmic}[1]
 \FOR{$i = 1:ns$} 
