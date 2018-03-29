@@ -10,17 +10,173 @@ In telecommunications networks, services are composed out of several network fun
 Services can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions such as in \pref{fig:dag_nfv}. Some network functions can affect the data rate. Network functions such as firewalls or can reduce the rate by filtering out packets. Other network functions such as video decoders can increase the data rate by creating more packets for subsequent network functions to process. The task of constructing a 'concrete' service from an abstract DAG is called service composition and has received much interest in optimisation \cite{EXAMPLES}. In \pref{sec:analytical_model} we describe how our model can be used to evaluate the performance of a given concrete service.
 
 \subsection{Software Defined Networking}
-Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network \cite{}. A logically centralised SDN controller exists in the network which maintains a global view of the network. When a packet arrives at a SDN enabled device a flow lookup is performed to determine how the packet should be routed. If an appropriate flow does not exist in the router the device sends a request to the controller requesting an update to the flow table. Depending on the implementation, portions or the entirety of the flow table may be populated in advance.
+Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network \cite{} and configuration of VNFs. A logically centralised SDN controller exists in the network which maintains a global view of the network. When a packet arrives at a SDN enabled device a flow lookup is performed to determine how the packet should be routed. If an appropriate flow does not exist in the router the device sends a request to the controller requesting an update to the flow table. Depending on the implementation, portions or the entirety of the flow table may be populated in advance.
 
-Depending on the structure of the network there may exist one or more physical controllers. In a centralised SDN solution, a single control entity has a global view of the network. In contrast hierachical and distributed approaches use several control entities and either decompose or share the network information respectively.
+There may exist one or more SDN controllers. In a centralised SDN solution, a single control entity has a global view of the network. In contrast hierachical and distributed approaches use several control entities and either decompose or share the network information respectively.
 
 \subsection{The Network Architecture}
-Each server has a virtual router
-Each server contains several VMs
 
-Each server can be connected to the SDN controller or each 
+\begin{figure}
 
-Assumptions
-- Uniform routing
-- SDN enables balanced routing throughout the network
-- Poisson arrival rate
+\label{fig:network_topology}
+
+\centering
+
+\begin{tikzpicture}[
+every node/.style={node distance=6mm and 1mm},
+server/.style={rectangle, draw=black, fill=black},
+edge/.style={rectangle, draw=black, fill=black},
+agg/.style={rectangle, draw=black, fill=black},
+core/.style={rectangle, draw=black, fill=black},
+sdn/.style={rectangle, draw=black, fill=black},
+vm/.style={rectangle, draw=black, fill=black},
+]
+
+% Servers
+\node[server]      (S1)                       {};
+\node[server]      (S2)        [right=of S1]  {};
+\node[server]      (S3)        [right=of S2]  {};
+\node[server]      (S4)        [right=of S3]  {};
+\node[server]      (S5)        [right=of S4]  {};
+\node[server]      (S6)        [right=of S5]  {};
+\node[server]      (S7)        [right=of S6]  {};
+\node[server]      (S8)        [right=of S7]  {};
+\node[server]      (S9)        [right=of S8]  {};
+\node[server]      (S10)       [right=of S9]  {};
+\node[server]      (S11)       [right=of S10] {};
+\node[server]      (S12)       [right=of S11] {};
+\node[server]      (S13)       [right=of S12] {};
+\node[server]      (S14)       [right=of S13] {};
+\node[server]      (S15)       [right=of S14] {};
+\node[server]      (S16)       [right=of S15] {};
+
+% VMs
+\node[vm]      (V1)        [below=of S1]  {};
+\node[vm]      (V2)        [below=of S1, left=of V1]  {};
+\node[vm]      (V3)        [below=of S1, right=of V1]  {};
+
+% \node[] at (-2, -.86)  {VM};
+\node [right=of V3] {\large ...};
+
+% Edge/ToR
+\node[edge]      (E1)        [above=of S1,  between=S1 and S2]   {};
+\node[edge]      (E2)        [above=of S3,  between=S3 and S4]   {};
+\node[edge]      (E3)        [above=of S5,  between=S5 and S6]   {};
+\node[edge]      (E4)        [above=of S7,  between=S7 and S8]   {};
+\node[edge]      (E5)        [above=of S9,  between=S9 and S10]  {};
+\node[edge]      (E6)        [above=of S11, between=S11 and S12] {};
+\node[edge]      (E7)        [above=of S13, between=S13 and S14] {};
+\node[edge]      (E8)        [above=of S15, between=S15 and S16] {};
+
+\node[text width=0.8cm] at (-2, .7)  {Edge};
+
+% SDN Controller
+\node[sdn]      (SC1)      at (-.67, .5)    {};
+
+% Aggregate
+\node[agg]      (A1)        [above=of E1] {};
+\node[agg]      (A2)        [above=of E2] {};
+\node[agg]      (A3)        [above=of E3] {};
+\node[agg]      (A4)        [above=of E4] {};
+\node[agg]      (A5)        [above=of E5] {};
+\node[agg]      (A6)        [above=of E6] {};
+\node[agg]      (A7)        [above=of E7] {};
+\node[agg]      (A8)        [above=of E8] {};
+
+\node[text width=0.8cm] at (-2, 1.55)  {Aggregation};
+
+% Core
+\node[core]      (C1)        [above=of A1,  between=A1 and A2]  {};
+\node[core]      (C2)        [above=of A3,  between=A3 and A4]  {};
+\node[core]      (C3)        [above=of A5,  between=A5 and A6]  {};
+\node[core]      (C4)        [above=of A7,  between=A7 and A8]  {};
+
+\node[text width=0.8cm] at (-2, 2.35)  {Core};
+
+%Lines
+\draw[-] (V1.north)  -- (S1.south);
+\draw[-] (V2.north)  -- (S1.south);
+\draw[-] (V3.north)  -- (S1.south);
+
+\draw[-] (S1.north)  -- (E1.south);
+\draw[-] (S2.north)  -- (E1.south);
+\draw[-] (S3.north)  -- (E2.south);
+\draw[-] (S4.north)  -- (E2.south);
+\draw[-] (S5.north)  -- (E3.south);
+\draw[-] (S6.north)  -- (E3.south);
+\draw[-] (S7.north)  -- (E4.south);
+\draw[-] (S8.north)  -- (E4.south);
+\draw[-] (S9.north)  -- (E5.south);
+\draw[-] (S10.north) -- (E5.south);
+\draw[-] (S11.north) -- (E6.south);
+\draw[-] (S12.north) -- (E6.south);
+\draw[-] (S13.north) -- (E7.south);
+\draw[-] (S14.north) -- (E7.south);
+\draw[-] (S15.north) -- (E8.south);
+\draw[-] (S16.north) -- (E8.south);
+
+\draw[-] (S1.north)  -- (SC1.south east);
+\draw[-] (S2.north)  -- (SC1.south east);
+\draw[-] (S3.north)  -- (SC1.south east);
+\draw[-] (S4.north)  -- (SC1.south east);
+\draw[-] (S5.north)  -- (SC1.south east);
+\draw[-] (S6.north)  -- (SC1.south east);
+\draw[-] (S7.north)  -- (SC1.south east);
+\draw[-] (S8.north)  -- (SC1.south east);
+\draw[-] (S9.north)  -- (SC1.south east);
+\draw[-] (S10.north) -- (SC1.south east);
+\draw[-] (S11.north) -- (SC1.south east);
+\draw[-] (S12.north) -- (SC1.south east);
+\draw[-] (S13.north) -- (SC1.south east);
+\draw[-] (S14.north) -- (SC1.south east);
+\draw[-] (S15.north) -- (SC1.south east);
+\draw[-] (S16.north) -- (SC1.south east);
+
+\draw[-] (E1.north)  -- (A1.south);
+\draw[-] (E2.north)  -- (A2.south);
+\draw[-] (E3.north)  -- (A3.south);
+\draw[-] (E4.north)  -- (A4.south);
+\draw[-] (E5.north)  -- (A5.south);
+\draw[-] (E6.north)  -- (A6.south);
+\draw[-] (E7.north)  -- (A7.south);
+\draw[-] (E8.north)  -- (A8.south);
+
+\draw[-] (E1.north)  -- (A2.south);
+\draw[-] (E2.north)  -- (A1.south);
+\draw[-] (E3.north)  -- (A4.south);
+\draw[-] (E4.north)  -- (A3.south);
+\draw[-] (E5.north)  -- (A6.south);
+\draw[-] (E6.north)  -- (A5.south);
+\draw[-] (E7.north)  -- (A8.south);
+\draw[-] (E8.north)  -- (A7.south);
+
+\draw[-] (A1.north)  -- (C1.south);
+\draw[-] (A1.north)  -- (C3.south);
+\draw[-] (A2.north)  -- (C2.south);
+\draw[-] (A2.north)  -- (C4.south);
+\draw[-] (A3.north)  -- (C1.south);
+\draw[-] (A3.north)  -- (C3.south);
+\draw[-] (A4.north)  -- (C2.south);
+\draw[-] (A4.north)  -- (C4.south);
+\draw[-] (A5.north)  -- (C1.south);
+\draw[-] (A5.north)  -- (C3.south);
+\draw[-] (A6.north)  -- (C2.south);
+\draw[-] (A6.north)  -- (C4.south);
+\draw[-] (A7.north)  -- (C1.south);
+\draw[-] (A7.north)  -- (C3.south);
+\draw[-] (A8.north)  -- (C2.south);
+\draw[-] (A8.north)  -- (C4.south);
+
+\end{tikzpicture}
+
+\caption{The three layer topology modelled in this network}
+
+\end{figure}
+
+In this work we extend the Fat Tree network \cite{} frequently found in datacentres \cite{} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. Generally the network is laid out as follows:
+
+We define $k$ as the number of ports for physical switches and $k_{vm}$ the number of ports for the virtual switches. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of the $k$ pods. There are $k$ pods each containing two layers (aggregation and edge) of $k/2$ switches. Each switch in the edge layer is connected to each of the $k/2$ aggregation switches. Each of the remaining switches in the edge layer is connected to $k/2$ servers. Each server has a virtual switch with $k_{vm}$ ports connecting to a VNF.
+
+For each pod, each aggregation switch connects to the core switch with the same index as it and all subsequent switches $k/2$ steps away. As an example, if $k=4$ the first aggregation switch in a pod connects to core switch 1 and 3, the second aggregation switch connects to 2 and 4 with this pattern repeating for each pod. This topology results in $n=k^3/4 * k_{vm}$ VNFs.
+
+For this research we constructed a network where each server is connected to a single centralised SDN controller. This topology is used in practice, most notably resembling VMwares NSX architecture \cite{}. Alternatively all elements in the network could be connected to the SDN \cite{} or a distributed SDN. This exploration is left to future research.

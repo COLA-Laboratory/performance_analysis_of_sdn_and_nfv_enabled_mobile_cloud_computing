@@ -1,0 +1,35 @@
+version 2
+run DifferentChains_FourLong-10-20180326-13:04:09-27711
+attr configname DifferentChains_FourLong
+attr datetime 20180326-13:04:09
+attr experiment DifferentChains_FourLong
+attr inifile omnetpp.ini
+attr iterationvars $0=4.8
+attr iterationvarsf 4.8-
+attr measurement $0=4.8
+attr network FatTree
+attr processid 27711
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 10
+attr seedset 10
+param FatTree.vms[*].service_rate exponential(0.5s)
+param FatTree.servers[*].service_rate exponential(0.1s)
+param FatTree.edge[*].service_rate exponential(0.1s)
+param FatTree.aggregate[*].service_rate exponential(0.1s)
+param FatTree.core[*].service_rate exponential(0.1s)
+param FatTree.sdn.service_rate exponential(0.1s)
+param FatTree.vms[*].production_rate exponential(4.8s)
+param FatTree.vnf_chains "\"100.100 100.100.100 100.100.100.100 100.100.100.100.100\""
+param FatTree.vms[*].production_rate exponential(5s)
+param FatTree.vnf_chains "\"100\""
+param FatTree.k 4
+param FatTree.vm_k 2
+param FatTree.p_sdn 0
+
+scalar FatTree Time_In_System:mean 6.8117169053502
+attr interpolationmode none
+attr source completed
+attr title "Time in System, mean"
+

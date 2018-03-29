@@ -1,0 +1,34 @@
+version 2
+run DifferentSDN_Large-4-20180326-13:17:29-30768
+attr configname DifferentSDN_Large
+attr datetime 20180326-13:17:29
+attr experiment DifferentSDN_Large
+attr inifile omnetpp.ini
+attr iterationvars $0=40
+attr iterationvarsf 40-
+attr measurement $0=40
+attr network FatTree
+attr processid 30768
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 4
+attr seedset 4
+param FatTree.vms[*].service_rate exponential(0.5s)
+param FatTree.servers[*].service_rate exponential(0.1s)
+param FatTree.edge[*].service_rate exponential(0.1s)
+param FatTree.aggregate[*].service_rate exponential(0.1s)
+param FatTree.core[*].service_rate exponential(0.1s)
+param FatTree.sdn.service_rate exponential(0.1s)
+param FatTree.p_sdn 40
+param FatTree.vms[*].production_rate exponential(5s)
+param FatTree.vnf_chains "\"100\""
+param FatTree.k 4
+param FatTree.vm_k 2
+param FatTree.p_sdn 0
+
+scalar FatTree Time_In_System:mean 1.3698580529164
+attr interpolationmode none
+attr source completed
+attr title "Time in System, mean"
+

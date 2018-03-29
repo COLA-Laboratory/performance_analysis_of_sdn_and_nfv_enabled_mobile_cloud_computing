@@ -1,0 +1,35 @@
+version 2
+run DifferentRT_20-14-20180326-15:27:39-5854
+attr configname DifferentRT_20
+attr datetime 20180326-15:27:39
+attr experiment DifferentRT_20
+attr inifile omnetpp.ini
+attr iterationvars $0=3.8
+attr iterationvarsf 3.8-
+attr measurement $0=3.8
+attr network FatTree
+attr processid 5854
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 14
+attr seedset 14
+param FatTree.vms[*].service_rate exponential(0.5s)
+param FatTree.servers[*].service_rate exponential(0.1s)
+param FatTree.edge[*].service_rate exponential(0.1s)
+param FatTree.aggregate[*].service_rate exponential(0.1s)
+param FatTree.core[*].service_rate exponential(0.1s)
+param FatTree.sdn.service_rate exponential(0.1s)
+param FatTree.vms[*].production_rate exponential(3.8s)
+param FatTree.vnf_chains "\"100.20\""
+param FatTree.vms[*].production_rate exponential(5s)
+param FatTree.vnf_chains "\"100\""
+param FatTree.k 4
+param FatTree.vm_k 2
+param FatTree.p_sdn 0
+
+scalar FatTree Time_In_System:mean 2.7415118836781
+attr interpolationmode none
+attr source completed
+attr title "Time in System, mean"
+

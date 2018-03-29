@@ -1,0 +1,34 @@
+version 2
+run IncreasingArrival_Small-15-20180326-11:16:07-13197
+attr configname IncreasingArrival_Small
+attr datetime 20180326-11:16:07
+attr experiment IncreasingArrival_Small
+attr inifile omnetpp.ini
+attr iterationvars $0=3
+attr iterationvarsf 3-
+attr measurement $0=3
+attr network FatTree
+attr processid 13197
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 15
+attr seedset 15
+param FatTree.vms[*].service_rate exponential(1s)
+param FatTree.servers[*].service_rate exponential(0.2s)
+param FatTree.edge[*].service_rate exponential(0.2s)
+param FatTree.aggregate[*].service_rate exponential(0.2s)
+param FatTree.core[*].service_rate exponential(0.2s)
+param FatTree.sdn.service_rate exponential(0.2s)
+param FatTree.vms[*].production_rate exponential(3s)
+param FatTree.vms[*].production_rate exponential(5s)
+param FatTree.vnf_chains "\"100\""
+param FatTree.k 4
+param FatTree.vm_k 2
+param FatTree.p_sdn 0
+
+scalar FatTree Time_In_System:mean 3.6517342147037
+attr interpolationmode none
+attr source completed
+attr title "Time in System, mean"
+

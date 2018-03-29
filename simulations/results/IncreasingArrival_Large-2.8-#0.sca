@@ -1,14 +1,14 @@
 version 2
-run IncreasingArrival_Large-10-20180323-15:49:19-30201
+run IncreasingArrival_Large-10-20180326-10:22:06-11976
 attr configname IncreasingArrival_Large
-attr datetime 20180323-15:49:19
+attr datetime 20180326-10:22:06
 attr experiment IncreasingArrival_Large
 attr inifile omnetpp.ini
 attr iterationvars $0=2.8
 attr iterationvarsf 2.8-
 attr measurement $0=2.8
 attr network FatTree
-attr processid 30201
+attr processid 11976
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -27,7 +27,7 @@ param FatTree.k 4
 param FatTree.vm_k 2
 param FatTree.p_sdn 0
 
-scalar FatTree Time_In_System:mean 1.4133653158699
+scalar FatTree Time_In_System:mean 1.4134155517861
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

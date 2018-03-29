@@ -1,4 +1,4 @@
-function [waiting_time] = mm1_model(k, k_vm, p_sdn, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn)
+function [waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn)
 
     avg_num_vnfs = 0;
     
@@ -9,18 +9,18 @@ function [waiting_time] = mm1_model(k, k_vm, p_sdn, vnf_chains, init_prod_rate, 
     avg_num_vnfs = avg_num_vnfs / length(vnf_chains);
 
     prod_rate = zeros(length(vnf_chains), 1);
-
+    
     for i = 1:length(vnf_chains)
         vnf_chain = vnf_chains{i};
         prod_multiplier = 1;
-
+        
         for j = 1:length(vnf_chain)
             prod_multiplier = prod_multiplier * vnf_chain(j);
             prod_rate(i) = prod_rate(i) + init_prod_rate * prod_multiplier;
         end
     end
 
-    prod_rate = mean(prod_rate);
+    prod_rate = sum(prod_rate' .* prob_services);
 
     num_core = (k / 2)^2;
     num_pods = k;
@@ -36,14 +36,19 @@ function [waiting_time] = mm1_model(k, k_vm, p_sdn, vnf_chains, init_prod_rate, 
     p_core = (num_vms - (k/2)^2 * k_vm) / (num_vms - 1);
 
     arv_vm = ((num_vms - 1) / (num_vms - 1)) * prod_rate;
+    
     arv_server = k_vm * prod_rate ... 
                + (num_vms - k_vm) * (1 / (num_vms - 1)) * k_vm * prod_rate ...
                + k_vm * prod_rate * p_sdn;
+           
     arv_tor = ((k/2) * k_vm) * ((num_vms - (k_vm)) / (num_vms - 1)) * prod_rate ... 
-            + (num_vms - ((k/2) * k_vm)) * (1 / (num_vms - 1)) * ((k / 2) * k_vm) * prod_rate;   
+            + (num_vms - ((k/2) * k_vm)) * (1 / (num_vms - 1)) * ((k / 2) * k_vm) * prod_rate;
+        
     arv_agg = ((k/2)^2 * k_vm) * ((num_vms - (k_vm * (k/2))) / (num_vms - 1)) * prod_rate * (1/(k/2)) ...
             + (num_vms - ((k/2)^2 * k_vm)) * prod_rate * (((k/2)^2 * k_vm) / (num_vms - 1)) * (1/(k/2));
+        
     arv_core = p_core * num_vms * (1 / num_core) * prod_rate;
+    
     arv_sdn = num_vms * prod_rate * p_sdn;
 
     if arv_vm > srv_vm || arv_server > srv_server || arv_tor > srv_tor || arv_agg > srv_agg || arv_core > srv_core || arv_sdn > srv_sdn

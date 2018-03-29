@@ -1,10 +1,22 @@
 \documentclass[conference]{IEEEtran}
+\usepackage{algorithmic}
 
 \usepackage{cite}
 \usepackage{prettyref}
 \usepackage{amsmath}
 \interdisplaylinepenalty=2500
 \usepackage{array}
+
+
+\usepackage{tikz}
+\usepackage{environ}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\tikzset{
+    between/.style args={#1 and #2}{
+         at = ($(#1)!0.5!(#2)$)
+    }
+}
 
 \newrefformat{fig}{Fig.~\ref{#1}}
 \newrefformat{tab}{Table~\ref{#1}}
