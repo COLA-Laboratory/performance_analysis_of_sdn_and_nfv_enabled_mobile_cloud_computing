@@ -96,9 +96,9 @@ Servers can receive messages from three sources: generated from VNFs it is runni
 
 Where line two can be understood as the number of VNFs that are not hosted by the server, sending an equal proportion of their messages to each of the VNFs hosted by the server.
 
-The arrival rate for the edge switches can be deduced in the same way. Following the same order:
+Note that the SDN controller does not affect switches as the portion of messages that are sent to the controller are not sent to higher switches till later cycles and that this absence is filled by messages returned from the SDN controller from earlier cycles. 
 
-TODO: What about the impact of the messages being received to the upper level switches from the SDN?
+The arrival rate for the edge switches can then be deduced in the same way. Following the same order:
 
 \begin{equation}
 \label{eq:arr_edge}

@@ -30,6 +30,8 @@ class VNF : public cSimpleModule
     virtual void finish();
 
   private:
+    simtime_t inter_production_time, inter_service_time;
+
     int num_vms;
     int p_sdn;
     std::vector<std::vector<int>> vnf_chains;
@@ -42,6 +44,8 @@ class VNF : public cSimpleModule
     simsignal_t processed_signal;
     simsignal_t completed_signal;
     simsignal_t msg_hop_cnt_signal;
+
+    cStdDev accuracy_detector;
 };
 
 } //namespace

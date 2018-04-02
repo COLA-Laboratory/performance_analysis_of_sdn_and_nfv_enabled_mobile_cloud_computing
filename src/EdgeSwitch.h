@@ -25,6 +25,8 @@ namespace nfv_fattree {
 class EdgeSwitch : public cSimpleModule
 {
   private:
+    simtime_t inter_service_time;
+
     int id, lb, ub;
     int num_ports, num_vm_ports;
     int num_msg_received = 0;

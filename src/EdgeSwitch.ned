@@ -18,7 +18,7 @@ package nfv_fattree;
 simple EdgeSwitch
 {
     parameters:
-        volatile double service_rate @unit(s); 
+        double service_rate; 
     gates:
         inout gate[];
 }

@@ -30,6 +30,9 @@ void CoreSwitch::initialize() {
     processed_signal = registerSignal("core_msg_processed");
 
     queue = cQueue();
+
+    double par_service = par("service_rate");
+    inter_service_time = SimTime(1 / par_service);
 }
 
 void CoreSwitch::handleMessage(cMessage *msg) {
@@ -41,7 +44,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
         emit(processed_signal, simTime() - dmsg->getQueued());
 
         if (!queue.isEmpty()) {
-            simtime_t service_rate = par("service_rate");
+            simtime_t service_rate = exponential(inter_service_time);
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
@@ -54,10 +57,10 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 
     } else {
 
-        num_msg_received ++;
+//        num_msg_received ++;
 
         if (queue.isEmpty()) {
-            simtime_t service_rate = par("service_rate");
+            simtime_t service_rate = exponential(inter_service_time);;
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
@@ -71,7 +74,7 @@ void CoreSwitch::handleMessage(cMessage *msg) {
 }
 
 void CoreSwitch::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } /* namespace canonical_tree */

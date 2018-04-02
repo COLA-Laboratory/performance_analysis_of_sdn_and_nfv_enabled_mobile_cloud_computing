@@ -1,17 +1,17 @@
 \documentclass[conference]{IEEEtran}
 \usepackage{algorithmic}
 
+\usepackage{pgfplots}
 \usepackage{cite}
 \usepackage{prettyref}
 \usepackage{amsmath}
 \interdisplaylinepenalty=2500
 \usepackage{array}
 
-
 \usepackage{tikz}
-\usepackage{environ}
 \usetikzlibrary{positioning}
 \usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
 \tikzset{
     between/.style args={#1 and #2}{
          at = ($(#1)!0.5!(#2)$)
@@ -48,11 +48,7 @@ Email: \{jb931, wang.miao, g.min\}@exeter.ac.uk}}
 \maketitle
 
 \begin{abstract}
-TODO:
-What
-Why
-How
-Impact
+Developed a novel and practical analytical model for next generation, SDN and NFV enabled communications networks. Next generation communications networks are using these technologies but fast and accurate models do not yet exist. We model each network component in a layer as identical M/M/1 queues and calculate the expected latency considering possible efficient paths. We extend this work to consider services with many network functions in sequence, several services in the same network and VNFs that filter messages. After validating the models accuracy through extensive simulation experiments we, the model is used to investigate the impact of different configurations of services and VNFs. The model revealed disproportionate load on certain layers in the network as well as significant impact of naieve placement of VNFs. It also serves as a first step towards developing an efficient analytical model for optimisation of Virtual Network Function placement.
 \end{abstract}
 
 % no keywords
@@ -64,6 +60,8 @@ Impact
 \input{analytical_model}
 
 \input{validation}
+
+\input{performance_analysis}
 
 \input{conclusions}
 

@@ -36,8 +36,16 @@ void VNF::initialize() {
                 tokenizer_vnfs.asIntVector());
     }
 
-    cStringTokenizer tokenizer_services(network->par("prob_service"));
-    prob_service = tokenizer_services.asIntVector();
+
+    std::string prob_service_par = network->par("prob_service");
+
+    if (prob_service_par == "EQUAL") {
+        for(int i = 0; i < vnf_chains.size(); i++)
+            prob_service.push_back(100 * (1.0 / ((double) vnf_chains.size())));
+    } else {
+        cStringTokenizer tokenizer_services(network->par("prob_service"));
+        prob_service = tokenizer_services.asIntVector();
+    }
 
     queue = cQueue();
 
@@ -46,12 +54,18 @@ void VNF::initialize() {
     received_cnt_signal = registerSignal("vnf_received_count");
     processed_signal = registerSignal("vnf_msg_processed");
 
-    simtime_t production_rate = par("production_rate");
+    double par_prod = par("production_rate"),
+           par_service = par("service_rate");
 
-//    if(getIndex() == 1) {
-        cMessage *send_msg_evt = new cMessage("send", 1);
-        scheduleAt(simTime() + production_rate, send_msg_evt);
-//    }
+    if(par_prod == 0) return;
+
+    inter_production_time = SimTime(1 / par_prod);
+    inter_service_time = SimTime(1 / par_service);
+
+    simtime_t production_rate = exponential(inter_production_time);
+
+    cMessage *send_msg_evt = new cMessage("send", 1);
+    scheduleAt(simTime() + production_rate, send_msg_evt);
 }
 
 void VNF::handleMessage(cMessage *msg) {
@@ -100,7 +114,7 @@ void VNF::handleMessage(cMessage *msg) {
 
         send(dmsg, "gate$o");
 
-        simtime_t production_rate = par("production_rate");
+        simtime_t production_rate = exponential(inter_production_time);
         cMessage *send_msg_evt = new cMessage("send", 1);
         scheduleAt(simTime() + production_rate, send_msg_evt);
 
@@ -112,10 +126,21 @@ void VNF::handleMessage(cMessage *msg) {
         emit(processed_signal, simTime() - dmsg->getQueued());
 
         if (dmsg->getVnfPos() == (dmsg->getVnfChainArraySize() - 1)) {
-            emit(completed_signal, simTime() - dmsg->getProduced());
+
+            simtime_t travel_time = simTime() - dmsg->getProduced();
+
+            emit(completed_signal, travel_time);
             emit(msg_hop_cnt_signal, dmsg->getHopCount());
 
             delete dmsg;
+
+//            double prev_value = accuracy_detector.getMean();
+//            accuracy_detector.collect(travel_time);
+//            double new_value = accuracy_detector.getMean();
+//
+//            if(abs(prev_value - new_value) < 0.001)
+//                endSimulation();
+
         } else {
 
             dmsg->setVnfPos(dmsg->getVnfPos() + 1);
@@ -138,17 +163,17 @@ void VNF::handleMessage(cMessage *msg) {
         }
 
         if (!queue.isEmpty()) {
-            simtime_t service_rate = par("service_rate");
+            simtime_t service_rate = exponential(inter_service_time);
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
 
     } else if (!msg->isSelfMessage()) {
 
-        num_msg_received++;
+//        num_msg_received++;
 
         if (queue.isEmpty()) {
-            simtime_t service_rate = par("service_rate");
+            simtime_t service_rate = exponential(inter_service_time);
             cMessage *process_msg_evt = new cMessage("process", 2);
             scheduleAt(simTime() + service_rate, process_msg_evt);
         }
@@ -162,7 +187,7 @@ void VNF::handleMessage(cMessage *msg) {
 }
 
 void VNF::finish() {
-    emit(received_cnt_signal, num_msg_received / simTime());
+//    emit(received_cnt_signal, num_msg_received / simTime());
 }
 
 } //namespace

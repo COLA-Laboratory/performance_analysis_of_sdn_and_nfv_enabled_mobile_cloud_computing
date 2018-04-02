@@ -25,6 +25,8 @@ namespace nfv_fattree {
 class AggregateSwitch : public cSimpleModule
 {
   private:
+    simtime_t inter_service_time;
+
     int id, lb, ub;
     int num_ports, num_vm_ports, num_vms;
     int num_msg_received = 0;

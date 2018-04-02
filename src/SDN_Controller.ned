@@ -15,13 +15,10 @@
 
 package nfv_fattree;
 
-//
-// TODO auto-generated module
-//
 simple SDN_Controller
 {
     parameters:
-        volatile double service_rate @unit(s);
+        double service_rate;
     gates:
         inout gate[];
 }

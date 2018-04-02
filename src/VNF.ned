@@ -18,8 +18,8 @@ package nfv_fattree;
 simple VNF
 {
     parameters:
-        volatile double service_rate @unit(s); 
-        volatile double production_rate @unit(s); 
+        double service_rate; 
+        double production_rate; 
     gates:
         inout gate;
 }

@@ -1,4 +1,4 @@
-function [waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn)
+function [feasible, waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn)
 
     avg_num_vnfs = 0;
     
@@ -51,7 +51,9 @@ function [waiting_time] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, i
     arv_sdn = num_vms * prod_rate * p_sdn;
 
     if arv_vm > srv_vm || arv_server > srv_server || arv_tor > srv_tor || arv_agg > srv_agg || arv_core > srv_core || arv_sdn > srv_sdn
-        error('Arrival rate exceeded service rate');
+       feasible = false;
+    else
+        feasible = true;
     end
     
     proc_vm = MM1(arv_vm, srv_vm);

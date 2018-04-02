@@ -12,60 +12,102 @@ test_group_ptrn = '-';
 
 for i = 1 : length(test_problems)
     temp = regexp(test_problems(i).name, test_group_ptrn, 'split');
-    test_group(i) = temp(1);
+    test_groups(i) = temp(1);
 end
 
-test_group = unique(test_group);
+test_groups = unique(test_groups);
 
 param_ptrn = '(?<=-)[0-9.]*(?=-)';
-mean_ptrn = '(?<=scalar FatTree Time_In_System:mean )[0-9.]*';
+mean_ptrn = '(?<=scalar FatTree Time_In_System:mean )([0-9.]*|-nan|nan)';
 
-for i = 1 : length(test_group)
-    test_files = dir([test_group{i}, '*']);
+for i = 1 : length(test_groups)
+    test_group = test_groups{i};
+    test_files = dir([test_group, '*']);
     
-    fwrite = fullfile(out_dir, ['SIMULATION_' test_group{i} '.out']);
-    fwrite = fopen(fwrite, 'w');
-    
-    if(contains(test_group{i}, ["IncreasingLength", "DifferentPorts", "DifferentSDN"]))
+    for j = 1 : size(test_files, 1)
         
-        for j = 1 : size(test_files, 1)
-            fread = fullfile(in_dir, test_files(j).name);
-            fread = fileread(fread);
+        test_file = test_files(j);
+        arr_rate = extract_arrival_rate(test_file.name);
+                
+        if strcmp(test_group, 'DifferentLengths')
             
-            param = regexp(test_files(j).name, param_ptrn, 'match');
-            param = param{1};
+            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            out_fname = [test_group '_' num2str(lengths(1))];
             
-            if(contains(test_group{i}, "IncreasingLength"))
-                param = length(strsplit(param, '.'));
-                param = num2str(param);
-            end
+        elseif strcmp(test_group, 'FilteringVNFs')
             
-            mean = regexp(fread, mean_ptrn, 'match');
-            mean = str2double(mean);
+            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            out_fname = [test_group '_' num2str(vnfs(end))];
             
-            fprintf(fwrite, '%s %f \n', param, mean);
+        elseif strcmp(test_group, 'IncreasingNumPorts') || strcmp(test_group, 'IncreasingSDN')
+            
+            par = extract_parameter(test_file.name);
+            out_fname = [test_group '_' num2str(par)];
+            
+        elseif strcmp(test_group, 'MultipleServices')
+            
+            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            out_fname = [test_group '_' num2str(num_services)];
+            
+        else
+            error("No match for test group %s", test_group);
         end
         
-        continue;
-    end
-    
-    for j = size(test_files, 1) : -1 : 1
         fread = fullfile(in_dir, test_files(j).name);
         fread = fileread(fread);
-        
-        param = regexp(test_files(j).name, param_ptrn, 'match');
-        param = str2double(param{1});
-        
+                
         mean = regexp(fread, mean_ptrn, 'match');
         mean = str2double(mean);
         
-        fprintf(fwrite, '%f %f \n', 1 / param, mean);
+        if isnan(mean)
+            mean = 0;
+        end
+        
+        fwrite = fullfile(out_dir, ['SIMULATION_' out_fname '.out']);
+        fwrite = fopen(fwrite, 'a');
+        
+        fprintf(fwrite, '%f %f \n', arr_rate, mean);
+        
+        fclose(fwrite);
+    end
+    
+end
+
+function arrival_rate = extract_arrival_rate(str)
+dash_pos = strfind(str, '-');
+comma_pos = strfind(str, ',');
+
+arrival_rate = str(dash_pos(1)+1:comma_pos(1)-1);
+arrival_rate = str2double(arrival_rate);
+end
+
+function [num_services, lengths, vnfs] = extract_services(str)
+
+dash_pos = strfind(str, '-');
+comma_pos = strfind(str, ',');
+
+services = str(comma_pos(1)+1:dash_pos(2)-1);
+services = strsplit(services, '_');
+
+num_services = length(services);
+
+for i=1:num_services
+    vnf_str = strsplit(services{i}, '.');
+    lengths(i) = length(vnf_str);
+    
+    for j=1:lengths(i)
+        vnfs(i,j) = str2double(vnf_str(j));
     end
 end
 
-function num = extract_numbers(str)
+end
 
-str_parsed = regexprep(str, '[A-z#-]+', '');
-num = str2double(str_parsed);
+function parameter = extract_parameter(str)
+
+dash_pos = strfind(str, '-');
+comma_pos = strfind(str, ',');
+
+parameter = str(comma_pos(1)+1:dash_pos(2)-1);
+parameter = str2double(parameter);
 
 end

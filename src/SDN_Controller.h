@@ -30,6 +30,8 @@ class SDN_Controller : public cSimpleModule
     virtual void finish();
 
   private:
+    simtime_t inter_service_time;
+
     int num_msg_received = 0;
 
     cQueue queue;

@@ -25,6 +25,8 @@ namespace nfv_fattree {
 class CoreSwitch : public cSimpleModule
 {
   private:
+    simtime_t inter_service_time;
+
     int num_ports, num_vm_ports;
     int num_msg_received = 0;
 

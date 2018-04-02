@@ -30,6 +30,8 @@ class Server : public cSimpleModule
     virtual void finish();
 
   private:
+    simtime_t inter_service_time;
+
     int num_ports, num_vm_ports, p_sdn;
     int num_msg_received = 0;
     int id, lb, ub;
