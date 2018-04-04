@@ -3,18 +3,18 @@
 \section{Introduction}
 \label{sec:introduction}
 
+Next generation communications networks are faced with scaling to support greater expectations and usage of existing services whilst simultanously supporting demanding new use cases such as the internet of things, machine to machine, fog computing and virtual and augmented reality. Two technologies that have emerged as part of the solution to these problems are Network Function Virtualisation (NFV) and Software Defined Networking (SDN).
 
-The key contributions of this paper are as follows:
+Fast analytical models allow for evaluation and hence optimisation of large scale networks. Existing research into analytical models of these technologies has focussed on them in isolation. Longo et al. \cite{LongoDBS15} constructed a model of the reliability of a two layer hierarchical SDN controller. Similarily, Azodolmolky et al. \cite{AzodolmolkyWY13} also examine the two layer SDN controller and use network calculus to determine the worst case delay incurred by visiting it and the minimum buffer size required to prevent packet loss given the highest load. Wang et al. \cite{MiaoMWWH16} produce a more accurate SDN model by considering the bursty and correlated arrivals of packets and a high and low priority queue at an SDN enabled switch. Unlike other research they only model the case of one switch and one SDN controller.
+
+With regards to NFV modeling Prados-Garzon et al. \cite{Prados-GarzonAR17} produced a detailed model of a single VNF which is composed of several VNF components and calculate the average response time of the VNF. Gebert et al. \cite{GebertZLST16} analysed a single VNF in even more detail by modelling the packet processing process of a Linux x86 system. Their model estimates latency and packet loss within the 95\% confidence interval of lab testing of a real world server. To the best of our knowledge, only Fahmin et al. \cite{FahminLHLS17} considered both NFV and SDN. They analysed the performance of two methods of combining SDN and NFV in the network. However they consider a simplfied network with only a single switch and VNF.
+
+In this work we strike a middle ground between existing approaches by considering all relevant aspects of the network at an appropriate level of detail. Whilst efficient analytical models for Fat Tree networks have long been known \cite{GreenbergG97}, and SDN and NFV modelling widely researched, to the best of our knowledge we are the first researchers to produce an integrated model that can consider the impact of all of these components. The key contributions of this paper are:
 
 \begin{itemize}
-
-\item SDN
-\item Network Function Virtualisation
-\item Multiple Services
-\item Different Length Services
-\item Reducing Traffic
-
+\item An efficient analytical model for a next generation NFV enabled network containing a centralised SDN controller using M/M/1 queues.
+\item Generally applicable extensions for different length service chains and multiple services in the same network.
+\item A generally applicable extension for VNFs that reduce packet rate as part of a service chain.
 \end{itemize}
-
 
 The rest of this paper is organised as follows. \pref{sec:preliminaries} reviews the preliminaries that are useful for understanding the subsequent sections. In \pref{sec:analytical_model} we derive the analytical model. \pref{sec:validation} validates this model with extensive simulation experiments. Finally \pref{sec:conclusions} concludes the paper, explores the implications of the models and examines future research directions.

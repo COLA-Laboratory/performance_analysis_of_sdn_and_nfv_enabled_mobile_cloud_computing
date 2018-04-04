@@ -1,14 +1,12 @@
 % !TeX root=main.tex
 
-\section{Conclusions}
+\section{Conclusions and Future Work}
 \label{sec:conclusions}
 % Outline paper again
+In this paper we have presented an efficient analytical model capable of modelling an SDN and NFV enabled datacentre communications network. We also propose extensions that allow the evaluation of impact of services with different lengths and properties running in the network aswell as support for network functions that filter a portion of the traffic. 
 
-Whilst this work has evaluated a specific network structure, the same approach for determining the impact of integrating SDN and NFV should be transferable to other network topologies. 
+Whilst this work has evaluated a specific network structure, the same approach for determining the impact of integrating SDN and NFV should be transferable to other network topologies. In particular the extensions made to the model to handle services and reducing network functions have been shown to only impact the arrival rate at servers and so this work should be generalisable to other network topologies.
 
-% Future Work
-In future work:
+There remain many useful extensions that can be made to the network. In particular the current model assumes uniform placement of network functions which makes it unsuitable as a model for VNF placement problems. More powerful models that can efficiently consider the impact of concrete and/or fuzzy placement of network functions are required.
 
-- Examine effect of particular placement
-- Extend work to encompass NFs that increase the load on the network.
-- MM1 queues have been shown to be innaccurate for real world communications networks. Extending the model to consider the impact of bursty traffic is also important.
+Further, M/M/1 queues have been shown to underestimate the latency when faced with more realistic bursty traffic \cite{WuMLJ12}. Similarily the current model can not accurately model NFs that increase the load on the network. This is as these network functions can produce more than one packet at a time, and hence also create bursty traffic patterns. MMPP queues have been used in the literature to model bursty traffic \cite{MiaoMWWH16, WuMLJ12} and may be able to solve these problems.

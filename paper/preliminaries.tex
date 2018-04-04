@@ -173,7 +173,7 @@ vm/.style={rectangle, draw=black, fill=black},
 
 \end{figure}
 
-In this work we extend the Fat Tree network \cite{} frequently found in datacentres \cite{} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. Generally the network is laid out as follows:
+In this work we extend the Fat Tree network \cite{Al-FaresLV08} frequently found in datacentres \cite{} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. Generally the network is laid out as follows:
 
 We define $k$ as the number of ports for physical switches and $k_{vm}$ the number of ports for the virtual switches. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of the $k$ pods. There are $k$ pods each containing two layers (aggregation and edge) of $k/2$ switches. Each switch in the edge layer is connected to each of the $k/2$ aggregation switches. Each of the remaining switches in the edge layer is connected to $k/2$ servers. Each server has a virtual switch with $k_{vm}$ ports connecting to a VNF.
 
