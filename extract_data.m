@@ -1,7 +1,10 @@
-cd simulations/results;
-
 in_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/simulations/results';
 out_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/out/data';
+
+cd (out_dir);
+delete SIMULATION_*.out
+
+cd (in_dir);
 
 test_problems = dir;
 test_problems = test_problems(~ismember({test_problems.name},{'.','..', 'parameters'}));
@@ -44,6 +47,11 @@ for i = 1 : length(test_groups)
             par = extract_parameter(test_file.name);
             out_fname = [test_group '_' num2str(par)];
             
+        elseif strcmp(test_group, 'LowNumPorts')
+            
+            par = 2;
+            out_fname = 'IncreasingNumPorts_2';
+            
         elseif strcmp(test_group, 'MultipleServices')
             
             [num_services, lengths, vnfs] = extract_services(test_file.name);
@@ -77,7 +85,12 @@ function arrival_rate = extract_arrival_rate(str)
 dash_pos = strfind(str, '-');
 comma_pos = strfind(str, ',');
 
-arrival_rate = str(dash_pos(1)+1:comma_pos(1)-1);
+if comma_pos > 0
+    arrival_rate = str(dash_pos(1)+1:comma_pos(1)-1);
+else
+    arrival_rate = str(dash_pos(1)+1:dash_pos(2)-1);
+end
+
 arrival_rate = str2double(arrival_rate);
 end
 

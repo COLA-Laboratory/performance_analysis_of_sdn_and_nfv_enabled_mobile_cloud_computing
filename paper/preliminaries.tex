@@ -5,16 +5,51 @@
 This section first introduces the concepts of Network Function Virtualisation and Software Defined Networking and presents the implications of these changes to the communication network architecture.
 
 \subsection{Network Function Virtualisation}
-In telecommunications networks, services are composed out of several network functions such as load balancers, firewalls and intrusion detection systems. Traditionally these network functions would be provided by specially engineered pieces of network hardware. In a Network Function Virtualisation (NFV) enabled network, these network functions are virtualised and can be run on industry standard servers reducing both capital and operating expenditure \cite{}.
+In telecommunications networks, services are composed of several network functions such as load balancers, firewalls and intrusion detection systems. Traditionally these network functions would be provided by specially engineered pieces of network hardware. In a Network Function Virtualisation (NFV) enabled network, these network functions are virtualised and run on virtual machines on commodity hardware.
 
-Services can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions such as in \pref{fig:dag_nfv}. Some network functions can affect the data rate. Network functions such as firewalls or can reduce the rate by filtering out packets. Other network functions such as video decoders can increase the data rate by creating more packets for subsequent network functions to process. The task of constructing a 'concrete' service from an abstract DAG is called service composition and has received much interest in optimisation \cite{EXAMPLES}. In \pref{sec:analytical_model} we describe how our model can be used to evaluate the performance of a given concrete service.
+\begin{figure}
+\label{fig:dag_nfv}
+
+\centering
+
+\begin{tikzpicture}[
+vnf/.style={rectangle, draw=black, fill=white, node distance=4mm and 14mm},]
+
+\node[vnf] (S1_A) 				  {A};
+\node[vnf] (S1_B) [right=of S1_A] {B};
+\node[vnf] (S1_C) [right=of S1_B] {C};
+\node[node distance = 4mm] [left=of S1_A]  {i)};
+
+\node[vnf] (S2_A) [below= of S1_A] {A};
+\node[vnf] (S2_B) [right= of S2_A] {B};
+\node[vnf] (S2_C) [right= of S2_B] {C};
+\node[vnf] (S2_D) [right= of S2_C] {D};
+\node[node distance = 4mm] [left=of S2_A]  {ii)};
+
+\draw[->] (S1_A.east)  -- node[above]{100\%}++(1.3,0) -- (S1_B.west);
+\draw[->] (S1_B.east)  -- node[above]{100\%}++(1.3,0) -- (S1_C.west);
+
+\draw[->] (S2_A.east)  -- node[above]{100\%}++(1.3,0) -- (S2_B.west);
+\draw[->] (S2_B.east)  -- node[above]{50\%}++(1.3,0) -- (S2_C.west);
+\draw[->] (S2_C.east)  -- node[above]{50\%}++(1.3,0) -- (S2_D.west);
+\end{tikzpicture}
+
+\caption{Two VNF service chains represented with directed acyclic graphs. Service i has a length of three and 100\% of the produced packets go through all VNFs. Service ii is four long and the proportion of packets passed between VNFs reduces at each VNF.}
+
+\end{figure}
+
+A service is a sequence of several virtual network functions (VNF). They can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions. Some network functions such as firewalls can reduce the data rate by filtering out packets. The task of constructing a 'concrete' service from an abstract DAG is called service composition and has received interest in optimisation \cite{MehraghdamKK14, BariCAB15, WadaSYO12}. Examples of some concrete services can be seen in \pref{fig:dag_nfv}.
 
 \subsection{Software Defined Networking}
-Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network \cite{} and configuration of VNFs. A logically centralised SDN controller exists in the network which maintains a global view of the network. When a packet arrives at a SDN enabled device a flow lookup is performed to determine how the packet should be routed. If an appropriate flow does not exist in the router the device sends a request to the controller requesting an update to the flow table. Depending on the implementation, portions or the entirety of the flow table may be populated in advance.
+Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network and configuration of VNFs \cite{KimF13, HaresW13}. A logically centralised but often physically distributed SDN controller maintains a global view of the network. A portion of the packets generated in the network will visit the SDN controller.
 
-There may exist one or more SDN controllers. In a centralised SDN solution, a single control entity has a global view of the network. In contrast hierachical and distributed approaches use several control entities and either decompose or share the network information respectively.
+In this work we model a two layer hierachical SDN controller similar to that evaluated by Azodolmolky et al. \cite{AzodolmolkyWY13}. In this architecture a local SDN controller exists at each server and an additional root SDN controller exists as an independant element. Arriving or produced packets are first evaluated at the local controller. If the local controller cannot process the packet it is sent to the root controller and then back to the server once resolved. A comparable implementation of this concept is VMwares NSX \cite{VMW18}.
 
 \subsection{The Network Architecture}
+
+In this work we extend the Fat Tree network topology \cite{Al-FaresLV08} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. The network topology is defined as follows:
+
+We define $k$ as the number of ports for each physical switch and $k_{vm}$ the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
 
 \begin{figure}
 
@@ -50,28 +85,39 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[server]      (S15)       [right=of S14] {};
 \node[server]      (S16)       [right=of S15] {};
 
+\node[text width=0.8cm] at (-2, 0)  {Servers};
+
 % VMs
 \node[vm]      (V1)        [below=of S1]  {};
 \node[vm]      (V2)        [below=of S1, left=of V1]  {};
 \node[vm]      (V3)        [below=of S1, right=of V1]  {};
 
-% \node[] at (-2, -.86)  {VM};
-\node [right=of V3] {\large ...};
+\node[vm]      (V4)        [below=of S8]  {};
+\node[vm]      (V5)        [below=of S8, left=of V4]  {};
+\node[vm]      (V6)        [below=of S8, right=of V4]  {};
 
-% Edge/ToR
-\node[edge]      (E1)        [above=of S1,  between=S1 and S2]   {};
-\node[edge]      (E2)        [above=of S3,  between=S3 and S4]   {};
-\node[edge]      (E3)        [above=of S5,  between=S5 and S6]   {};
-\node[edge]      (E4)        [above=of S7,  between=S7 and S8]   {};
-\node[edge]      (E5)        [above=of S9,  between=S9 and S10]  {};
-\node[edge]      (E6)        [above=of S11, between=S11 and S12] {};
-\node[edge]      (E7)        [above=of S13, between=S13 and S14] {};
-\node[edge]      (E8)        [above=of S15, between=S15 and S16] {};
+\node[vm]      (V7)        [below=of S15]  {};
+\node[vm]      (V8)        [below=of S15, left=of V7]  {};
+\node[vm]      (V9)        [below=of S15, right=of V7]  {};
 
-\node[text width=0.8cm] at (-2, .7)  {Edge};
+\node[] at (-2, -.86)  {VNF};
+\node [between=V1 and V4] {\large ...};
+\node [between=V6 and V7] {\large ...};
 
 % SDN Controller
-\node[sdn]      (SC1)      at (-.67, .5)    {};
+\node[sdn]      (SC1)      	at (-0.3, 0.6) {};
+
+% Edge/ToR
+\node[edge]      (E1)        [above=of SC1,  between=S1 and S2]   {};
+\node[edge]      (E2)        [above=of SC1,  between=S3 and S4]   {};
+\node[edge]      (E3)        [above=of SC1,  between=S5 and S6]   {};
+\node[edge]      (E4)        [above=of SC1,  between=S7 and S8]   {};
+\node[edge]      (E5)        [above=of SC1,  between=S9 and S10]  {};
+\node[edge]      (E6)        [above=of SC1, between=S11 and S12] {};
+\node[edge]      (E7)        [above=of SC1, between=S13 and S14] {};
+\node[edge]      (E8)        [above=of SC1, between=S15 and S16] {};
+
+\node[text width=0.8cm] at (-2, .7)  {Edge};
 
 % Aggregate
 \node[agg]      (A1)        [above=of E1] {};
@@ -97,6 +143,14 @@ vm/.style={rectangle, draw=black, fill=black},
 \draw[-] (V1.north)  -- (S1.south);
 \draw[-] (V2.north)  -- (S1.south);
 \draw[-] (V3.north)  -- (S1.south);
+
+\draw[-] (V4.north)  -- (S8.south);
+\draw[-] (V5.north)  -- (S8.south);
+\draw[-] (V6.north)  -- (S8.south);
+
+\draw[-] (V7.north)  -- (S15.south);
+\draw[-] (V8.north)  -- (S15.south);
+\draw[-] (V9.north)  -- (S15.south);
 
 \draw[-] (S1.north)  -- (E1.south);
 \draw[-] (S2.north)  -- (E1.south);
@@ -169,14 +223,6 @@ vm/.style={rectangle, draw=black, fill=black},
 
 \end{tikzpicture}
 
-\caption{The three layer topology modelled in this network}
+\caption{The network topology modelled in this paper}
 
 \end{figure}
-
-In this work we extend the Fat Tree network \cite{Al-FaresLV08} frequently found in datacentres \cite{} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. Generally the network is laid out as follows:
-
-We define $k$ as the number of ports for physical switches and $k_{vm}$ the number of ports for the virtual switches. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of the $k$ pods. There are $k$ pods each containing two layers (aggregation and edge) of $k/2$ switches. Each switch in the edge layer is connected to each of the $k/2$ aggregation switches. Each of the remaining switches in the edge layer is connected to $k/2$ servers. Each server has a virtual switch with $k_{vm}$ ports connecting to a VNF.
-
-For each pod, each aggregation switch connects to the core switch with the same index as it and all subsequent switches $k/2$ steps away. As an example, if $k=4$ the first aggregation switch in a pod connects to core switch 1 and 3, the second aggregation switch connects to 2 and 4 with this pattern repeating for each pod. This topology results in $n=k^3/4 * k_{vm}$ VNFs.
-
-For this research we constructed a network where each server is connected to a single centralised SDN controller. This topology is used in practice, most notably resembling VMwares NSX architecture \cite{}. Alternatively all elements in the network could be connected to the SDN \cite{} or a distributed SDN. This exploration is left to future research.

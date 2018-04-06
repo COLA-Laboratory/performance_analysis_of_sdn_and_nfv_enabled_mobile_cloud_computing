@@ -1,14 +1,14 @@
 version 2
-run MultipleServices-204-20180401-15:23:19-22821
+run MultipleServices-204-20180404-21:10:43-3856
 attr configname MultipleServices
-attr datetime 20180401-15:23:19
+attr datetime 20180404-21:10:43
 attr experiment MultipleServices
 attr inifile omnetpp.ini
 attr iterationvars "$0=4, $1=\"100 100.100 100.100.100 100.100.100.100 100.100.100.100.100\""
 attr iterationvarsf 4,100_100.100_100.100.100_100.100.100.100_100.100.100.100.100-
 attr measurement "$0=4, $1=\"100 100.100 100.100.100 100.100.100.100 100.100.100.100.100\""
 attr network FatTree
-attr processid 22821
+attr processid 3856
 attr repetition 0
 attr replication #0
 attr resultdir results
@@ -20,147 +20,14 @@ param FatTree.edge[*].service_rate 40
 param FatTree.aggregate[*].service_rate 40
 param FatTree.core[*].service_rate 40
 param FatTree.sdn.service_rate 40
-param FatTree.vms[*].production_rate 4
-param FatTree.vnf_chains "\"100 100.100 100.100.100 100.100.100.100 100.100.100.100.100\""
 param FatTree.k 4
 param FatTree.vm_k 2
 param FatTree.p_sdn 0
-param FatTree.vnf_chains "\"100\""
+param FatTree.vms[*].production_rate 4
+param FatTree.vnf_chains "\"100 100.100 100.100.100 100.100.100.100 100.100.100.100.100\""
 param FatTree.prob_service "\"EQUAL\""
 
-statistic FatTree Proc_SDN:stats
-field count 0
-field mean -nan
-field stddev nan
-field min nan
-field max nan
-field sum 0
-field sqrsum 0
-attr interpolationmode none
-attr source sdn_msg_processed
-attr title "Queueing Time - SDN, stats"
-statistic FatTree Proc_Core:stats
-field count 12731138
-field mean 0.3242837064175
-field stddev 0.32520123064947
-field min 1.0402e-08
-field max 3.745525255334
-field sum 4128500.6175527
-field sqrsum 2685197.5750923
-attr interpolationmode none
-attr source core_msg_processed
-attr title "Queueing Time - Core, stats"
-statistic FatTree Proc_Agg:stats
-field count 27579519
-field mean 30.920864897802
-field stddev 27.038746646734
-field min 1.944014e-06
-field max 120.19880184512
-field sum 852782580.94537
-field sqrsum 46531990147.23
-attr interpolationmode none
-attr source agg_msg_processed
-attr title "Queueing Time - Aggregate, stats"
-statistic FatTree Proc_Edge:stats
-field count 27595134
-field mean 9221.7527200709
-field stddev 5334.6704877299
-field min 6.961569e-06
-field max 18590.776995603
-field sum 254475502025.22
-field sqrsum 3.1320320187241e+15
-attr interpolationmode none
-attr source edge_msg_processed
-attr title "Queueing Time - Edge, stats"
-statistic FatTree Proc_Server:stats
-field count 33673368
-field mean 0.064134942932362
-field stddev 0.064145487850059
-field min 8.96e-10
-field max 1.054369641705
-field sum 2159639.5350204
-field sqrsum 277062.26273799
-attr interpolationmode none
-attr source server_msg_processed
-attr title "Queueing Time - Server, stats"
-statistic FatTree Proc_VNF:stats
-field count 13408551
-field mean 0.066033694672926
-field stddev 0.066004506166494
-field min 5.448e-09
-field max 1.198209585113
-field sum 885416.16274035
-field sqrsum 116882.92021409
-attr interpolationmode none
-attr source vnf_msg_processed
-attr title "Queueing Time - VNF, stats"
-statistic FatTree Rec_SDN:stats
-field count 1
-field mean 0
-field stddev -nan
-field min 0
-field max 0
-field sum 0
-field sqrsum 0
-attr interpolationmode none
-attr source sdn_received_count
-attr title "Arrival Rate - SDN, stats"
-statistic FatTree Rec_Core:stats
-field count 4
-field mean 36.902696997354
-field stddev 0.032497170501707
-field min 36.868716626724
-field max 36.946735534501
-field sum 147.61078798941
-field sqrsum 5447.2393509123
-attr interpolationmode none
-attr source core_received_count
-attr title "Arrival Rate - Core, stats"
-statistic FatTree Rec_Agg:stats
-field count 8
-field mean 39.991430946913
-field stddev 0.036322806503275
-field min 39.939860379305
-field max 40.041798592589
-field sum 319.9314475753
-field sqrsum 12794.525628878
-attr interpolationmode none
-attr source agg_received_count
-attr title "Arrival Rate - Aggregate, stats"
-statistic FatTree Rec_Edge:stats
-field count 8
-field mean 50.889607994973
-field stddev 0.022919015372483
-field min 50.851040578662
-field max 50.918462179008
-field sum 407.11686395979
-field sqrsum 20718.021292025
-attr interpolationmode none
-attr source edge_received_count
-attr title "Arrival Rate - Edge, stats"
-statistic FatTree Rec_Server:stats
-field count 16
-field mean 24.401485892158
-field stddev 0.017332322305146
-field min 24.379639090704
-field max 24.435721340209
-field sum 390.42377427452
-field sqrsum 9526.9247260635
-attr interpolationmode none
-attr source server_received_count
-attr title "Arrival Rate - Server, stats"
-statistic FatTree Rec_VNF:stats
-field count 32
-field mean 4.8582668951508
-field stddev 0.0064522582466817
-field min 4.849508753902
-field max 4.8751092515055
-field sum 155.46454064482
-field sqrsum 755.2895217653
-attr interpolationmode none
-attr source vnf_received_count
-attr title "Arrival Rate - VNF, stats"
-scalar FatTree Time_In_System:mean 24020.22487787
+scalar FatTree Time_In_System:mean 27238.870908104
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

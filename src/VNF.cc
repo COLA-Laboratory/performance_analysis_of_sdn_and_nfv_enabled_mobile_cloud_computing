@@ -36,7 +36,6 @@ void VNF::initialize() {
                 tokenizer_vnfs.asIntVector());
     }
 
-
     std::string prob_service_par = network->par("prob_service");
 
     if (prob_service_par == "EQUAL") {

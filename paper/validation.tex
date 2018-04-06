@@ -7,10 +7,10 @@ The described model has been validated using a discrete event simulator. Each si
 Numerous validation experiments were performed for several combinations of network sizes, service lengths, number and probability of selection, filtering VNFs and $p_{user\_sdn}$. To remain concise, latency results are presented for selected cases. For all cases, where not otherwise specified, the following parameter settings are used:
 
 \begin{itemize}
-\item $k = 4$, $k_{vm} = 2$ and $p_{sdn_user} = 0$
+\item $k = 4$, $k_{vsw} = 2$ and $p_{sdn_user} = 0$
 \item All switches have the same service rate of 40 messages per cycle
 \item The VNFs have a service rate of 20 messages per cycle
-\item One service with two VNFs is used
+\item The network holds one service with two VNFs
 \item Services are selected with equal probability
 \end{itemize}
 
@@ -39,8 +39,6 @@ xmin = 0
 \begin{tikzpicture}
 	\begin{axis}[ 
 		xlabel=$\lambda_{new}$ (messages/cycle),
-		width=0.48\textwidth,
-		height=.23\paperheight,
 		xmin = 0.1,
 		restrict y to domain=0:10,
 		legend pos = north east,
@@ -50,14 +48,14 @@ xmin = 0
         legend style={font=\normalsize},
 		] 
 
-	\addplot [blue, mark = none, dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_2.out};
-	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_2.out};
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_2.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_2.out};
 	
-	\addplot [red, mark = none, dashed] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_4.out};
-	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_4.out};
+	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_4.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_4.out};
 	
-	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_8.out};	
-	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_8.out};
+	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_IncreasingNumPorts_8.out};	
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingNumPorts_8.out};
 
 	\end{axis} 
 \end{tikzpicture}
@@ -74,10 +72,9 @@ xmin = 0
 \begin{tikzpicture}
 	\begin{axis}[ 
 		xlabel=$\lambda_{new}$ (messages/cycle),
-		width=0.48\textwidth,
-		height=.23\paperheight,
 		xmin = 0.1,
-		restrict y to domain=0:10,
+		ymax = 1.2,
+		restrict y to domain=0:100,
 		legend pos = north west,
 		legend entries = {$p_{sdn\_user}=.1$,, $p_{sdn\_user}=.5$,, $p_{sdn\_user}=1$, Simulation},
 		clip marker paths=true,
@@ -85,19 +82,19 @@ xmin = 0
         legend style={font=\normalsize},
 		] 
 
-	\addplot [blue, mark = none, dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_10.out};
-	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_10.out};	
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_10.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_10.out};	
 	
-	\addplot [red, mark = none, dashed] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_50.out};
-	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_50.out};	
+	\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_50.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_50.out};	
 	
-	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_100.out};
-	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_100.out};
+	\addplot [black, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_SDN_100.out};
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_IncreasingSDN_100.out};
 
 	\end{axis} 
 \end{tikzpicture}
 
-\caption{Latency predicted by the model and simulation with different proportions of messages routing via the SDN controller.}
+\caption{Latency predicted by the model and simulation with different proportions of packets routing via the SDN controller.}
 
 \end{figure}
 
@@ -108,11 +105,10 @@ xmin = 0
 
 \begin{tikzpicture}
 	\begin{axis}[ 
-		width=0.48\textwidth,
-		height=.23\paperheight,
 		xlabel=$\lambda_{new}$ (messages/cycle),
 		xmin=0.1,
-		restrict y to domain=0:10,
+		ymax=10,
+		restrict y to domain=0:1000,
 		legend pos = north east,
 		legend entries = {2 VNFs,, 3 VNFs,, 5 VNFs,, 8 VNFs, Simulation},
 		clip marker paths=true,
@@ -120,17 +116,17 @@ xmin = 0
         legend style={font=\normalsize},
 		] 
 
-	\addplot [blue, mark = none, dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_1.out};
-	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_1.out};	
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_1.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_1.out};	
 	
-	\addplot [red, mark = none, dashed] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_2.out};
-	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_2.out};	
+	\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_2.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_2.out};	
 	
-	\addplot [purple, mark = none, densely dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_4.out};
-	\addplot [purple, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_4.out};	
+	\addplot [purple, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_4.out};
+	\addplot [purple, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_4.out};	
 	
-	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_8.out};
-	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_8.out};	
+	\addplot [black, only marks, mark = *, mark size = 1.5pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_8.out};
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_8.out};	
 
 	\end{axis} 
 \end{tikzpicture}
@@ -138,8 +134,6 @@ xmin = 0
 \caption{Latency predicted by the model and simulation for different length service chains.}
 
 \end{figure}
-
-\vfill
 
 % Multiple Services
 \begin{figure}
@@ -149,10 +143,9 @@ xmin = 0
 \begin{tikzpicture}
 	\begin{axis}[ 
 		xlabel=$\lambda_{new}$ (messages/cycle),
-		xmin=0.1,		
-		restrict y to domain=0:10,
-		width=.48\textwidth,
-		height=.23\paperheight,
+		xmin=0.1,
+		ymax=1.2,
+		restrict y to domain=0:100,
 		legend pos = north west,
 		legend entries = {1 Service,, 2 Services,, 4 Services, Simulation},
 		clip marker paths=true,
@@ -160,14 +153,14 @@ xmin = 0
         legend style={font=\normalsize},
 		] 
 
-	\addplot [blue, mark = none, dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_1.out};
-	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_1.out};	
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_1.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_1.out};	
 	
-	\addplot [red, mark = none, dashed] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_2.out};
-	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_2.out};	
+	\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_2.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_2.out};	
 	
-	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_4.out};
-	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_4.out};	
+	\addplot [black, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_MultipleServices_4.out};
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_MultipleServices_4.out};	
 	
 	\end{axis} 
 \end{tikzpicture}
@@ -184,10 +177,9 @@ xmin = 0
 \begin{tikzpicture}
 	\begin{axis}[ 
 		xlabel=$\lambda_{new}$ (messages/cycle),
-		xmin=0.1,		
-		restrict y to domain=0:10,
-		width=.48\textwidth,
-		height=.23\paperheight,
+		xmin=0.1,
+		ymax=10,
+		restrict y to domain=0:1100,
 		legend pos = north west,
 		legend entries = {0\% Filtered,, 40\% Filtered,, 80\% Filtered, Simulation},
 		clip marker paths=true,
@@ -195,14 +187,14 @@ xmin = 0
         legend style={font=\normalsize},
 		] 
 
-	\addplot [blue, mark = none, dotted] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_100.out};
-	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_100.out};	
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_100.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_100.out};	
 	
-	\addplot [red, mark = none, dashed] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_60.out};
-	\addplot [red, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_60.out};		
+	\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_60.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_60.out};		
 	
-	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_20.out};
-	\addplot [black, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_20.out};	
+	\addplot [black, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_FilteringVNFs_20.out};
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_FilteringVNFs_20.out};	
 
 	\end{axis} 
 \end{tikzpicture}

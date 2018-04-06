@@ -4,107 +4,109 @@
 \label{sec:analytical_model}
 
 \subsection{Assumptions}
-The analytical model is based on the following assumptions which are commonly accepted in the literature \cite{}. Assumption 3 is based on the high speed of data centre interconnection networks and the short distances between components.
+The analytical model is based on the following assumptions:
 
 \begin{enumerate}
-\item At each VNF, messages are generated according to an independant Poisson process with a mean rate of $\lambda$ messages a cycle. Furthermore, message destinations are uniformly distributed across the VNFs.
-\item At each network component messages are serviced according to an independant Poisson process with a mean rate of $\mu$ messages a cycle.
-\item The time taken for a message to travel between network components in negligible.
-\item The SDN controller ensures messages take the shortest path between the two destinations and that messages are evenly distributed over the switches in the network.
+\item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\lambda$ packets a cycle. Furthermore, packet destinations are uniformly distributed across the VNFs.
+\item At every network component packets are serviced according to an independent Poisson process with a mean rate of $\mu$ packets a cycle.
+\item The time taken for a packet to travel between network components is negligible.
+\item The SDN controller ensures packets take the shortest path between the two destinations and that packets are evenly distributed over the switches in the network.
 \item Queues at each network component have infinite capacity.
-\item Messages sent from a VNF to VNFs on other servers, may need to visit the SDN controller with probability $p_{sdn\_user}$. The same does not apply to messages arriving at a server as the route to the destination will be known.
+\item Packets leaving a server may need to visit the root SDN controller with probability $p_{sdn\_root}$.
 \end{enumerate}
 
-The mean message latency of the network can be calculated as the sum of the waiting time at each network component a message visits. As a result of the network architecture, messages will take shorter paths to visit VNFs under the same server, edge switch or pod. Consequently, the traffic arriving at servers at each layer in the network will also vary. The mean message latency for a single hop service chain can hence be calculated as:
+The mean latency of the network can be calculated as the sum of the waiting time at each network component that a packet visits. As a result of the network architecture, packets will take shorter paths to visit VNFs under the same server, edge switch or pod. Consequently, the traffic arriving at network components at each layer in the network will also vary. The expected waiting time can be calculated as follows:
 
 \begin{equation} 
 \label{eq:mean_latency}
 \begin{split}
-L&atency_{base} = ((w_{vm} + w_{sdn} + w_{srv}) \cdot p_{srv} \\
-		&+ (w_{vm} + w_{sdn} + 2w_{srv} + w_{edge}) \cdot p_{edge} \\
-	 	&+ (w_{vm} + w_{sdn} + 2w_{srv} + 2w_{edge} + w_{agg}) \cdot p_{agg} \\
-	 	&+ (w_{vm} + w_{sdn} + 2w_{srv} + 2w_{edge}  \\
-		& \;\;\;\quad\qquad\quad\qquad + 2w_{agg} + 2w_{core})\cdot p_{core})
+L&atency(\lambda, \mu) = (w_{vnf} + w_{sdn} + w_{vsw}) \cdot p_{vsw} \\
+		&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + w_{edge}) \cdot p_{edge} \\
+	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge} + w_{agg}) \cdot p_{agg} \\
+	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge}  \\
+		& \;\;\;\quad\qquad\quad\qquad + 2w_{agg} + 2w_{core})\cdot p_{core}
 \end{split}
 \end{equation}
 
-Where $w_{vm}$, $w_{sdn}$, $w_{srv}$,$w_{edge}$,$w_{agg}$, $w_{core}$ represent the average time spent in a VM, the SDN controller, a virtual, edge, aggregate and core switch respectively. Similarily $p_{srv}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level a message which reach is a virtual, edge, aggregate or core switch respectively. The remainder of this section will deduce these values for arbitary settings of $k$ and $k_vm$.
+Where $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the root SDN controller and virtual, edge, aggregate and core switch respectively. Similarily $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level a packet which reach is a virtual, edge, aggregate or core switch respectively. We will now deduce these values for arbitary settings of $k$ and $k_vsw$.
 
 \subsection{Probability of Highest Level}
-As messages will always take the shortest path, a message will visit only a virtual switch if the destination VM is in under the same virtual switch as the source. Given $n=k^3/4 \cdot k_{vm}$ total VMs:
+As packets will always take the shortest path, a packet will just visit a virtual switch if the destination VNF is in under the same virtual switch as the source. Given $n=(k^3/4) \cdot k_{vsw}$ different VNFs:
 
 \begin{equation}
-p_{vm} = \frac{k_{vm} - 1}{n - 1}
+\label{eq:p_vm}
+p_{vm} = \frac{k_{vsw} - 1}{n - 1}
 \end{equation}
 
-Similarily the probability of a message visiting at highest an edge switch is the proportion of destinations that are under the edge switch, excluding those destinations that could be visited via a shorter route.
+Similarily the probability of a packet visiting at highest an edge switch is the proportion of destinations that are under the edge switch, excluding those destinations that could be visited via a shorter route.
 
 \begin{equation}
-p_{edge} = \frac{(k/2) \cdot k_{vm} - k_{vm}}{n - 1}
+\label{eq:p_edge}
+p_{edge} = \frac{(k/2) \cdot k_{vsw} - k_{vsw}}{n - 1}
 \end{equation}
 
 This same techinque can be used to find the remaining probabilities:
 
 \begin{align}
-&p_{agg} = \frac{(k/2)^2 \cdot k_{vm} - (k/2) \cdot k_vm}{n - 1} \\ \nonumber \\
-&p_{core} = \frac{n - (k/2)^2 \cdot k_{vm}}{n - 1}
+\label{eq:p_agg_core}
+&p_{agg} = \frac{(k/2)^2 \cdot k_{vsw} - (k/2) \cdot k_{vsw}}{n - 1} \\ \nonumber \\
+&p_{core} = \frac{n - (k/2)^2 \cdot k_{vsw}}{n - 1}
 \end{align}
 
-Finally we can calculate the probability $p_{sdn}$ by excluding all messages that will not leave the server:
+Finally we can calculate the probability that a packet will visit the root SDN controller by considering the probability that a packet leaving a server will visit the controller and excluding all packets that will not leave the server:
 
 \begin{equation}
-p_{sdn} = p_{sdn\_user} \cdot (1 - p_{vm})
+\label{eq:p_sdn}
+p_{sdn} = p_{sdn\_root} \cdot (1 - p_{vsw})
 \end{equation}
 
 \subsection{Calculation of Mean Waiting Time}
-To determine the mean waiting time at each network component, we model each component as a M/M/1 queue where the mean waiting time is calculated as \cite{}:
+To determine the mean waiting time at each network component, we model each component as a M/M/1 queue where the mean waiting time is calculated with \cite{Kleinrock75}:
 
 \begin{equation}
 \label{eq:MM1_time_in_network}
 MM1(\mu, \lambda_{nc}) = \frac{1}{\mu - \lambda_{nc}}
 \end{equation}
 
-Where $nc$ is the network component under question. Despite messages being distributed evenly across switches in each layer by the SDN controller, the arrival rate, $\lambda_{nc}$, will be different for each layer as not all messages will visit all layers.
+Where $nc$ is the network component under question. We can now calculate the arrival rate, $\lambda_{nc}$, for each network component.
 
-As destinations are evenly distributed over the VNFs, all VNFs will send an equal proportion of messages to all others:
+As destinations are evenly distributed over the VNFs, each VNF will send an equal proportion of packets to every other:
 
 \begin{equation}
 \label{eq:arr_vnf}
 \begin{split}
-\lambda_{vm} &= \frac{n - 1}{n - 1} \cdot \lambda \\
-			 &= \lambda
+\lambda_{vnf} &= \frac{n - 1}{n - 1} \cdot \lambda \\
+			  &= \lambda
 \end{split}
 \end{equation}
 
-A portion of the messages being produced by every VNF will require the SDN controller to be consulted:
+A portion of the packets being produced will visit the root SDN controller:
 
 \begin{equation}
 \label{eq:arr_sdn}
 \lambda_{sdn} = n \cdot p_{sdn} \cdot \lambda
 \end{equation}
 
-Servers can receive messages from three sources: generated from VNFs it is running, received from other VNFs and reflected messages that it had sent to the SDN. Following the same format:
+Virtual switches can receive packets from three sources: generated from VNFs on the server, received from other VNFs and reflected packets that it had sent to the root SDN controller. Following the same format:
 
 \begin{equation}
 \label{eq:arr_srv}
 \begin{split}
-\lambda_{srv} &= k_{vm} \cdot \lambda \\
-			  &+ (n - k_{vm}) \cdot  \frac{k_{vm}}{n - 1} \cdot \lambda \\
-			  &+ k_{vm} \cdot \lambda \cdot p_{sdn}
+\lambda_{vsw} &= k_{vsw} \cdot \lambda \\
+			  &+ (n - k_{vsw}) \cdot  \frac{k_{vsw}}{n - 1} \cdot \lambda \\
+			  &+ k_{vsw} \cdot \lambda \cdot p_{sdn}
 \end{split}
 \end{equation}
 
-Where line two can be understood as the number of VNFs that are not hosted by the server, sending an equal proportion of their messages to each of the VNFs hosted by the server.
-
-Note that the SDN controller does not affect switches as the portion of messages that are sent to the controller are not sent to higher switches till later cycles and that this absence is filled by messages returned from the SDN controller from earlier cycles. 
+Note that the packets sent back from the SDN controller do not impact higher level switches as the portion of packets that are sent to the controller are not sent to higher switches till later cycles and that this absence is filled by packets returned from the SDN controller from earlier cycles. 
 
 The arrival rate for the edge switches can then be deduced in the same way. Following the same order:
 
 \begin{equation}
 \label{eq:arr_edge}
 \begin{split}
-\lambda_{edge} &= ((k/2) \cdot k_{vm}) \cdot (n - k_{vm}) \cdot \frac{1}{n - 1} \cdot \lambda \\
-			   &+ (n - ((k/2) \cdot k_{vm}) \cdot \frac{(k/2) \cdot k_{vm}}{n - 1} \cdot \lambda 
+\lambda_{edge} &= ((k/2) \cdot k_{vsw}) \cdot \frac{n - k_{vsw}}{n - 1} \cdot \lambda \\
+			   &+ (n - ((k/2) \cdot k_{vsw}) \cdot \frac{(k/2) \cdot k_{vsw}}{n - 1} \cdot \lambda 
 \end{split}
 \end{equation}
 
@@ -113,61 +115,68 @@ The same principle can also be followed for the aggregate switches only now all 
 \begin{equation}
 \label{eq:arr_agg}
 \begin{split}
-\lambda_{agg} &= (k/2)^2 \cdot k_{vm} \cdot \frac{n - (k_{vm} \cdot (k/2))}{n - 1} \cdot \frac{\lambda}{k/2} \\
-			  &+ n - ((k/2)^2 k_{vm}) \cdot \frac{(k/2)^2 \cdot k_{vm}}{n - 1} \cdot \frac{\lambda}{k/2}
+\lambda_{agg} &= \Big((k/2)^2 \cdot k_{vsw} \cdot \frac{n - (k_{vsw} \cdot (k/2))}{n - 1} \cdot \lambda\\
+			  &+ n - ((k/2)^2 k_{vsw}) \cdot \frac{(k/2)^2 \cdot k_{vsw}}{n - 1} \cdot \lambda\Big) \cdot \frac{1}{k/2}
 \end{split}
 \end{equation}
 
-Finally, as all VNFs are descendants of all core switches the arrival rate at each core can be calculated as the portion of messages arriving at a core switch, split evenly between each of the core switches.
+Finally, as all VNFs are descendants of all core switches the arrival rate at each core can be calculated as the portion of packets arriving at a core switch, split evenly between each of the core switches.
 
 \begin{equation}
 \label{eq:arr_core}
-\lambda_{core} = p_{core} \cdot n \cdot  \frac{1}{(k / 2)^2} \cdot  \lambda
+\lambda_{core} = p_{core} \cdot n \lambda \cdot  \frac{1}{(k / 2)^2}
 \end{equation}
 
-By substituting \ref{eq:arr_vnf} to \ref{eq:arr_core} for the arrival rates at each network component into \ref{eq:MM1_time_in_network} for the average waiting time we can calculate the latency incurred when visiting a network component, $w_{nc}$, for all network components except for the SDN controller.
+By substituting \ref{eq:arr_vnf} to \ref{eq:arr_core} for the arrival rates at each network component into \ref{eq:MM1_time_in_network} for the average waiting time we can calculate the waiting times $w_{vnf}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ i.e. all network components except for the SDN controller.
 
-When a message is sent to the controller it will incurr added latency both waiting at the controller and waiting at the server again when it returns. The expectation of the waiting time incurred by the SDN controller is:
+When a packet is sent to the root controller it will incur added latency both waiting at the controller and at the virtual switch again when it returns. The expectation of the waiting time incurred by the SDN controller is:
 
 \begin{equation}
-w_{sdn} = (MM1(\mu, \lambda_{sdn}) + w_{srv}) * p_{sdn}
+\label{eq:arr_sdn}
+w_{sdn} = (MM1(\mu, \lambda_{sdn}) + w_{vsw}) \cdot p_{sdn}
 \end{equation}
+
+By substituting equations \ref{eq:p_vm} to \ref{eq:p_sdn} and \ref{eq:arr_vnf} to \ref{eq:arr_sdn} into \pref{eq:mean_latency}, we can calculate the average latency in the network for the base case where only one service exists and only one hop is required.
 
 \subsection{Mean Latency of Long Services and Many Services}
-As discussed in the preliminary section telecommunications services are typically composed from several network functions that pass messages from one to the other. As a result messages persist in the network for a longer period of time. 
+As discussed in the preliminary section telecommunications services result in packets being passed through several network functions. As a result packets persist in the network for a longer period of time for longer services.
 
-Consider a situation where each VNF send a message to an adjacent network function every cycle, under the same server or otherwise, so that all network functions will receive a message each cycle. Consider also that we have a service chain of three network function so that messages will be required to make two hops. 
+Consider a situation where each VNF send a packets to an adjacent network function every cycle, under the same server or otherwise, so that all network functions will receive a packets each cycle. Consider also that we have a service chain of three network function so that packets will be required to make two hops. 
 
-After the first cycle all messages will have sent and received one message. After the second cycle all messages will have sent two messages, forwarding the one received in the previous step and a new message from this cycle, and also received two messages, a message with no hops remaining and one with one hop remaining. At the third cycle one message will be destroyed having completed, leaving one message to be forwarded and one new message created for each VNF. The net result is that on average each VNF is producing 2 messages per cycle.
+After the first cycle all VNFs will have sent and received 1 packet. After the second cycle all VNFs will have sent 2 packets, forwarding the 1 received in the previous step and a new packet from this cycle, and also received 2 packets, a packet with no hops remaining and one with 1 hop remaining. At the third cycle 1 packet will be destroyed having completed the service, leaving 1 packet to be forwarded and 1 new packet created for each VNF. The net result is that on average each VNF is producing 2 packets per cycle.
 
-We can extend this intuition to arbitary length chains. Applying this back to the original analytical model we get:
+We can extend this intuition to arbitary length chains:
 
 \begin{equation}
-\lambda = \lambda_{new} \cdot (len(chain_i) - 1)
+\lambda_{long} = \lambda \cdot (len(chain_i) - 1)
 \end{equation}
 
-where $\lambda_{new}$ is the average number of new messages that are generated each cycle, $len$ is the number of network functions that compose a given service chain and $chain_i$ is the service being modelled.
+where $\lambda_{long}$ is the effective number of packets that are generated by a VNF each cycle, $len$ is the number of network functions that compose a given service chain and $chain_i$ is the service being modelled.
 
-We can further extend this to several services, each of which may have different numbers of network functions. If a given message has probability $p(chain_i)$ of belonging to a particular service the average number of hops that a message persists for and hence the impact on the production rate can be calculated as:
+We can further extend this to several services, each of which may have different numbers of network functions. If a given packet has probability $p(chain_i)$ of belonging to a particular service the average number of hops that a packet persists for and hence the impact on the production rate is the weighted mean:
 
 \begin{equation}
-\lambda = \lambda_{new} \sum_{i=1}^{ns} p(chain_i) \cdot (len(chain_i) - 1)
+\lambda_{eff} = \lambda \sum_{i=1}^{ns} p(chain_i) \cdot (len(chain_i) - 1)
 \end{equation}
 
 where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(chain_i) = 1$.
 
-Finally we must also consider that messages that require several hops must also traverse the network several times. We can extend \pref{eq:mean_latency} by multiplying it by the average number of hops in the network considering each service:
+Finally we must also consider that packets that require several hops must also traverse the network several times. We can extend \pref{eq:mean_latency} by multiplying it by the average number of hops in the network considering each service:
 
 \begin{equation}
-Latency = Latency_{base} \cdot \sum_{i=1}^{ns} p(chain_i) \cdot (len(chain_i) - 1)
+\label{eq:latency_eff}
+\begin{split}
+Latency_{eff} &= Latency(\lambda_{eff}, \mu) \cdot \\
+			  &\sum_{i=1}^{ns} p(chain_i) (len(chain_i) - 1)
+\end{split}
 \end{equation}
 
 \subsection{Mean Latency with Filtering VNFs}
-We make one final extension for the case where one or more network functions in a service may not forward all of the messages that they receive. As a result subsequent network functions in a service chain have lower production rates. 
+We make one final extension for the case where one or more network functions in a service may not forward all of the packets that they receive. This impacts subsequent network functions in a service chain that will have lower arrival and hence lower production rates. 
 
-We can use the same conceptual model as before to solve this. Consider a situation where we have a service chain with 4 VNFs with 2 filtering VNFs that remove 50\% of the traffic, as illustrated in \ref{}. After the first cycle all VNFs will have sent and received 1 message. After the second cycle all VNFs will have sent at least one message, and half of the VNFs will have forwarded another message bringing the average production rate to 1.5. After the first cycle all VNFs will have produced at least 1 message, another half will have forwarded the message received in the previous cycle and a quarter will have forwarded the message sent in the first cycle bringing the average production rate to 1.75.
+Consider a situation where we have a service chain with 4 VNFs with 2 filtering VNFs that filter 50\% of the packets they receive, illustrated in \ref{fig:filtering_vnfs}. After the first cycle all VNFs will have sent and received 1 packet. After the second cycle all VNFs will have sent at least one packet, and half of the VNFs will have forwarded another packet. After the third cycle all VNFs will have produced at least 1 packet, another half will have forwarded the packet received in the previous cycle and a quarter will have forwarded the packet sent in the first cycle bringing the average production rate to 1.75.
 
-We can extend this process to several services in the same manner as before by averaging the production rates of each service. The complete algorithm for calculating the production rate considering all aspects is as follows:
+Using this intuition we can calculate the effective production rate as the sum of the production rates considering the impact of earlier filtering VNFs. To incorporate multiple services we again must average the production rates of each service. The complete algorithm for calculating the effective production rate considering all aspects is as follows:
 
 \begin{algorithmic}[1]
 \FOR{$i = 1:ns$} 
@@ -179,7 +188,7 @@ $multiplier \leftarrow 1$
 \STATE{
 
 $multiplier \leftarrow multiplier \cdot chain_i(j)$ \\
-$\lambda_i  \leftarrow \lambda_i + \lambda_{new} * multiplier$
+$\lambda_i  \leftarrow \lambda_i + \lambda \cdot multiplier$
 
 }
 \ENDFOR
@@ -187,6 +196,6 @@ $\lambda_i  \leftarrow \lambda_i + \lambda_{new} * multiplier$
 
 \ENDFOR
 
-\STATE $\lambda \leftarrow \sum_{i=1}^{ns} \lambda_i \cdot p(chain_i)$
+\STATE $\lambda_{eff} \leftarrow \sum_{i=1}^{ns} \lambda_i \cdot p(chain_i)$
 
 \end{algorithmic}

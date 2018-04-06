@@ -1,19 +1,19 @@
 version 2
-run IncreasingNumPorts-1-20180402-19:45:08-23040
+run IncreasingNumPorts-0-20180405-17:56:50-16191
 attr configname IncreasingNumPorts
-attr datetime 20180402-19:45:08
+attr datetime 20180405-17:56:50
 attr experiment IncreasingNumPorts
 attr inifile omnetpp.ini
 attr iterationvars "$0=0, $1=4"
 attr iterationvarsf 0,4-
 attr measurement "$0=0, $1=4"
 attr network FatTree
-attr processid 23040
+attr processid 16191
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 1
-attr seedset 1
+attr runnumber 0
+attr seedset 0
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
