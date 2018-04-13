@@ -13,48 +13,50 @@ Database file #2: bibliography.bib
 -- http://www.michaelshell.org/tex/ieeetran/bibtex/
 -- See the "IEEEtran_bst_HOWTO.pdf" manual for usage information.
 Warning--empty journal in GSA15
+Warning--empty journal in Cisco18
 Warning--empty journal in VMW18
+Warning--empty journal in VMW16
 
 Done.
-You've used 17 entries,
+You've used 18 entries,
             4087 wiz_defined-function locations,
-            1324 strings with 19040 characters,
-and the built_in function-call counts, 15591 in all, are:
-= -- 1259
-> -- 411
-< -- 133
-+ -- 217
-- -- 72
-* -- 816
-:= -- 2374
-add.period$ -- 41
-call.type$ -- 17
-change.case$ -- 24
-chr.to.int$ -- 318
-cite$ -- 19
-duplicate$ -- 1043
-empty$ -- 1191
-format.name$ -- 89
-if$ -- 3592
+            1315 strings with 18554 characters,
+and the built_in function-call counts, 14777 in all, are:
+= -- 1175
+> -- 387
+< -- 121
++ -- 204
+- -- 69
+* -- 735
+:= -- 2216
+add.period$ -- 42
+call.type$ -- 18
+change.case$ -- 27
+chr.to.int$ -- 285
+cite$ -- 22
+duplicate$ -- 1038
+empty$ -- 1160
+format.name$ -- 85
+if$ -- 3420
 int.to.chr$ -- 0
-int.to.str$ -- 17
-missing$ -- 190
-newline$ -- 106
-num.names$ -- 23
-pop$ -- 437
+int.to.str$ -- 18
+missing$ -- 189
+newline$ -- 87
+num.names$ -- 24
+pop$ -- 444
 preamble$ -- 1
 purify$ -- 0
 quote$ -- 2
-skip$ -- 1171
+skip$ -- 1116
 stack$ -- 0
-substring$ -- 760
-swap$ -- 887
-text.length$ -- 27
+substring$ -- 693
+swap$ -- 847
+text.length$ -- 26
 text.prefix$ -- 0
 top$ -- 5
-type$ -- 17
-warning$ -- 2
-while$ -- 76
-width$ -- 19
-write$ -- 235
-(There were 2 warnings)
+type$ -- 18
+warning$ -- 4
+while$ -- 70
+width$ -- 20
+write$ -- 209
+(There were 4 warnings)

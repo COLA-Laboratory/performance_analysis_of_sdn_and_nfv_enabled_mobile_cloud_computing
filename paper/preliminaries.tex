@@ -1,59 +1,14 @@
 % !TeX root=main.tex
 
-\section{Preliminaries}
+\section{Network Architecture}
 \label{sec:preliminaries}
-This section first introduces the concepts of Network Function Virtualisation and Software Defined Networking and presents the implications of these changes to the communication network architecture.
+The interconnection network modelled in this work is the fat-tree topology \cite{Al-FaresLV08}. The fat-tree or folded-Clos topology is currently the most common topology used for datacentre communication networks \cite{Cisco18}. The fat-tree topology is formed of many physical switches split into three layers: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled network each of these servers contains one or more VNFs which are managed by a virtual switch. The switches can direct packets towards any other network component they are connected to. In an SDN enabled network an SDN controller provides logically centralised management, instructing the switches how to route traffic to ensure it is routed through an efficient path from the source to destination VNF. Figure \ref{fig:network_topology} illustrates an SDN and NFV enabled fat-tree topology.
 
-\subsection{Network Function Virtualisation}
-In telecommunications networks, services are composed of several network functions such as load balancers, firewalls and intrusion detection systems. Traditionally these network functions would be provided by specially engineered pieces of network hardware. In a Network Function Virtualisation (NFV) enabled network, these network functions are virtualised and run on virtual machines on commodity hardware.
+The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vm}$ the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
 
-\begin{figure}
-\label{fig:dag_nfv}
-
-\centering
-
-\begin{tikzpicture}[
-vnf/.style={rectangle, draw=black, fill=white, node distance=4mm and 14mm},]
-
-\node[vnf] (S1_A) 				  {A};
-\node[vnf] (S1_B) [right=of S1_A] {B};
-\node[vnf] (S1_C) [right=of S1_B] {C};
-\node[node distance = 4mm] [left=of S1_A]  {i)};
-
-\node[vnf] (S2_A) [below= of S1_A] {A};
-\node[vnf] (S2_B) [right= of S2_A] {B};
-\node[vnf] (S2_C) [right= of S2_B] {C};
-\node[vnf] (S2_D) [right= of S2_C] {D};
-\node[node distance = 4mm] [left=of S2_A]  {ii)};
-
-\draw[->] (S1_A.east)  -- node[above]{100\%}++(1.3,0) -- (S1_B.west);
-\draw[->] (S1_B.east)  -- node[above]{100\%}++(1.3,0) -- (S1_C.west);
-
-\draw[->] (S2_A.east)  -- node[above]{100\%}++(1.3,0) -- (S2_B.west);
-\draw[->] (S2_B.east)  -- node[above]{50\%}++(1.3,0) -- (S2_C.west);
-\draw[->] (S2_C.east)  -- node[above]{50\%}++(1.3,0) -- (S2_D.west);
-\end{tikzpicture}
-
-\caption{Two VNF service chains represented with directed acyclic graphs. Service i has a length of three and 100\% of the produced packets go through all VNFs. Service ii is four long and the proportion of packets passed between VNFs reduces at each VNF.}
-
-\end{figure}
-
-A service is a sequence of several virtual network functions (VNF). They can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions. Some network functions such as firewalls can reduce the data rate by filtering out packets. The task of constructing a 'concrete' service from an abstract DAG is called service composition and has received interest in optimisation \cite{MehraghdamKK14, BariCAB15, WadaSYO12}. Examples of some concrete services can be seen in \pref{fig:dag_nfv}.
-
-\subsection{Software Defined Networking}
-Software Defined Networking (SDN) allow for dynamic routing of packets throughout the network and configuration of VNFs \cite{KimF13, HaresW13}. A logically centralised but often physically distributed SDN controller maintains a global view of the network. A portion of the packets generated in the network will visit the SDN controller.
-
-In this work we model a two layer hierachical SDN controller similar to that evaluated by Azodolmolky et al. \cite{AzodolmolkyWY13}. In this architecture a local SDN controller exists at each server and an additional root SDN controller exists as an independant element. Arriving or produced packets are first evaluated at the local controller. If the local controller cannot process the packet it is sent to the root controller and then back to the server once resolved. A comparable implementation of this concept is VMwares NSX \cite{VMW18}.
-
-\subsection{The Network Architecture}
-
-In this work we extend the Fat Tree network topology \cite{Al-FaresLV08} to be SDN and NFV capable. \pref{fig:network_topology} illustrates this network. The network topology is defined as follows:
-
-We define $k$ as the number of ports for each physical switch and $k_{vm}$ the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
+Whilst the SDN controller is logically centralised, in practice a physically centralised SDN architecture cannot scale to support a large datacentre network \cite{AzodolmolkyWY13}. A simple extension is the two layer hierarchical structure. In this architecture, a local SDN controller exists at or close to each server and an additional root SDN controller exists as an independent element. Arriving or produced packets are first evaluated at the local controller. If the local controller cannot process the packet it is sent to the root controller and then back to the server once resolved. As a result only a portion of the packets generated in the network will visit the root SDN controller. A comparable real world implementation is VMWare NSX \cite{VMW18} which as of 2016 had been deployed on over 2400 networks \cite{VMW16}. 
 
 \begin{figure}
-
-\label{fig:network_topology}
 
 \centering
 
@@ -85,7 +40,7 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[server]      (S15)       [right=of S14] {};
 \node[server]      (S16)       [right=of S15] {};
 
-\node[text width=0.8cm] at (-2, 0)  {Servers};
+\node[text width=0.8cm] at (-2, 0)  {V.Switches};
 
 % VMs
 \node[vm]      (V1)        [below=of S1]  {};
@@ -100,26 +55,40 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[vm]      (V8)        [below=of S15, left=of V7]  {};
 \node[vm]      (V9)        [below=of S15, right=of V7]  {};
 
-\node[] at (-2, -.86)  {VNF};
+\node[text width=0.8cm] at (-2, -.86)  {VNFs};
 \node [between=V1 and V4] {\large ...};
 \node [between=V6 and V7] {\large ...};
 
 % SDN Controller
-\node[sdn]      (SC1)      	at (-0.3, 0.6) {};
+\node[text width=0.8cm] at (-2, .9)  {Controller};
+\node[sdn]      (SC1)      	 [above left=of S1] {};
 
 % Edge/ToR
-\node[edge]      (E1)        [above=of SC1,  between=S1 and S2]   {};
-\node[edge]      (E2)        [above=of SC1,  between=S3 and S4]   {};
-\node[edge]      (E3)        [above=of SC1,  between=S5 and S6]   {};
-\node[edge]      (E4)        [above=of SC1,  between=S7 and S8]   {};
-\node[edge]      (E5)        [above=of SC1,  between=S9 and S10]  {};
-\node[edge]      (E6)        [above=of SC1, between=S11 and S12] {};
-\node[edge]      (E7)        [above=of SC1, between=S13 and S14] {};
-\node[edge]      (E8)        [above=of SC1, between=S15 and S16] {};
+% This weird hack stops Tikz from placing the points at the same level as the SDN Controller
+%\node[bug_example]      (test)      [above=of SC1, between=S15 and S16] {};
 
-\node[text width=0.8cm] at (-2, .7)  {Edge};
+\node[text width=0.8cm] at (-2, 1.75)  {Edge};
+\node[] 		 (H1) 		 [above=of SC1] {};
+\node[] 		 (H2) 		 [between=S1 and S2] {};
+\node[] 		 (H3) 		 [between=S3 and S4] {};
+\node[] 		 (H4) 		 [between=S5 and S6] {};
+\node[] 		 (H5) 		 [between=S7 and S8] {};
+\node[] 		 (H6) 		 [between=S9 and S10] {};
+\node[] 		 (H7) 		 [between=S11 and S12] {};
+\node[] 		 (H8) 		 [between=S13 and S14] {};
+\node[] 		 (H9) 		 [between=S15 and S16] {};
+
+\node[edge]      (E1)        [at = (H1 -| H2)] {};
+\node[edge]      (E2)        [at = (H1 -| H3)] {};
+\node[edge]      (E3)        [at = (H1 -| H4)] {};
+\node[edge]      (E4)        [at = (H1 -| H5)] {};
+\node[edge]      (E5)        [at = (H1 -| H6)] {};
+\node[edge]      (E6)        [at = (H1 -| H7)] {};
+\node[edge]      (E7)        [at = (H1 -| H8)] {};
+\node[edge]      (E8)        [at = (H1 -| H9)] {};
 
 % Aggregate
+\node[text width=0.8cm] at (-2, 2.55)  {Aggregation};
 \node[agg]      (A1)        [above=of E1] {};
 \node[agg]      (A2)        [above=of E2] {};
 \node[agg]      (A3)        [above=of E3] {};
@@ -129,15 +98,12 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[agg]      (A7)        [above=of E7] {};
 \node[agg]      (A8)        [above=of E8] {};
 
-\node[text width=0.8cm] at (-2, 1.55)  {Aggregation};
-
 % Core
+\node[text width=0.8cm] at (-2, 3.3)  {Core};
 \node[core]      (C1)        [above=of A1,  between=A1 and A2]  {};
 \node[core]      (C2)        [above=of A3,  between=A3 and A4]  {};
 \node[core]      (C3)        [above=of A5,  between=A5 and A6]  {};
 \node[core]      (C4)        [above=of A7,  between=A7 and A8]  {};
-
-\node[text width=0.8cm] at (-2, 2.35)  {Core};
 
 %Lines
 \draw[-] (V1.north)  -- (S1.south);
@@ -223,6 +189,8 @@ vm/.style={rectangle, draw=black, fill=black},
 
 \end{tikzpicture}
 
-\caption{The network topology modelled in this paper}
+\caption{An example SDN and NFV enabled fat-tree network with 4 ports for each hardware switch and 3 for the virtual switches.}
+
+\label{fig:network_topology}
 
 \end{figure}

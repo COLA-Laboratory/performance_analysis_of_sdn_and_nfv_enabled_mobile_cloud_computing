@@ -1,0 +1,64 @@
+\documentclass{article}
+
+\usepackage{pgfplots}
+\usepackage{cite}
+\usepackage{amsmath}
+\interdisplaylinepenalty=2500
+\usepackage{array}
+\usepackage{tikz}
+\usetikzlibrary{positioning}
+\usetikzlibrary{calc}
+\usetikzlibrary{backgrounds}
+
+\tikzset{
+    between/.style args={#1 and #2}{
+    	at = ($(#1)!0.5!(#2)$)
+    }
+}
+
+\begin{document}
+\pagestyle{empty}
+
+\pgfplotsset{every axis/.append style={
+font = \large,
+%grid = major,
+xlabel=$\lambda$ (messages/cycle),
+ylabel = {Latency (Cycles)},
+thick,
+width=.6\textwidth,
+line width = 1pt,
+tick style = {line width = 0.8pt},
+axis x line*=bottom,
+axis y line*=left,
+ymin = 0,
+xmin = 0
+}}
+
+\begin{tikzpicture}
+	\begin{axis}[ 
+		xmin=0.1,
+		ymax=10,
+		restrict y to domain=0:1000,
+		legend pos = north east,
+		legend entries = {3 VNFs,, 5 VNFs,, 7 VNFs,, 9 VNFs, Simulation},
+		clip marker paths=true,
+		legend cell align={left},
+        legend style={font=\normalsize},
+		] 
+
+	\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_2.out};
+	\addplot [blue, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_2.out};	
+	
+	\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_4.out};
+	\addplot [red, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_4.out};	
+	
+	\addplot [purple, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_6.out};
+	\addplot [purple, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_6.out};	
+	
+	\addplot [black, only marks, mark = *, mark size = 1.5pt] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/MODEL_DifferentLengths_8.out};
+	\addplot [black, mark = none] table[x index = 0, y index = 1] {/media/joebillingsley/Data/projects/NFV_FatTree/out/data/SIMULATION_DifferentLengths_8.out};	
+
+	\end{axis} 
+\end{tikzpicture}
+
+\end{document}

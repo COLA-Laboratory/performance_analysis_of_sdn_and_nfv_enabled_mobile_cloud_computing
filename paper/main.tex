@@ -3,52 +3,42 @@
 
 \usepackage{pgfplots}
 \usepackage{cite}
-\usepackage{prettyref}
 \usepackage{amsmath}
 \interdisplaylinepenalty=2500
 \usepackage{array}
-
 \usepackage{tikz}
+\usepackage{stfloats}
 \usetikzlibrary{positioning}
 \usetikzlibrary{calc}
 \usetikzlibrary{backgrounds}
+
 \tikzset{
     between/.style args={#1 and #2}{
-         at = ($(#1)!0.5!(#2)$)
+    	at = ($(#1)!0.5!(#2)$)
     }
 }
-
-\newrefformat{fig}{Fig.~\ref{#1}}
-\newrefformat{tab}{Table~\ref{#1}}
-\newrefformat{sec}{Section~\ref{#1}}
-\newrefformat{alg}{Algorithm~\ref{#1}}
-\newrefformat{property}{Property~\ref{#1}}
-\newrefformat{theorem}{Theorem~\ref{#1}}
-\newrefformat{definition}{Definition~\ref{#1}}
-\newrefformat{corollary}{Corollary~\ref{#1}}
-\newrefformat{lemma}{Lemma~\ref{#1}}
-\newrefformat{conj}{Conjecture~\ref{#1}}
-\newrefformat{def}{Definition~\ref{#1}}
-\newrefformat{eq}{equation~(\ref{#1})}
-\newrefformat{app}{Appendix~\ref{#1}}
-
-\newcommand{\pref}{\prettyref}
 
 \hyphenation{}
 
 \begin{document}
 
-\title{Modelling and Analysis of SDN and NFV Enabled Communications Networks}
+\title{Modelling and Analysis of SDN and NFV Enabled Datacentre Networks}
 
-\author{\IEEEauthorblockN{Joseph Billingsley, Wang Miao and Geyong Min}
-\IEEEauthorblockA{Department of Computer Science\\
+\author{\IEEEauthorblockN{Joseph Billingsley\IEEEauthorrefmark{1},
+Wang Miao\IEEEauthorrefmark{1},
+Geyong Min\IEEEauthorrefmark{1}, 
+Nektarios Georgalas\IEEEauthorrefmark{2} and
+Ke Li\IEEEauthorrefmark{1}}
+\IEEEauthorblockA{\IEEEauthorrefmark{1}Department of Computer Science,
 University of Exeter, UK\\
-Email: \{jb931, wang.miao, g.min\}@exeter.ac.uk}}
-
+Email: \{jb931, wang.miao, g.min, k.li\}@exeter.ac.uk}
+\IEEEauthorblockA{\IEEEauthorrefmark{2}Research and Innovation, British Telecom, UK\\
+Email: nektarios.georgalas@bt.com}}
+ 
 \maketitle
 
 \begin{abstract}
-Next generation communications networks are exploring the use of new technologies including software defined networks (SDN) and network function virtualisation (NFV) but existing models only consider these components in isolation. A novel analytical is developed for next generation, SDN and NFV enabled communications networks. Each network component in a layer is modelled as an M/M/1 queues and the expected latency is calculated. We extend this work to consider services with many network functions in sequence, several services in the same network and VNFs that filter messages. After validating the models accuracy through extensive simulation experiments the model is used to investigate the impact of different configurations of services and VNFs. The model revealed disproportionate load on certain layers in the network as well as significant impact of naive placement of VNFs. It also serves as a first step towards developing an efficient analytical model for optimisation of VNF placement.
+Consumer demand for better and faster services is requiring datacentres to scale to provide more resources than ever before. Simultaneously there is growing pressure to ensure these datacentres become progressively more efficient. Two promising technologies that could help solve these problems are software defined networking (SDN) and network function virtualisation (NFV). SDN allows for flexible management and routing of the network allowing for more agile deployment of services and faster iteration times. NFV allows for services to be scaled to meet demand enabling more efficient resource allocation. These two technologies combined allow for flexible management of datacentres and provisioning of resources. Whilst NFV and SDN have received much interest from researchers and in industry, existing models only consider these components in isolation. To achieve a deeper understanding of the impact of the interactions between SDN, NFV and the underlying interconnection network used in the datacentre, this paper proposes a novel analytical model that considers these technologies in unison. The average latency in the network is calculated and the accuracy of the model verified by simulation. The model illuminates disproportionate load on certain layers of the network and serves as a step towards developing an efficient analytical model for optimisation of next generation datacentres.
 \end{abstract}
 
 % no keywords

@@ -2,7 +2,7 @@ in_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/simulations/results';
 out_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/out/data';
 
 cd (out_dir);
-delete SIMULATION_*.out
+%delete SIMULATION_*.out
 
 cd (in_dir);
 
@@ -27,11 +27,15 @@ for i = 1 : length(test_groups)
     test_group = test_groups{i};
     test_files = dir([test_group, '*']);
     
+    if (not(strcmp(test_group, 'LowNumPorts')))
+        continue
+    end
+    
     for j = 1 : size(test_files, 1)
         
         test_file = test_files(j);
         arr_rate = extract_arrival_rate(test_file.name);
-                
+        
         if strcmp(test_group, 'DifferentLengths')
             
             [num_services, lengths, vnfs] = extract_services(test_file.name);

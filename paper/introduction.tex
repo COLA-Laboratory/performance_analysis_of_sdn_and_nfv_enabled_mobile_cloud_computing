@@ -2,19 +2,59 @@
 
 \section{Introduction}
 \label{sec:introduction}
+Next generation communications networks are faced with scaling to support greater expectations and usage of existing services \cite{AndrewsBCHLSZ14} whilst simultaneously supporting demanding new use cases such as the internet of things, smart cities and virtual and augmented reality \cite{GSA15}. Some organisations argue that the total amount of energy used by telecommunications should
+not increase with the rising demand [40, 9] Two technologies that have emerged as part of the solution to these problems are Network Function Virtualisation (NFV) and Software Defined Networking (SDN).
 
-Next generation communications networks are faced with scaling to support greater expectations and usage of existing services \cite{AndrewsBCHLSZ14} whilst simultanously supporting demanding new use cases such as the internet of things, smart cities and virtual and augmented reality \cite{GSA15}. Two technologies that have emerged as part of the solution to these problems are Network Function Virtualisation (NFV) and Software Defined Networking (SDN).
+In telecommunications networks, services are composed of several network functions such as load balancers, firewalls and intrusion detection systems. Traditionally these network functions would be provided by purpose engineered network hardware. In an NFV enabled network, virtual network functions (VNFs) are run on virtual machines on commodity hardware. With NFV the resources allocated to each VNF can be dynamically committed, allowing for efficient resource allocation whilst minimising the cost and environmental impact of the datacentre.
 
-Fast analytical models allow for evaluation and optimisation of large scale networks. Existing research into analytical models of NFV and SDN has focussed on them in isolation. Longo et al. \cite{LongoDBS15} constructed a model of the reliability of a two layer hierarchical SDN controller. Similarily, Azodolmolky et al. \cite{AzodolmolkyWY13} also examine the two layer SDN controller but use network calculus to determine the worst case delay incurred by visiting it and the minimum buffer size required to prevent packet loss given the highest load. Wang et al. \cite{MiaoMWWH16} produce a more accurate SDN model by considering the bursty and correlated arrivals of packets and a high and low priority queue at an SDN enabled switch.
+\begin{figure}
 
-Similarily in NFV modeling, Prados-Garzon et al. \cite{Prados-GarzonAR17} produced a detailed model of a single VNF which is composed of several VNF components and calculate the average response time of the VNF. Gebert et al. \cite{GebertZLST16} analysed a single VNF in even more detail by modelling the packet processing process of a Linux x86 system. Their model estimates latency and packet loss within the 95\% confidence interval of lab testing of a real world server. To the best of our knowledge, only Fahmin et al. \cite{FahminLHLS17} considered both NFV and SDN. They analysed the performance of two methods of combining SDN and NFV in the network. However they consider a simplfied network with only a single switch and VNF.
+\centering
 
-In this work we strike a middle ground between existing approaches by considering all relevant aspects of the network at an appropriate level of detail. To the best of our knowledge we are the first researchers to produce an integrated model that can consider the impact of the SDN controller, NFV in a practical network topology. The key contributions of this paper are:
+\begin{tikzpicture}[
+vnf/.style={rectangle, draw=black, fill=white, node distance=4mm and 14mm},]
+
+\node[vnf] (S1_A) 				  {A};
+\node[vnf] (S1_B) [right=of S1_A] {B};
+\node[vnf] (S1_C) [right=of S1_B] {C};
+\node[node distance = 4mm] [left=of S1_A]  {i)};
+
+\draw[->] (S1_A.east) -- (S1_B.west);
+\draw[->] (S1_B.east) -- (S1_C.west);
+
+\node[vnf] (S2_A) [below=of S1_A] {A};
+\node[vnf] (S2_B) [right=of S2_A] {B};
+\node[vnf] (S2_C) [right=of S2_B] {C};
+\node[vnf] (S2_D) [right=of S2_C] {D};
+\node[node distance = 4mm] [left=of S2_A]  {ii)};
+
+\draw[->] (S2_A.east) -- (S2_B.west);
+\draw[->] (S2_B.east) -- (S2_C.west);
+\draw[->] (S2_C.east) -- (S2_D.west);
+
+\end{tikzpicture}
+
+\caption{Two services of different lengths, i) is three long whilst ii) is four long. These and other services may exist in the network at the same time}
+\label{fig:dag_nfv}
+
+\end{figure}
+
+A service is a collection of several virtual network functions where packets are sent through each of the VNFs in sequence. They can be defined using Directed Acyclic Graphs (DAG) which encapsulate dependencies between network functions as in Figure \ref{fig:dag_nfv}. Different services may be composed of different numbers and types of VNF. Additionally, one or more services may be provided by the datacentre simultaneously.
+
+Software Defined Networking (SDN) allows for dynamic routing of packets throughout the network and configuration of VNFs \cite{KimF13, HaresW13}. A logically centralised but typically physically distributed SDN controller maintains a global view of the network. This simplifies maintenance of the network and allows for complex routing procedures. 
+
+SDN and NFV are often considered complementary technologies \cite{MatiasGTUJ15}, with the flexible placement enabled by NFV meshing well with the flexible routing allowed by SDN. Despite this existing research in modelling of both technologies has typically considered them in isolation.
+
+Many methods of modelling SDN alone are available in the literature. Longo et al. \cite{LongoDBS15} proposed a model of the reliability of a two layer hierarchical SDN controller. Azodolmolky et al. \cite{AzodolmolkyWY13} also examine the two layer SDN controller but use network calculus to determine the worst case delay and the minimum buffer size required to prevent packet loss given the highest load. Wang et al. \cite{MiaoMWWH16} developed a more realistic SDN model by considering the bursty and correlated arrivals of packets and a high and low priority queue at an SDN enabled switch. While useful, these models had objectives that did not require them to consider the wider network or other technologies.
+
+As with SDN, NFV modelling has similarily had a narrow focus. Prados-Garzon et al. \cite{Prados-GarzonAR17} produced a detailed model of a single VNF which is composed of several VNF components and calculated the average response time of the VNF. Another example is Gebert et al. \cite{GebertZLST16} who analysed a single VNF in detail, modelling each queue in the packet processing process of a Linux x86 system. To the best of our knowledge, only Fahmin et al. \cite{FahminLHLS17} considered both NFV and SDN, they modelled the performance of two methods of combining SDN and NFV in the network. However they consider a simplified network with only a single switch and VNF.
+
+Unfortunately existing models are not useful for optimisation of the network. In particular they do not typically consider the datacentre interconnection network which is an important factor when considering the placement of services. Additionally existing models do not consider the interaction between NFV and SDN and the effect this can have on latency. Further none of the reviewed literature considered the impact that different length services, or multiple different services may have on the performance of the network. In practice it is unlikely that a datacentre will provide only a single, short service. To this end the main contributions of this paper are:
 
 \begin{itemize}
-\item An efficient analytical model for a next generation NFV enabled network containing a centralised SDN controller using M/M/1 queues.
-\item Extensions for different length service chains and multiple services in the same network.
-\item An extension to model VNFs that reduce packet rate as part of a service chain.
+\item An efficient analytical model of a joint NFV and SDN enabled datacentre network is proposed that considers the underlying datacentre interconnection network
+\item Additional extensions for modelling of multiple services of different lengths are constructed
+\item The accuracy of the model is verified through comparison with a simulation
 \end{itemize}
 
-The rest of this paper is organised as follows. \pref{sec:preliminaries} reviews the preliminaries that are useful for understanding the subsequent sections. In \pref{sec:analytical_model} we derive the analytical model. \pref{sec:validation} validates this model with extensive simulation experiments. Finally \pref{sec:conclusions} concludes the paper, explores the implications of the models and examines future research directions.
+The rest of this paper is organised as follows. Section \ref{sec:preliminaries} discusses the details of the network architecture that is modelled in this work. In Section \ref{sec:analytical_model} we derive the analytical model for the network. Section \ref{sec:validation} validates the accuracy of this model with extensive simulation experiments. Section \ref{sec:performance} explores the implications of the model and Section \ref{sec:conclusions} concludes the paper and examines future research directions. 
