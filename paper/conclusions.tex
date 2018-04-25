@@ -1,12 +1,8 @@
 % !TeX root=main.tex
 
-\section{Conclusions and Future Work}
+\section{Conclusion}
 \label{sec:conclusions}
 % Outline paper again
-In this paper we have presented an efficient analytical model capable of modelling an SDN and NFV enabled datacentre communications network. We also propose extensions that accurately model the impact of one or more services of different lengths in the network.
+Emerging services will place intense demand on the datacentre. To provide a good service whilst remaining economically viable, modern datacentres are exploring the potential of SDN and NFV to provide efficient allocation of resources and simplify management. Whilst these are often considered complementary technologies, previous analytical models in the literature have typically considered them in isolation. Further previous work on this topic has not considered the importance of the interconnection network or how multiple services with different length service chains may affect performance.
 
-Whilst this work has evaluated a specific network structure, the same approach for determining the impact of integrating SDN and NFV should be transferable to other network topologies. There remain many useful extensions that can be made to the network. In particular the current model assumes uniform placement of network functions which makes it unsuitable as a model for VNF placement problems. More powerful models that can efficiently consider the impact of concrete and/or fuzzy placement of network functions are required for practical applications.
-
-This model cannot determine the effect of VNFs that increase or reduce the outgoing packet rate. Optimisation of the ordering of filtering VNFs could reduce the impact of increased lifetimes of packets on the network.
-
-Further, M/M/1 queues have been shown to underestimate the latency when faced with more realistic bursty traffic \cite{WuMLJ12}. MMPP queues have been used in the literature to model bursty traffic \cite{MiaoMWWH16, WuMLJ12} and may be an appropriate extension.
+In this paper we have presented a comprehensive analytical model capable of modelling an SDN and NFV enabled datacentre. Extensions are derived that accurately model how the presence of multiple services with varying length service chains impacts the datacentre. Finally useful properties pertaining to the performance of the network are derived from the mathematical model. These show that the edge switches, virtual switches and SDN controller can receive disproportionately more traffic than the other components in the datacentre.

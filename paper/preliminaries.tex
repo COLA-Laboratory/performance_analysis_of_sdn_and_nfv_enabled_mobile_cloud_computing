@@ -2,11 +2,45 @@
 
 \section{Network Architecture}
 \label{sec:preliminaries}
-The interconnection network modelled in this work is the fat-tree topology \cite{Al-FaresLV08}. The fat-tree or folded-Clos topology is currently the most common topology used for datacentre communication networks \cite{Cisco18}. The fat-tree topology is formed of many physical switches split into three layers: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled network each of these servers contains one or more VNFs which are managed by a virtual switch. The switches can direct packets towards any other network component they are connected to. In an SDN enabled network an SDN controller provides logically centralised management, instructing the switches how to route traffic to ensure it is routed through an efficient path from the source to destination VNF. Figure \ref{fig:network_topology} illustrates an SDN and NFV enabled fat-tree topology.
+With NFV a service is provided by forming several virtual network functions into a service chain where packets must pass through each of the VNFs in sequence. Service chains can be represented with Directed Acyclic Graphs (DAG), as in Figure \ref{fig:dag_nfv}, which encapsulate the dependencies between the VNFs. Different service chains may be composed of different numbers and types of VNF. Additionally many services may be provided by the datacentre simultaneously.
 
-The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vm}$ the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
+\begin{figure}
 
-Whilst the SDN controller is logically centralised, in practice a physically centralised SDN architecture cannot scale to support a large datacentre network \cite{AzodolmolkyWY13}. A simple extension is the two layer hierarchical structure. In this architecture, a local SDN controller exists at or close to each server and an additional root SDN controller exists as an independent element. Arriving or produced packets are first evaluated at the local controller. If the local controller cannot process the packet it is sent to the root controller and then back to the server once resolved. As a result only a portion of the packets generated in the network will visit the root SDN controller. A comparable real world implementation is VMWare NSX \cite{VMW18} which as of 2016 had been deployed on over 2400 networks \cite{VMW16}. 
+\centering
+
+\begin{tikzpicture}[
+vnf/.style={rectangle, draw=black, fill=white, minimum size = 8mm, node distance=4mm and 14mm},]
+
+\node[vnf] (S1_A) 				  {A};
+\node[vnf] (S1_B) [right=of S1_A] {B};
+\node[vnf] (S1_C) [right=of S1_B] {C};
+\node[node distance = 4mm] [left=of S1_A]  {i)};
+
+\draw[->] (S1_A.east) -- (S1_B.west);
+\draw[->] (S1_B.east) -- (S1_C.west);
+
+\node[vnf] (S2_A) [below=of S1_A] {A};
+\node[vnf] (S2_B) [right=of S2_A] {B};
+\node[vnf] (S2_C) [right=of S2_B] {C};
+\node[vnf] (S2_D) [right=of S2_C] {D};
+\node[node distance = 4mm] [left=of S2_A]  {ii)};
+
+\draw[->] (S2_A.east) -- (S2_B.west);
+\draw[->] (S2_B.east) -- (S2_C.west);
+\draw[->] (S2_C.east) -- (S2_D.west);
+
+\end{tikzpicture}
+
+\caption{Two service chains of different lengths represented with directed acyclic graphs. Packets must pass through each VNF in sequence. These and other services may exist in the network at the same time}
+\label{fig:dag_nfv}
+
+\end{figure}
+
+Service chains may be physically distributed over the datacentre. Communication between servers in the datacentre is provided by the interconnection network. The fat-tree or folded-Clos topology is currently the most common topology used for interconnection networks in datacentres \cite{Cisco18}. The fat-tree topology (see Figure \ref{fig:network_topology}) is formed of three layers of switches: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled datacentre each of these servers contains a virtual switch which manages one or more VNFs.
+
+The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vsw}$ as the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
+
+In an SDN enabled datacentre an SDN controller provides centralised management, instructing the switches how to direct traffic to ensure it takes an efficient route to its destination. Each SDN enabled switch has a flow table maintained by the controller containing instructions on where to send received packets. This table may not be large enough to contain instructions for all possible destinations. If the local switch receives a packet that it does not have matching instructions for, it must request instructions from the controller. As a result a portion of the packets in the datacentre visit the controller. For this work we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX software \cite{VMW18}.
 
 \begin{figure}
 
@@ -14,11 +48,11 @@ Whilst the SDN controller is logically centralised, in practice a physically cen
 
 \begin{tikzpicture}[
 every node/.style={node distance=6mm and 1mm},
-server/.style={rectangle, draw=black, fill=black},
+server/.style={rectangle, draw=black, fill=black, node distance=10mm and 1mm},
 edge/.style={rectangle, draw=black, fill=black},
 agg/.style={rectangle, draw=black, fill=black},
 core/.style={rectangle, draw=black, fill=black},
-sdn/.style={rectangle, draw=black, fill=black},
+sdn/.style={rectangle, draw=black, fill=black,node distance=10mm and 1mm},
 vm/.style={rectangle, draw=black, fill=black},
 ]
 
@@ -40,7 +74,7 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[server]      (S15)       [right=of S14] {};
 \node[server]      (S16)       [right=of S15] {};
 
-\node[text width=0.8cm] at (-2, 0)  {V.Switches};
+\node[text width=2cm] at (-1.4, 0)  {SDN Enabled V.Switches};
 
 % VMs
 \node[vm]      (V1)        [below=of S1]  {};
@@ -60,14 +94,14 @@ vm/.style={rectangle, draw=black, fill=black},
 \node [between=V6 and V7] {\large ...};
 
 % SDN Controller
-\node[text width=0.8cm] at (-2, .9)  {Controller};
+\node[text width=2cm] at (-1.4, 1.2)  {SDN Controller};
 \node[sdn]      (SC1)      	 [above left=of S1] {};
 
 % Edge/ToR
 % This weird hack stops Tikz from placing the points at the same level as the SDN Controller
 %\node[bug_example]      (test)      [above=of SC1, between=S15 and S16] {};
 
-\node[text width=0.8cm] at (-2, 1.75)  {Edge};
+\node[text width=0.8cm] at (-2, 2.15)  {Edge};
 \node[] 		 (H1) 		 [above=of SC1] {};
 \node[] 		 (H2) 		 [between=S1 and S2] {};
 \node[] 		 (H3) 		 [between=S3 and S4] {};
@@ -88,7 +122,7 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[edge]      (E8)        [at = (H1 -| H9)] {};
 
 % Aggregate
-\node[text width=0.8cm] at (-2, 2.55)  {Aggregation};
+\node[text width=0.8cm] at (-2, 2.95)  {Aggregation};
 \node[agg]      (A1)        [above=of E1] {};
 \node[agg]      (A2)        [above=of E2] {};
 \node[agg]      (A3)        [above=of E3] {};
@@ -99,7 +133,7 @@ vm/.style={rectangle, draw=black, fill=black},
 \node[agg]      (A8)        [above=of E8] {};
 
 % Core
-\node[text width=0.8cm] at (-2, 3.3)  {Core};
+\node[text width=0.8cm] at (-2, 3.75)  {Core};
 \node[core]      (C1)        [above=of A1,  between=A1 and A2]  {};
 \node[core]      (C2)        [above=of A3,  between=A3 and A4]  {};
 \node[core]      (C3)        [above=of A5,  between=A5 and A6]  {};

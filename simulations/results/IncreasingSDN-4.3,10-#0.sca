@@ -1,19 +1,19 @@
 version 2
-run IncreasingSDN-474-20180403-11:16:14-23044
+run IncreasingSDN-43-20180414-20:54:33-26225
 attr configname IncreasingSDN
-attr datetime 20180403-11:16:14
+attr datetime 20180414-20:54:33
 attr experiment IncreasingSDN
 attr inifile omnetpp.ini
 attr iterationvars "$0=4.3, $1=10"
 attr iterationvarsf 4.3,10-
 attr measurement "$0=4.3, $1=10"
 attr network FatTree
-attr processid 23044
+attr processid 26225
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 474
-attr seedset 474
+attr runnumber 43
+attr seedset 43
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
@@ -27,7 +27,7 @@ param FatTree.vms[*].production_rate 4.3
 param FatTree.p_sdn 10
 param FatTree.prob_service "\"EQUAL\""
 
-scalar FatTree Time_In_System:mean 0.60739771047238
+scalar FatTree Time_In_System:mean 0.6082121602427
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

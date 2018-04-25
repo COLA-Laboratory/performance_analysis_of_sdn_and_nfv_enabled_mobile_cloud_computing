@@ -7,13 +7,14 @@ root_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/out/data';
 
 %% Test
 reset();
-%for j = 0 : 0.1 : 5
+for j = 0 : 0.1 : 5
     k = 4;
-    init_prod_rate = 2.2;
-    vnf_chains = {[1, 1]};
+    k_vm = 1;
+    init_prod_rate = 1;    
+    p_sdn = 0;
     
     [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);   
-%end
+end
 
 %% IncreasingNumPorts
 reset();

@@ -26,11 +26,7 @@ mean_ptrn = '(?<=scalar FatTree Time_In_System:mean )([0-9.]*|-nan|nan)';
 for i = 1 : length(test_groups)
     test_group = test_groups{i};
     test_files = dir([test_group, '*']);
-    
-    if (not(strcmp(test_group, 'LowNumPorts')))
-        continue
-    end
-    
+   
     for j = 1 : size(test_files, 1)
         
         test_file = test_files(j);
@@ -48,7 +44,14 @@ for i = 1 : length(test_groups)
             
         elseif strcmp(test_group, 'IncreasingNumPorts') || strcmp(test_group, 'IncreasingSDN')
             
-            par = extract_parameter(test_file.name);
+            comma_pos = strfind(test_file.name, ',');
+            
+            if isempty(comma_pos)
+                par = 4;
+            else
+                par = extract_parameter(test_file.name);
+            end
+                
             out_fname = [test_group '_' num2str(par)];
             
         elseif strcmp(test_group, 'LowNumPorts')

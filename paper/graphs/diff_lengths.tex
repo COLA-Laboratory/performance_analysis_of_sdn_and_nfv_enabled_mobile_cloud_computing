@@ -20,10 +20,11 @@
 \pagestyle{empty}
 
 \pgfplotsset{every axis/.append style={
+compat=1.15,
 font = \large,
 %grid = major,
-xlabel=$\lambda$ (messages/cycle),
-ylabel = {Latency (Cycles)},
+xlabel=$\alpha$ (packets/second),
+ylabel = {Latency (seconds)},
 thick,
 width=.6\textwidth,
 line width = 1pt,
