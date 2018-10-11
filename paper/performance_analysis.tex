@@ -14,13 +14,13 @@ These equations show that the edge switches receives more traffic than the aggre
 
 Similarily from the definition of the arrival rates for the edge switches (Equation \ref{eq:arr_edge}) and the VNFs (Equation \ref{eq:arr_vnf}) it is clear that edge switches will also receive more traffic than the VNFs.
 
-The portion of traffic that visits the SDN controller is dependent on the parameter $p_{miss\_route}$. The minimum value of $p_{miss\_route}$ that will cause the SDN controller to receive a higher traffic rate than the edge switches can be found when $lambda_{sdn} = lambda_{edge}$. Rearranging and simplifying the equation gives:
+The portion of traffic that visits the SDN controller is dependent on the parameter $p_{miss\_route}$. The minimum value of $p_{miss\_route}$ that will cause the SDN controller to receive a higher traffic rate than the edge switches can be found when $\lambda_{sdn} = \lambda_{edge}$. Rearranging and simplifying the equation gives:
 
 \begin{equation}
 p_{req\_sdn\_miss} = \frac{k_{vsw} \cdot k \cdot (1 - \frac{1}{k^3}(k + 2))}{1 - \frac{k_{vsw} - 1}{n - 1}}
 \end{equation}
 
-$p_{miss\_route} > 1$ indicates that there is no setting of this parameter which can cause the SDN controller to receive more traffic than an edge switch.
+$p_{req\_sdn\_miss} > 1$ indicates that there is no setting of $p_{miss\_route}$ which can cause the SDN controller to receive more traffic than an edge switch.
 
 The same technique can be used to calculate the minimum value of $p_{miss\_route} > 1$ for a virtual switch to receive more traffic than an edge switch. 
 

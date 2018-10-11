@@ -31,12 +31,12 @@ network FatTree
         
         int p_sdn;
         
-        int num_core = (k / 2) * (k / 2);
+        int num_core = int((k / 2) * (k / 2));
         int num_pods = k;
-        int num_agg = num_pods * (k / 2);
-        int num_edge = num_pods * (k / 2);
-        int num_servers = num_edge * (k / 2);
-        int num_vms = num_servers * vm_k;
+        int num_agg = int(num_pods * (k / 2));
+        int num_edge = int(num_pods * (k / 2));
+        int num_servers = int(num_edge * (k / 2));
+        int num_vms = int(num_servers * vm_k);
         
         string vnf_chains;
         string prob_service;
@@ -75,11 +75,11 @@ network FatTree
     connections:
         
         for i=0..num_vms-1 {
-            vms[i].gate <--> Channel <--> servers[floor(i/vm_k)].gate++;
+            vms[i].gate <--> Channel <--> servers[int(floor(i/vm_k))].gate++;
         }
         
         for i=0..num_servers-1 {
-            servers[i].gate++ <--> Channel <--> edge[floor(i/(k/2))].gate++;
+            servers[i].gate++ <--> Channel <--> edge[int(floor(i/(k/2)))].gate++;
         }
         
         for i=0..num_servers-1 {
@@ -87,10 +87,10 @@ network FatTree
         }
         
         for i=0..num_edge - 1, for j=0..num_agg - 1 {
-            edge[i].gate++ <--> Channel <--> aggregate[j].gate++ if j >= floor(i/(k /2)) * (k/2) && j < floor(i/(k/2)) * (k/2) + (k/2);
+            edge[i].gate++ <--> Channel <--> aggregate[j].gate++ if j >= int(floor(i/(k /2)) * (k/2)) && j < int(floor(i/(k/2)) * (k/2) + (k/2));
         }
         
         for i=0..num_agg - 1, for j=0..num_core - 1 { 
-            aggregate[i].gate++ <--> Channel <--> core[j].gate++ if j >= ((i % (k / 2)) * (k / 2)) && j < ((i % (k / 2)) * (k / 2) + (k/2));
+            aggregate[i].gate++ <--> Channel <--> core[j].gate++ if j >= int(((i % (k / 2)) * (k / 2))) && j < int(((i % (k / 2)) * (k / 2) + (k/2)));
         }
 }

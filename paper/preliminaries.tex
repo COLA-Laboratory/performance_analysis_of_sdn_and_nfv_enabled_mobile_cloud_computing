@@ -2,39 +2,7 @@
 
 \section{Network Architecture}
 \label{sec:preliminaries}
-With NFV a service is provided by forming several virtual network functions into a service chain where packets must pass through each of the VNFs in sequence. Service chains can be represented with Directed Acyclic Graphs (DAG), as in Figure \ref{fig:dag_nfv}, which encapsulate the dependencies between the VNFs. Different service chains may be composed of different numbers and types of VNF. Additionally many services may be provided by the datacentre simultaneously.
-
-\begin{figure}
-
-\centering
-
-\begin{tikzpicture}[
-vnf/.style={rectangle, draw=black, fill=white, minimum size = 8mm, node distance=4mm and 14mm},]
-
-\node[vnf] (S1_A) 				  {A};
-\node[vnf] (S1_B) [right=of S1_A] {B};
-\node[vnf] (S1_C) [right=of S1_B] {C};
-\node[node distance = 4mm] [left=of S1_A]  {i)};
-
-\draw[->] (S1_A.east) -- (S1_B.west);
-\draw[->] (S1_B.east) -- (S1_C.west);
-
-\node[vnf] (S2_A) [below=of S1_A] {A};
-\node[vnf] (S2_B) [right=of S2_A] {B};
-\node[vnf] (S2_C) [right=of S2_B] {C};
-\node[vnf] (S2_D) [right=of S2_C] {D};
-\node[node distance = 4mm] [left=of S2_A]  {ii)};
-
-\draw[->] (S2_A.east) -- (S2_B.west);
-\draw[->] (S2_B.east) -- (S2_C.west);
-\draw[->] (S2_C.east) -- (S2_D.west);
-
-\end{tikzpicture}
-
-\caption{Two service chains of different lengths represented with directed acyclic graphs. Packets must pass through each VNF in sequence. These and other services may exist in the network at the same time}
-\label{fig:dag_nfv}
-
-\end{figure}
+With NFV a service is provided by forming several virtual network functions into a service chain where packets must pass through each of the VNFs in sequence. Different service chains may be composed of different numbers and types of VNF. Additionally many services may be provided by the datacentre simultaneously.
 
 Service chains may be physically distributed over the datacentre. Communication between servers in the datacentre is provided by the interconnection network. The fat-tree or folded-Clos topology is currently the most common topology used for interconnection networks in datacentres \cite{Cisco18}. The fat-tree topology (see Figure \ref{fig:network_topology}) is formed of three layers of switches: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled datacentre each of these servers contains a virtual switch which manages one or more VNFs.
 

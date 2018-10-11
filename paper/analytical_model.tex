@@ -2,11 +2,16 @@
 
 \section{Analytical Model}
 \label{sec:analytical_model}
-
-In a datacentre each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. Subsequently the datacentre is modelled in the same way with each component modelled as an M/M/1 queue.
-
 \subsection{Assumptions}
-For the derivation of the analytical model, the following assumptions are made with regards to the construction of the network:
+In a datacentre each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. To model the time a packet will wait at each queue we must consider three things: the probability distribution of the inter-arrival rate, the probability distribution of the service rate and the size of the queue.
+
+It is reasonable to expect that packets, that may come from different users or different sources, will be independently distributed from each other. Similarily, in an efficient system the time taken to service a packet should not be dependent on earlier packets. Hence we can consider the arrival and service rates of packets to rollow independant probability distributions.
+
+In a real datacentre each queue must be bounded to within a certain size as to do otherwise would require infinite memory or storage. However in practice the buffers should be large enough that buffer overflows are rarely an issue. For the purposes of this work we will assume queues are effectively infinite.
+
+Finally the placement of VNFs must be considered. An important consideration when placing a VNF is considering the impact on the wider network. So as to evenly distribute the load across the network we will assume that VNFs are uniformly distributed across the datacentre.
+
+Following this reasoning, the following assumptions are made with regards to the construction of the network:
 
 \begin{enumerate}
 \item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\alpha$ packets a cycle. Furthermore, packet destinations are uniformly distributed across the VNFs.
@@ -24,15 +29,22 @@ Before extending the model to complex service chains we consider the base case w
 \label{eq:mean_latency}
 \begin{split}
 L&atency_{path}(\alpha, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
-		&=(w_{vnf} + w_{vsw}) \cdot p_{vsw} \\
-		&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + w_{edge}) \cdot p_{edge} \\
-	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge} + w_{agg}) \cdot p_{agg} \\
-	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge}  \\
-		& \qquad\qquad\qquad\quad + 2w_{agg} + w_{core})\cdot p_{core}
+		&=l_{vsw} \cdot p_{vsw} + l_{edge} \cdot p_{edge} \\
+	 	&+l_{agg} \cdot p_{agg} + l_{agg} \cdot p_{core}
 \end{split}
 \end{equation}
 
-where $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the SDN controller and virtual, edge, aggregate and core switches respectively. Similarly $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level switch a packet visits is a virtual, edge, aggregate or core switch respectively. We now deduce these values for arbitrary numbers of ports for the physical ($k$) and virtual ($k_{vsw}$) switches.
+\noindent where:
+\begin{equation}
+\begin{split}
+l_{vsw} &= w_{vnf} + w_{vsw} \\
+l_{edge} &= l_{vsw} + w_{sdn} + w_{vsw} + w_{edge} \\
+l_{agg} &= l_{edge} + w_{edge} + w_{agg} \\
+l_{core} &= l_{agg} + w_{agg} + w_{core} \\
+\end{split}
+\end{equation}
+
+\noindent and $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the SDN controller and virtual, edge, aggregate and core switches respectively. Similarly $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level switch a packet visits is a virtual, edge, aggregate or core switch respectively. We now deduce these values for arbitrary numbers of ports for the physical ($k$) and virtual ($k_{vsw}$) switches.
 
 \subsubsection{Probability of Highest Level}
 If the source and destination VNFs share the same virtual switch they will not need to visit a higher level switch. Hence the probability of a packet only visiting a virtual switch is the probability the destination is under the same virtual switch as the source:
@@ -41,7 +53,7 @@ If the source and destination VNFs share the same virtual switch they will not n
 \label{eq:p_vm}
 p_{vsw} = \frac{k_{vsw} - 1}{n - 1}
 \end{equation}
-where $n$ denotes the total number of VMs in the datacenter.
+\noindent where $n$ denotes the total number of VMs in the datacenter.
 
 Whilst higher level switches cover more destinations, there may be shorter routes available to some of these destinations. The probability that the highest layer a packet visits is the edge layer is the probability the destination is under the same edge switch as the source, excluding those destinations that could be visited via a shorter route:
 
@@ -73,7 +85,7 @@ As not every packet visits every layer but traffic is evenly distributed over th
 f_w(\mu, \lambda) = \frac{1}{\mu - \lambda}
 \end{equation}
 
-where $\mu$ is the service rate and $\lambda$ is the arrival rate for a given component in the datacentre.
+\noindent where $\mu$ is the service rate and $\lambda$ is the arrival rate for a given component in the datacentre.
 
 As destinations are evenly distributed over the VNFs, each VNF will receive an equal proportion of packets from every other VNF. Hence the arrival rate for each VNF is $(n - 1) \cdot \frac{1}{n - 1} \cdot \alpha$ which can be simplified to: 
 
@@ -143,16 +155,16 @@ By substituting the probabilities of the different paths and the mean waiting ti
 \subsubsection{Multiple NFV Services with Different Length Chains}
 Existing research into NFV modelling has only considered the case of a single service requiring a single pass through the network. However in practice, datacentres may provide several services with different length service chains.
 
-An important consequence of longer service chains is each packet persisting in the network for a longer period of time. Consider a situation where each VNF deterministically sends a packet to an adjacent VNF every second. Consider also that we have a service chains with three network functions so that packets will be required to cross the network twice. After one second all VNFs will have sent and received one packet. After two seconds all VNFs will have sent two packets, forwarding the packet received in the previous step and a new packet. It will have also received two packets, a packet with no VNFs left to visit and a packet with one VNF remaining. Every subsequent second one packet will be destroyed having completed the service, leaving one packet to be forwarded and one new packet created for each VNF. Effectively, each VNF is producing two packets per second on average.
+% Consider a situation where each VNF deterministically sends a packet to an adjacent VNF every second. Consider also that we have a service chains with three network functions so that packets will be required to cross the network twice. After one second all VNFs will have sent and received one packet. After two seconds all VNFs will have sent two packets, forwarding the packet received in the previous step and a new packet. It will have also received two packets, a packet with no VNFs left to visit and a packet with one VNF remaining. Every subsequent second one packet will be destroyed having completed the service, leaving one packet to be forwarded and one new packet created for each VNF. Effectively, each VNF is producing two packets per second on average.
 
-We can extend this intuition to arbitrary length services. The longer the service grows, the longer messages will persist in the network leading to higher effective production rates. Following this intuition, the effective production rate for an arbitrary length service is:
+As service chains increase in length, packets will persist in the network for longer. Each packet a VNF receives that has not completed it's service will eventually be forwarded on to another VNF. At the same time it is also producing new packets. Hence, we can model this as the VNF effectively producing more packets. As packets only persist for the length of the service, the effective production rate is given by:
 
 \begin{equation}
 \label{eq:alpha_eff_single}
 \alpha_{eff} = \alpha \cdot (len(service_i) - 1)
 \end{equation}
 
-where $len$ is the number of network functions that compose a given service and $service_i$ is the service being modelled.
+\noindent where $len$ is the number of network functions that compose a given service and $service_i$ is the service being modelled.
 
 Furthermore, if several services of different lengths were supported by the network, the average time a packet persisted in the network is dependent on the average service chain length. As not all services may produce packets at the same rate, if a given packet has probability $p(service_i)$ of belonging to $service_i$, the expected service length determines the effective production rate:
 
@@ -161,7 +173,7 @@ Furthermore, if several services of different lengths were supported by the netw
 \alpha_{eff} = \alpha \cdot \sum_{i=1}^{ns} p(service_i) (len(service_i) - 1)
 \end{equation}
 
-where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(service_i) = 1$.
+\noindent where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(service_i) = 1$.
 
 The network must be crossed to visit each VNF in the service chain. The end-to-end latency will be the sum of the time spent taking each path. Using the derivation for the case of a single crossing of the network, the average latency for multiple services with variable length service chains is given by:
 
@@ -173,6 +185,21 @@ Latency = & Latency_{path}(\alpha_{eff}, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
 \end{split}
 \end{equation}
 
-where $Latency_{pass}$ is given by Equation \ref{eq:mean_latency} and $\alpha_{eff}$ is given by Equation \ref{eq:alpha_eff}.
+\noindent where $Latency_{path}$ is given by Equation \ref{eq:mean_latency} and $\alpha_{eff}$ is given by Equation \ref{eq:alpha_eff}. For convenience, pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}.
 
-\vspace{0mm} % Adds a new line
+\begin{algorithm}
+
+\caption{Calculation of Average Latency}
+\label{alg:avg_latency_final}
+
+\begin{algorithmic}[1]
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\REQUIRE $\alpha$, $k$, $k_{vm}$, $\mu_{sw/vnf/sdn}$, $p_{miss\_route}$, $p(service_i)$ 
+\STATE Calculate $p_{vsw/edge/agg/core/sdn}$ \hfill(\textit{Equations \ref{eq:p_vm} - \ref{eq:p_sdn}})
+\STATE Calculate $\lambda_{vnf/vsw/edge/agg/core/sdn}$ \hfill(\textit{Equation \ref{eq:arr_vnf} - \ref{eq:arr_sdn}})
+\STATE Calculate $w_{vnf/vsw/edge/agg/core/sdn}$\hfill(\textit{Equations \ref{eq:mean_latency}, \ref{eq:wait_sdn}})
+\STATE Calculate effective prod. rate: $\alpha_{eff}$ \hfill(\textit{Equation \ref{eq:alpha_eff}})
+\STATE Calculate one path latency: $Latency_{path}$ \hfill (\textit{Equation \ref{eq:mean_latency}})
+\STATE Calculate average latency: $Latency$ \hfill (\textit{Equation \ref{eq:latency_eff}})
+\end{algorithmic}
+\end{algorithm}

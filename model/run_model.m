@@ -3,14 +3,14 @@ global k; global k_vm; global p_sdn; global prob_services; global vnf_chains;
 global init_prod_rate; global srv_vm; global srv_server; global srv_tor;
 global srv_agg; global srv_core; global srv_sdn;
 
-root_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/out/data';
+root_dir = '~/Projects/NFV_FatTree/out/data';
 
 %% Test
 reset();
 for j = 0 : 0.1 : 5
-    k = 4;
-    k_vm = 1;
-    init_prod_rate = 1;    
+    k = 2;
+    k_vm = 2;
+    init_prod_rate = 2;    
     p_sdn = 0;
     
     [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);   
