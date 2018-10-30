@@ -2,13 +2,7 @@
 
 \section{Network Architecture}
 \label{sec:preliminaries}
-With NFV a service is provided by forming several virtual network functions into a service chain where packets must pass through each of the VNFs in sequence. Different service chains may be composed of different numbers and types of VNF. Additionally many services may be provided by the datacentre simultaneously.
 
-Service chains may be physically distributed over the datacentre. Communication between servers in the datacentre is provided by the interconnection network. The fat-tree or folded-Clos topology is currently the most common topology used for interconnection networks in datacentres \cite{Cisco18}. The fat-tree topology (see Figure \ref{fig:network_topology}) is formed of three layers of switches: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled datacentre each of these servers contains a virtual switch which manages one or more VNFs.
-
-The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vsw}$ as the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
-
-In an SDN enabled datacentre an SDN controller provides centralised management, instructing the switches how to direct traffic to ensure it takes an efficient route to its destination. Each SDN enabled switch has a flow table maintained by the controller containing instructions on where to send received packets. This table may not be large enough to contain instructions for all possible destinations. If the local switch receives a packet that it does not have matching instructions for, it must request instructions from the controller. As a result a portion of the packets in the datacentre visit the controller. For this work we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX software \cite{VMW18}.
 
 \begin{figure}
 
@@ -196,3 +190,12 @@ vm/.style={rectangle, draw=black, fill=black},
 \label{fig:network_topology}
 
 \end{figure}
+
+
+As shown in Fig. \ref{fig:network_topology}, we abstract a network architecture where multiple NFV chains are deployed and linked by a virtualised SDN architecture. With NFV deployment, a service is provided in the form of a service chain which is formed by several VNFs. The packets pass through each of the VNFs in sequence. Based on the performance requirements, service chains are composed of different numbers and types of VNFs. In the abstracted network architecture, multiple NFV chains can simultaneously coexist in the datacenter.
+
+Service chains may be physically distributed over the datacenter. Communication between servers in the datacenter is provided by the interconnection network. The fat-tree or folded-Clos topology is currently the most common topology used for interconnection networks in datacentres \cite{Cisco18}. The fat-tree topology (see Fig. \ref{fig:network_topology}) is formed of three layers of switches: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled datacentre each of these servers contains a virtual switch which manages one or more VNFs.
+
+The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vsw}$ as the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
+
+In an SDN enabled datacentre an SDN controller provides centralised management, instructing the switches how to direct traffic to ensure it takes an efficient route to its destination. Each SDN enabled switch has a flow table maintained by the controller containing instructions on where to send received packets. This table may not be large enough to contain instructions for all possible destinations. If the local switch receives a packet that it does not have matching instructions for, it must request instructions from the controller. As a result a portion of the packets in the datacentre visit the controller. For this work we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX solution \cite{VMW18}.

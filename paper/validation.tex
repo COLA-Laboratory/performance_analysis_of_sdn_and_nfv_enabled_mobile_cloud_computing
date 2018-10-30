@@ -20,7 +20,7 @@ proportions of packets visiting the SDN controller ($p_{miss\_route}$).}
 	\label{fig:sdn_perc}
 \end{minipage}
 
-\vspace{4mm}
+\vspace{2mm}
 
 \begin{minipage}[b]{.49\textwidth}
 	\includegraphics[width=\linewidth]{graphs/diff_lengths-crop}
@@ -42,7 +42,7 @@ To verify the accuracy of the analytical model, a discrete event simulator has b
 
 Comprehensive simulation experiments were conducted to validate the performance of the proposed analytical model under different network configurations. However for the sake of specific illustration only a selection of tests are presented here and the results comparison between the analytical model and simulation experiments are presented in terms of the average end-to-end latency.
 
-In practice a datacentre can contain on the order of tens of thousands of servers \cite{AWS16}, with each switch supporting 1 to 100Gbits/s traffic a second. Unfortunately it is computationally expensive to simulate a datacentre at this scale, especially for a large number of tests. Additionally, the results do not produce a better comparison than smaller instances of the problem. Hence a scaled down version of a typical datacentre is modelled with the following parameters:
+In practice a datacentre can contain on the order of tens of thousands of servers \cite{AWS16}, with each switch supporting 1 to 100Gbits/s traffic a second. Unfortunately it is computationally expensive to simulate a datacentre at this scale, especially for a large number of tests. Hence a scaled down version of a typical datacentre is modelled with the following parameters:
 
 \begin{itemize}
 \item $k = 4$, $k_{vsw} = 2$ and $p_{miss\_route} = 0$
@@ -53,4 +53,4 @@ In practice a datacentre can contain on the order of tens of thousands of server
 \item Case II: The network holds multiple services and the number of VNFs in the $i$th service chain has a length of $i+1$
 \end{itemize}
 
-Figures \ref{fig:num_ports} to \ref{fig:mult_services} depict mean message latency predicted by the model plotted against those provided by simulation experiments for a range of parameter settings. For the model, results are only shown where the network is in a steady state, i.e. where the arrival rate is lower than or equal to the service rate for all queues. The figures demonstrate that the simulation results closely match those predicted by the model. The tractability and accuracy of the analytical model make it suitable for analysis of next generation NFV and SDN enabled datacentre networks.
+Figs \ref{fig:num_ports} to \ref{fig:mult_services} depict mean message latency predicted by the model plotted against those provided by simulation experiments for a range of parameter settings. For the model, results are only shown where the network is in a steady state, i.e. where the arrival rate is lower than or equal to the service rate for all queues. The figures demonstrate that the simulation results closely match those predicted by the model. The tractability and accuracy of the analytical model make it suitable for analysis of next generation NFV and SDN enabled Mobile Cloud computing datacentres.

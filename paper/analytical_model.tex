@@ -2,29 +2,19 @@
 
 \section{Analytical Model}
 \label{sec:analytical_model}
-\subsection{Assumptions}
-In a datacentre each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. To model the time a packet will wait at each queue we must consider three things: the probability distribution of the inter-arrival rate, the probability distribution of the service rate and the size of the queue.
-
-It is reasonable to expect that packets, that may come from different users or different sources, will be independently distributed from each other. Similarily, in an efficient system the time taken to service a packet should not be dependent on earlier packets. Hence we can consider the arrival and service rates of packets to rollow independant probability distributions.
-
-In a real datacentre each queue must be bounded to within a certain size as to do otherwise would require infinite memory or storage. However in practice the buffers should be large enough that buffer overflows are rarely an issue. For the purposes of this work we will assume queues are effectively infinite.
-
-Finally the placement of VNFs must be considered. An important consideration when placing a VNF is considering the impact on the wider network. So as to evenly distribute the load across the network we will assume that VNFs are uniformly distributed across the datacentre.
-
-Following this reasoning, the following assumptions are made with regards to the construction of the network:
-
+\subsection{Preliminary}
+In the abstracted network architecture, each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. To model the time a packet will wait at each queue we must consider three things: the probability distribution of the inter-arrival rate, the probability distribution of the service rate and the size of the queue. It is reasonable to expect that packets, that may come from different users or different sources, will be independently distributed from each other. Similarly, in an efficient system the time taken to process a packet should not be dependent on earlier packets. Hence we can consider the arrival and service rates of packets to follow independent probability distributions. When deriving the analytical model, key parameters are denoted as follows:
 \begin{enumerate}
-\item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\alpha$ packets a cycle. Furthermore, packet destinations are uniformly distributed across the VNFs.
+\item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\alpha$ packets a cycle. 
 \item Each physical/virtual switch, VNF and the controller services packets according to an independent Poisson process with a mean rate of $\mu_{sw}$, $\mu_{vnf}$ and $\mu_{sdn}$ packets a second respectively.
-\item The time taken for a packet to travel between datacentre components is negligible.
-\item The SDN controller ensures packets take one of the shortest paths between the source and destination and that packets are evenly distributed over the switches in the datacentre.
-\item Queues at each network component have infinite capacity.
+\item The SDN controller directs packets so that they are evenly distributed over the switches in the datacenter and take one of the shortest paths to visit the destination.
 \item Packets leaving a server will visit the SDN controller with probability $p_{miss\_route}$.
 \end{enumerate}
 
 \subsection{Derivation of Model}
-Before extending the model to complex service chains we consider the base case where the datacentre provides only one service formed with a chain of two VNFs. Hence packets are only required to cross the network once. As a result of the network topology, packets sent between two VNFs only need to travel as high as their first common ancestor. As the packets will always take an efficient path, the average latency is dependant on the probability a packet must visit a certain layer switch and the waiting time incurred at each component on the path:
+In this section, we will present the methodology to derive the analytical model. Before extending the model to complex service chains we consider the base case where the datacenter provides only one service formed with a chain of two VNFs. In subsection \ref{multiple}, we will extend the proposed analytical model to consider multiple NFV chains of different lengths. 
 
+For the single NFV chain case, packets sent between two VNFs only need to travel as high as their first common ancestor. As the packets will take the shortest path, the average latency is dependant on the probability a packet must visit a certain layer switch and the waiting time incurred at each component on the path,
 \begin{equation} 
 \label{eq:mean_latency}
 \begin{split}
@@ -44,33 +34,30 @@ l_{core} &= l_{agg} + w_{agg} + w_{core} \\
 \end{split}
 \end{equation}
 
-\noindent and $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the SDN controller and virtual, edge, aggregate and core switches respectively. Similarly $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level switch a packet visits is a virtual, edge, aggregate or core switch respectively. We now deduce these values for arbitrary numbers of ports for the physical ($k$) and virtual ($k_{vsw}$) switches.
+\noindent and $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the SDN controller, virtual edge, aggregate and core switches respectively. Similarly $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level switch a packet visits is a virtual, edge, aggregate or core switch respectively. We now deduce these values for arbitrary numbers of ports for the physical ($k$) and virtual ($k_{vsw}$) switches.
 
 \subsubsection{Probability of Highest Level}
-If the source and destination VNFs share the same virtual switch they will not need to visit a higher level switch. Hence the probability of a packet only visiting a virtual switch is the probability the destination is under the same virtual switch as the source:
-
+If the source and destination VNFs share the same virtual switch they will not need to visit a higher level switch. Hence the probability of a packet only visiting a virtual switch is the probability the destination is under the same virtual switch as the source,
 \begin{equation}
 \label{eq:p_vm}
 p_{vsw} = \frac{k_{vsw} - 1}{n - 1}
 \end{equation}
 \noindent where $n$ denotes the total number of VMs in the datacenter.
 
-Whilst higher level switches cover more destinations, there may be shorter routes available to some of these destinations. The probability that the highest layer a packet visits is the edge layer is the probability the destination is under the same edge switch as the source, excluding those destinations that could be visited via a shorter route:
-
+Whilst higher level switches cover more destinations, there may be shorter routes available to some of these destinations. The probability that the highest layer a packet visits is the edge, is the probability the destination is under the same edge switch as the source excluding those destinations that could be visited via a shorter path,
 \begin{equation}
 \label{eq:p_edge}
 p_{edge} = \frac{(k/2) \cdot k_{vsw} - k_{vsw}}{n - 1}
 \end{equation}
 
-This same principle can be used to deduce the probability of visiting the aggregate and core layers:
-
+Similarly, the probability of visiting the aggregate and core layers are as follows,
 \begin{align}
 \label{eq:p_agg_core}
 &p_{agg} = \frac{(k/2)^2 \cdot k_{vsw} - (k/2) \cdot k_{vsw}}{n - 1} \\ \nonumber \\
 &p_{core} = \frac{n - (k/2)^2 \cdot k_{vsw}}{n - 1}
 \end{align}
 
-Finally, as the SDN controller will only be consulted if the destination VNF is on a different server to the source VNF, the probability of a packet visiting the controller is the probability of the destination being outside of the server and the virtual switch being unable to process it:
+Finally, as the SDN controller will only be consulted if the destination VNF is on a different server to the source VNF, the probability of a packet visiting the controller is the probability of the destination being outside of the server and the virtual switch being unable to process it,
 
 \begin{equation}
 \label{eq:p_sdn}
@@ -78,7 +65,7 @@ p_{sdn} = (1 - p_{vsw}) \cdot p_{miss\_route}
 \end{equation}
 
 \subsubsection{Calculation of Mean Waiting Time}
-As not every packet visits every layer but traffic is evenly distributed over the switches, the waiting time is the same at each component on a layer but can vary over layers. To determine the mean waiting time at each network component, each component is modelled as a M/M/1 queue where the mean waiting time is calculated with \cite{Kleinrock75}:
+As not every packet visits every layer but traffic is evenly distributed over the switches, the waiting time is the same at each component on a layer but can vary over layers. To determine the mean waiting time, each component of the network is modelled as a M/M/1 queue where the mean waiting time is calculated with \cite{Kleinrock75}:
 
 \begin{equation}
 \label{eq:MM1_time_in_network}
@@ -87,27 +74,27 @@ f_w(\mu, \lambda) = \frac{1}{\mu - \lambda}
 
 \noindent where $\mu$ is the service rate and $\lambda$ is the arrival rate for a given component in the datacentre.
 
-As destinations are evenly distributed over the VNFs, each VNF will receive an equal proportion of packets from every other VNF. Hence the arrival rate for each VNF is $(n - 1) \cdot \frac{1}{n - 1} \cdot \alpha$ which can be simplified to: 
+As destinations are evenly distributed over the VNFs, each VNF will receive an equal proportion of packets from every other VNF. Hence the arrival rate for each VNF is $(n - 1) \cdot \frac{1}{n - 1} \cdot \alpha$ which can be simplified to, 
 
 \begin{equation}
 \label{eq:arr_vnf}
 \lambda_{vnf} = \alpha
 \end{equation}
 
-Virtual switches can receive packets from three sources. All packets generated by VNFs on the server must visit the virtual switch to reach any destination. Additionally, an equal portion of the traffic generated by VNFs on other servers will be intended for each of the VNFs under the virtual switch. Finally all of the traffic sent to the SDN controller must return to the virtual switch to reach higher level switches. Therefore the arrival rate at the virtual switch can be calculated as:
+Virtual switches can receive packets from three sources. All packets generated by VNFs on the server must visit the virtual switch to reach any destination. Additionally, an equal portion of the traffic generated by VNFs on other servers will be intended for each of the VNFs under the virtual switch. Finally all of the traffic sent to the SDN controller must return to the virtual switch to reach higher level switches. Therefore the arrival rate at the virtual switch can be calculated as,
 
 \begin{equation}
 \label{eq:arr_srv}
 \begin{split}
 \lambda_{vsw} &= k_{vsw} \cdot \alpha \\
-			  &+ (n - k_{vsw}) \cdot  \frac{k_{vsw}}{n - 1} \cdot \alpha \\
+			  &+ (n - k_{vsw}) \cdot \frac{k_{vsw}}{n - 1} \cdot \alpha \\
 			  &+ k_{vsw} \cdot p_{sdn} \cdot \alpha
 \end{split}
 \end{equation}
 
-Packets visiting the SDN controller do not affect the the arrival rate for higher level switches. While packets that are sent to the controller are not forwarded to higher level switches immediately, their absence is matched by packets returning from the SDN controller.
+Packets visiting the SDN controller do not change the arrival rate of higher level switches. While packets that are sent to the controller are not forwarded to higher level switches immediately, their absence is matched by packets returning from the SDN controller.
 
-The arrival rate for the edge switches can be deduced in a similar way. The edge switch has more VNFs under it than the virtual switch. However packets that are intended for destinations on the same server as the source VNF do not need to visit the edge switch. Considering this, the arrival rate at the edge switch can be calculated as:
+The arrival rate for the edge switches can be deduced in a similar way. The edge switch has more VNFs compared with virtual switch. However packets that are intended for destinations on the same server do not need to visit the edge switch. Considering this, the arrival rate at the edge switch can be calculated as,
 
 \begin{equation}
 \label{eq:arr_edge}
@@ -117,7 +104,7 @@ The arrival rate for the edge switches can be deduced in a similar way. The edge
 \end{split}
 \end{equation}
 
-Similarily, the aggregate switch allows access to more destinations than the edge switch. However destinations that share an edge switch with the source VNF can be visited in a more efficient manner. Additionally all traffic will be balanced between each aggregate switch in the pod. The arrival rate at the aggregate switch is hence:
+Similarily, the aggregate switch allows access to more destinations than the edge switch. However destinations that share an edge switch with the source VNF can be visited in a more efficient manner. Additionally all traffic will be balanced between each aggregate switch in the pod. The arrival rate at the aggregate switch is hence,
 
 \begin{equation}
 \label{eq:arr_agg}
@@ -127,23 +114,23 @@ Similarily, the aggregate switch allows access to more destinations than the edg
 \end{split}
 \end{equation}
 
-As all VNFs are under each of the core switches the arrival rate at each core switch is the portion of traffic that must visit a core switch, split evenly between each of the core switches. Therefore the arrival rate at the core switch is:
+As all VNFs are under each of the core switches the arrival rate at each core switch is the portion of traffic that must visit a core switch, split evenly between each of the core switches. Therefore the arrival rate at the core switch is,
 
 \begin{equation}
 \label{eq:arr_core}
 \lambda_{core} = p_{core} \cdot n \cdot \alpha \frac{1}{(k / 2)^2}
 \end{equation}
 
-Finally, all VNFs will send a portion of the messages they produce to the controller. Therefore, the arrival rate at the SDN controller is:
+Finally, all VNFs will send a portion of the messages they produce to the controller. Therefore, the arrival rate at the SDN controller is,
 
 \begin{equation}
 \label{eq:arr_sdn}
 \lambda_{sdn} = n \cdot p_{sdn} \cdot \alpha
 \end{equation}
 
-By substituting the arrival rates (Equations \ref{eq:arr_vnf} to \ref{eq:arr_core}) and service rates ($\mu_{sw}, \mu_{vnf}, \mu_{sdn}$) of each network component into $f_w(\mu, \lambda)$ we can calculate the average waiting time at each VNF and switch: $w_{vnf}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$, $w_{core}$.
+By substituting the arrival rates (Eqs. \ref{eq:arr_vnf} to \ref{eq:arr_core}) and service rates ($\mu_{sw}, \mu_{vnf}, \mu_{sdn}$) of each network component into $f_w(\mu, \lambda)$ we can calculate the average waiting time at each VNF and switch: $w_{vnf}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$, $w_{core}$.
 
-A visit to the SDN controller requires waiting at two queues. When a packet is sent to the controller it will first wait at the controller and then at a virtual switch when it returns. The additional waiting time incurred by the SDN controller is therefore:
+A visit to the SDN controller requires waiting at two queues. When a packet is sent to the controller it will first wait at the controller and then at a virtual switch when it returns. The additional waiting time incurred by the SDN controller is therefore,
 
 \begin{equation}
 \label{eq:wait_sdn}
@@ -152,12 +139,12 @@ w_{sdn} = (f_w(\mu_{sdn}, \lambda_{sdn}) + w_{vsw}) \cdot p_{sdn}
 
 By substituting the probabilities of the different paths and the mean waiting times at each component into Equation \ref{eq:mean_latency}, we can determine the average latency in the network for the case of a single pass through the network.
 
-\subsubsection{Multiple NFV Services with Different Length Chains}
+\subsubsection{Multiple NFV Services with Different Length Chains} \label{multiple}
 Existing research into NFV modelling has only considered the case of a single service requiring a single pass through the network. However in practice, datacentres may provide several services with different length service chains.
 
 % Consider a situation where each VNF deterministically sends a packet to an adjacent VNF every second. Consider also that we have a service chains with three network functions so that packets will be required to cross the network twice. After one second all VNFs will have sent and received one packet. After two seconds all VNFs will have sent two packets, forwarding the packet received in the previous step and a new packet. It will have also received two packets, a packet with no VNFs left to visit and a packet with one VNF remaining. Every subsequent second one packet will be destroyed having completed the service, leaving one packet to be forwarded and one new packet created for each VNF. Effectively, each VNF is producing two packets per second on average.
 
-As service chains increase in length, packets will persist in the network for longer. Each packet a VNF receives that has not completed it's service will eventually be forwarded on to another VNF. At the same time it is also producing new packets. Hence, we can model this as the VNF effectively producing more packets. As packets only persist for the length of the service, the effective production rate is given by:
+As service chains increase in length, packets will persist in the network for longer. Each packet a VNF receives that has not completed it's service will eventually be forwarded on to another VNF. At the same time it is also producing new packets. Hence, we can model this as each VNF effectively producing more packets as the service length increases. As packets only persist for the length of the service, the effective production rate is given by,
 
 \begin{equation}
 \label{eq:alpha_eff_single}
@@ -195,11 +182,11 @@ Latency = & Latency_{path}(\alpha_{eff}, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
 \begin{algorithmic}[1]
 %\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 %\REQUIRE $\alpha$, $k$, $k_{vm}$, $\mu_{sw/vnf/sdn}$, $p_{miss\_route}$, $p(service_i)$ 
-\STATE Calculate $p_{vsw/edge/agg/core/sdn}$ \hfill(\textit{Equations \ref{eq:p_vm} - \ref{eq:p_sdn}})
-\STATE Calculate $\lambda_{vnf/vsw/edge/agg/core/sdn}$ \hfill(\textit{Equation \ref{eq:arr_vnf} - \ref{eq:arr_sdn}})
-\STATE Calculate $w_{vnf/vsw/edge/agg/core/sdn}$\hfill(\textit{Equations \ref{eq:mean_latency}, \ref{eq:wait_sdn}})
-\STATE Calculate effective prod. rate: $\alpha_{eff}$ \hfill(\textit{Equation \ref{eq:alpha_eff}})
-\STATE Calculate one path latency: $Latency_{path}$ \hfill (\textit{Equation \ref{eq:mean_latency}})
-\STATE Calculate average latency: $Latency$ \hfill (\textit{Equation \ref{eq:latency_eff}})
+\STATE Calculate $p_{vsw/edge/agg/core/sdn}$ \hfill(\textit{Eqs. \ref{eq:p_vm} - \ref{eq:p_sdn}})
+\STATE Calculate $\lambda_{vnf/vsw/edge/agg/core/sdn}$ \hfill(\textit{Eqs. \ref{eq:arr_vnf} - \ref{eq:arr_sdn}})
+\STATE Calculate $w_{vnf/vsw/edge/agg/core/sdn}$\hfill(\textit{Eqs. \ref{eq:mean_latency}, \ref{eq:wait_sdn}})
+\STATE Calculate effective prod. rate: $\alpha_{eff}$ \hfill(\textit{Eqs. \ref{eq:alpha_eff}})
+\STATE Calculate one path latency: $Latency_{path}$ \hfill (\textit{Eqs. \ref{eq:mean_latency}})
+\STATE Calculate average latency: $Latency$ \hfill (\textit{Eqs. \ref{eq:latency_eff}})
 \end{algorithmic}
 \end{algorithm}
