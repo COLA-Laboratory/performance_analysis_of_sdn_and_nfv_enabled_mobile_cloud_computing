@@ -3,7 +3,7 @@
 \section{Analytical Model}
 \label{sec:analytical_model}
 \subsection{Preliminary}
-In the abstracted network architecture, each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. To model the time a packet will wait at each queue we must consider three things: the probability distribution of the inter-arrival rate, the probability distribution of the service rate and the size of the queue. It is reasonable to expect that packets, that may come from different users or different sources, will be independently distributed from each other. Similarly, in an efficient system the time taken to process a packet should not be dependent on earlier packets. Hence we can consider the arrival and service rates of packets to follow independent probability distributions. When deriving the analytical model, key parameters are denoted as follows:
+In the abstracted network architecture, each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. To model the time a packet will wait at each queue we must consider three things: the probability distribution of the inter-arrival rate, the probability distribution of the service rate and the size of the queue. It is reasonable to expect that packets, that may come from different users or different sources, will be independently distributed from each other. Similarly, in an efficient system the time taken to process a packet should not be dependent on earlier packets. Hence we can consider the arrival and service rates of packets to follow independent probability distributions. When deriving the analytical model, the following parameters are required:
 \begin{enumerate}
 \item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\alpha$ packets a cycle. 
 \item Each physical/virtual switch, VNF and the controller services packets according to an independent Poisson process with a mean rate of $\mu_{sw}$, $\mu_{vnf}$ and $\mu_{sdn}$ packets a second respectively.
@@ -12,7 +12,7 @@ In the abstracted network architecture, each VNF, physical or virtual switch and
 \end{enumerate}
 
 \subsection{Derivation of Model}
-In this section, we will present the methodology to derive the analytical model. Before extending the model to complex service chains we consider the base case where the datacenter provides only one service formed with a chain of two VNFs. In subsection \ref{multiple}, we will extend the proposed analytical model to consider multiple NFV chains of different lengths. 
+In this section, we will present the methodology to derive the analytical model. Before extending the model to complex service chains we consider the base case where the datacenter provides only one service formed with a chain of two VNFs. In subsection \ref{multiple}, we will extend the proposed analytical model to consider multiple NFV chains of different lengths.
 
 For the single NFV chain case, packets sent between two VNFs only need to travel as high as their first common ancestor. As the packets will take the shortest path, the average latency is dependant on the probability a packet must visit a certain layer switch and the waiting time incurred at each component on the path,
 \begin{equation} 
