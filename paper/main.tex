@@ -1,18 +1,16 @@
 \documentclass[conference]{IEEEtran}
-\usepackage{algorithmic}
 
+\usepackage{algorithm}
+\usepackage{algorithmic}
 \usepackage{pgfplots}
 \usepackage{cite}
 \usepackage{amsmath}
 \interdisplaylinepenalty=2500
 \usepackage{array}
 \usepackage{tikz}
-\usepackage{stfloats}
 \usetikzlibrary{positioning}
 \usetikzlibrary{calc}
 \usetikzlibrary{backgrounds}
-
-\usepackage{algorithmic}
 
 \tikzset{
     between/.style args={#1 and #2}{
@@ -24,23 +22,23 @@
 
 \begin{document}
 
-\title{Modelling and Analysis of SDN and NFV Enabled Datacentre Networks}
+\title{Performance Analysis of SDN and NFV enabled Mobile Cloud Computing}
 
 \author{\IEEEauthorblockN{Joseph Billingsley\IEEEauthorrefmark{1},
 Wang Miao\IEEEauthorrefmark{1},
+Ke Li\IEEEauthorrefmark{1}
 Geyong Min\IEEEauthorrefmark{1}, 
-Nektarios Georgalas\IEEEauthorrefmark{2} and
-Ke Li\IEEEauthorrefmark{1}}
+ and Nektarios Georgalas\IEEEauthorrefmark{2}}
 \IEEEauthorblockA{\IEEEauthorrefmark{1}Department of Computer Science,
 University of Exeter, UK\\
-Email: \{jb931, wang.miao, g.min, k.li\}@exeter.ac.uk}
+Email: \{jb931, wang.miao, k.li, g.min\}@exeter.ac.uk}
 \IEEEauthorblockA{\IEEEauthorrefmark{2}Research and Innovation, British Telecom, UK\\
 Email: nektarios.georgalas@bt.com}}
  
 \maketitle
 
 \begin{abstract}
-Consumer demand for better and faster online services requires datacentres to continually evolve to provide more powerful and flexible storage, processing and networking services. Software defined networking (SDN) and network function virtualisation (NFV) have been regarded as two key pillars for building next generation data centres. Analytical models provide a fast and cost effective approach to experiment with these new technologies. Although some interesting research findings have appeared in the literature regarding the performance of SDN and NFV in the datacentre, most work only considers these technologies in isolation which hardly reflects their practical deployment and cannot capture interaction effects between these two technologies. In order to achieve a deeper understanding of next generation datacentre networks, a comprehensive analytical model is developed in this work to investigate the performance of a datacentre network in the presence of multiple NFV service chains and a virtualised SDN implementation. The end-to-end latency is derived based on the developed model with different network parameters. The accuracy of the proposed analytical model is validated by conducting comprehensive simulation experiments. To illustrate its application, the proposed model is used the study the performance limits of datacentre networks.
+Mobile Cloud Computing (MCC) is regarded as a promising method to extend the battery life, increase the data storage and enhance the processing power of mobile devices. The technologies, e.g. Software Defined Networking (SDN) and Network Function Virtualisation (NFV) have been deployed in MEC to simplify the network management and accelerate mobile service deployment. There have been some interesting research findings appeared in the literature regarding the performance of SDN and NFV in MCC, however most of the existing work only considers these technologies in isolation and pays little attention to their cooperative and complementary relations in practical deployments.  In order to achieve a deeper understanding of future MCC, a comprehensive analytical model is developed in this work to investigate the performance of MCC in the presence of both NFV service chains and SDN networks. The proposed model is capable of investigating the interactions between SDN and NFV when they share the same underlying physical infrastructure. The end-to-end latency is derived based on the developed model with different scales of service deployments and network configurations. Comprehensive simulation experiments are conducted and the results demonstrate that the proposed analytical model matches well with the simulation experiments. In addition, the proposed analytical model is used as a useful tool to investigate the impact of the centralised SDN control on the performance of the NFV traffic transmission. 
 \end{abstract}
 
 % no keywords
@@ -53,7 +51,7 @@ Consumer demand for better and faster online services requires datacentres to co
 
 \input{validation}
 
-\input{performance_analysis}
+% \input{performance_analysis}
 
 \input{conclusions}
 

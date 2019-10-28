@@ -1,178 +1,122 @@
 % !TeX root=main.tex
 
-\section{Analytical Model}
+\section{Analytical Model Derivation}
 \label{sec:analytical_model}
 
-In a datacentre each VNF, physical or virtual switch and the SDN controller contain a queue where packets are buffered before being processed. Subsequently the datacentre is modelled in the same way with each component modelled as an M/M/1 queue.
+In this section, we will present the methodology and approaches to derive the analytical model of SND and NFV enabled MCC datacenter. The model to be designed will be capable of analysing the end-to-end service performance with the coexistence of multiple NFVs, each of which will have different number of VNFs with respect to different MCC services. The impact of the centralised control of SDN controller on the end-to-end performance provisioning is also studied in the developed model. With the aim of increasing the readability of model derivation, we firstly consider the case of single NFV deployment scenario in the analytical derivation, then the simplified version will be extended to the scenario of multiple NFV service chains. 
 
-\subsection{Assumptions}
-For the derivation of the analytical model, the following assumptions are made with regards to the construction of the network:
+\subsubsection{Single NFV deployment Case}
 
-\begin{enumerate}
-\item At each VNF, packets are generated according to an independent Poisson process with a mean rate of $\alpha$ packets a cycle. Furthermore, packet destinations are uniformly distributed across the VNFs.
-\item Each physical/virtual switch, VNF and the controller services packets according to an independent Poisson process with a mean rate of $\mu_{sw}$, $\mu_{vnf}$ and $\mu_{sdn}$ packets a second respectively.
-\item The time taken for a packet to travel between datacentre components is negligible.
-\item The SDN controller ensures packets take one of the shortest paths between the source and destination and that packets are evenly distributed over the switches in the datacentre.
-\item Queues at each network component have infinite capacity.
-\item Packets leaving a server will visit the SDN controller with probability $p_{miss\_route}$.
-\end{enumerate}
-
-\subsection{Derivation of Model}
-Before extending the model to complex service chains we consider the base case where the datacentre provides only one service formed with a chain of two VNFs. Hence packets are only required to cross the network once. As a result of the network topology, packets sent between two VNFs only need to travel as high as their first common ancestor. As the packets will always take an efficient path, the average latency is dependant on the probability a packet must visit a certain layer switch and the waiting time incurred at each component on the path:
-
+According to the widely used Equal-Cost Multi-path Routing (ECMR) \cite{Chiesa} in datacenter network, the end-to-end latency is dependant on the probability that a packet will visit a certain layer of switches and the waiting times in each layer. The end-to-end latency can be written as, 
 \begin{equation} 
 \label{eq:mean_latency}
 \begin{split}
-L&atency_{path}(\alpha, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
-		&=(w_{vnf} + w_{vsw}) \cdot p_{vsw} \\
-		&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + w_{edge}) \cdot p_{edge} \\
-	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge} + w_{agg}) \cdot p_{agg} \\
-	 	&+ (w_{vnf} + w_{sdn} + 2w_{vsw} + 2w_{edge}  \\
-		& \qquad\qquad\qquad\quad + 2w_{agg} + w_{core})\cdot p_{core}
+{ L }_{ t }=\prod _{ i=0 }^{ 3 }{ { L }_{ i }({ \lambda  }_{ i },\mu _{ i }){ p }_{ i } } 
 \end{split}
 \end{equation}
 
-where $w_{vnf}$, $w_{sdn}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$ and $w_{core}$ represent the average time spent at a VNF, the SDN controller and virtual, edge, aggregate and core switches respectively. Similarly $p_{vsw}$, $p_{edge}$, $p_{agg}$ and $p_{core}$ represent the probability that the highest level switch a packet visits is a virtual, edge, aggregate or core switch respectively. We now deduce these values for arbitrary numbers of ports for the physical ($k$) and virtual ($k_{vsw}$) switches.
-
-\subsubsection{Probability of Highest Level}
-If the source and destination VNFs share the same virtual switch they will not need to visit a higher level switch. Hence the probability of a packet only visiting a virtual switch is the probability the destination is under the same virtual switch as the source:
-
+\noindent where ``$i=0$'' represents the virtual switch layer, and ``$i=1,2,3$'' denotes the edge, aggregation and core layers respectively. ${ L }_{ i }({ \lambda  }_{ i },\mu _{ i })$ denotes the end to end latency when the packets need to travel to the $i$th layer network switches. Similarly $p_i$ represent the probability that a packet could reach the $i$th layer switches. ${ L }_{ i }({ \lambda  }_{ i },\mu _{ i })$ is the sum of the latency the packets experience from VNF nodes to the $i$th layer switches, which can be calculated by, 
+\begin{equation}
+\label{eq:latency:path}
+\begin{split}
+{ L }_{ i }({ \lambda  }_{ i },\mu _{ i })={ w }_{ f }+\sum _{ j=0 }^{ i }{ { w }_{ j } } 
+\end{split}
+\end{equation}
+\noindent where $w_{f}$ is the processing latency within a VFN. $w_j$ is the latency at the $j$th layer of the switches. For the virtual switches, the latency, $w_0$, has two parts, the latency at the virtual switch and latency at the SDN controller. Therefore, $w_0=p_cw_c + (1-p_c)w_v$, where $p_c$ is the probability that a packet will be forward to SDN controller for the routing decision making. If the source and destination VNFs share the same virtual switch, the packets between two VNF will not visit a higher layer switch. Let the probability of a packet only visiting a virtual switch, $p_0$, denote is the probability that the source and destination VNFs are under the same virtual switch. $p_0$ can be calculated by 
 \begin{equation}
 \label{eq:p_vm}
-p_{vsw} = \frac{k_{vsw} - 1}{n - 1}
+p_{0} = \frac{k_{f} - 1}{n_v - 1}
 \end{equation}
-where $n$ denotes the total number of VMs in the datacenter.
+\noindent where $n_v$ denotes the total number of VMs in the datacenter.
 
-Whilst higher level switches cover more destinations, there may be shorter routes available to some of these destinations. The probability that the highest layer a packet visits is the edge layer is the probability the destination is under the same edge switch as the source, excluding those destinations that could be visited via a shorter route:
-
+Based on the topology of fat-tree structure, the higher layer a packet can reach means that the more destinations this packet could visit. If the switches that a packet visits is at edge layer, then the probability that the destination VNF is under the same edge switch can be calculated by excluding destinations that could be visited via a shorter path. In this case, the short path would be virtual switches. Therefore, $p_1$ can be derived from the following equation, 
 \begin{equation}
 \label{eq:p_edge}
-p_{edge} = \frac{(k/2) \cdot k_{vsw} - k_{vsw}}{n - 1}
+p_{1} = \frac{(k/2-1) \cdot k_{f}}{n_v - 1}
 \end{equation}
 
-This same principle can be used to deduce the probability of visiting the aggregate and core layers:
-
+Following the method of deriving $p_1$, the probability of visiting the aggregate and core layers can be calculated by,
 \begin{align}
 \label{eq:p_agg_core}
-&p_{agg} = \frac{(k/2)^2 \cdot k_{vsw} - (k/2) \cdot k_{vsw}}{n - 1} \\ \nonumber \\
-&p_{core} = \frac{n - (k/2)^2 \cdot k_{vsw}}{n - 1}
+&p_{ 2 }=\frac { (k/2-1)\cdot k\cdot k_{ f } }{ 2\cdot (n_{ v }-1) } \\ \nonumber \\
+&p_{3} = \frac{n_v - (k/2)^2 \cdot k_{f}}{n_v - 1}
 \end{align}
 
-Finally, as the SDN controller will only be consulted if the destination VNF is on a different server to the source VNF, the probability of a packet visiting the controller is the probability of the destination being outside of the server and the virtual switch being unable to process it:
-
+At the virtual switch, the SDN controller will only be consulted if the destination VNF is located in another physical server, and the packet does not match routing table of virtual switch in that server. Then, the probability that the packets will be sent to SDN controller for routing computation can be calculated by, 
 \begin{equation}
 \label{eq:p_sdn}
-p_{sdn} = (1 - p_{vsw}) \cdot p_{miss\_route}
+p_{c} = (1 - p_{0}) \cdot p_{m}
 \end{equation}
 
-\subsubsection{Calculation of Mean Waiting Time}
-As not every packet visits every layer but traffic is evenly distributed over the switches, the waiting time is the same at each component on a layer but can vary over layers. To determine the mean waiting time at each network component, each component is modelled as a M/M/1 queue where the mean waiting time is calculated with \cite{Kleinrock75}:
-
+After obtaining the probability that a packet will be processed at the different layers of switches and SDN controller. The following subsection derives the waiting time at each component of the routing path. According to \cite{Kleinrock75}, the waiting time for a M/M/1 queue is obtained by 
 \begin{equation}
-\label{eq:MM1_time_in_network}
-f_w(\mu, \lambda) = \frac{1}{\mu - \lambda}
+\label{eq:p_latency}
+w(\mu, \lambda) = \frac{1}{\mu - \lambda}
 \end{equation}
-
-where $\mu$ is the service rate and $\lambda$ is the arrival rate for a given component in the datacentre.
-
-As destinations are evenly distributed over the VNFs, each VNF will receive an equal proportion of packets from every other VNF. Hence the arrival rate for each VNF is $(n - 1) \cdot \frac{1}{n - 1} \cdot \alpha$ which can be simplified to: 
-
-\begin{equation}
-\label{eq:arr_vnf}
-\lambda_{vnf} = \alpha
-\end{equation}
-
-Virtual switches can receive packets from three sources. All packets generated by VNFs on the server must visit the virtual switch to reach any destination. Additionally, an equal portion of the traffic generated by VNFs on other servers will be intended for each of the VNFs under the virtual switch. Finally all of the traffic sent to the SDN controller must return to the virtual switch to reach higher level switches. Therefore the arrival rate at the virtual switch can be calculated as:
-
+where $\mu$ is the service rate and $\lambda$ is the arrival rate for a M/M/1 queue.  In the following, we aim to calculate the arrive rate at the VNFs, SDN controller and different layers of switches. As the destination VNFs are evenly distributed over the VNFs, each destination VNF will receive an equal proportion of packets from other VNF. Hence the traffic arrives at the destination VNF at the rate of $\lambda_f$. Virtual switches realise the communications among VMs, so virtual switches can receive packets from three sources: 1) packets generated by VNFs on the server that the virtual switch locates; 2) the traffic generated by the VNFs in the other servers; and 3) the packets feed back from the SDN controller. Then the arrival rate at the virtual switch can be calculated by,
 \begin{equation}
 \label{eq:arr_srv}
 \begin{split}
-\lambda_{vsw} &= k_{vsw} \cdot \alpha \\
-			  &+ (n - k_{vsw}) \cdot  \frac{k_{vsw}}{n - 1} \cdot \alpha \\
-			  &+ k_{vsw} \cdot p_{sdn} \cdot \alpha
+\lambda _{ 0 }={ \lambda  }_{ f }(1+\frac { n_v-k_{ v } }{ n_v-1 } +p_{ c })
 \end{split}
 \end{equation}
 
-Packets visiting the SDN controller do not affect the the arrival rate for higher level switches. While packets that are sent to the controller are not forwarded to higher level switches immediately, their absence is matched by packets returning from the SDN controller.
-
-The arrival rate for the edge switches can be deduced in a similar way. The edge switch has more VNFs under it than the virtual switch. However packets that are intended for destinations on the same server as the source VNF do not need to visit the edge switch. Considering this, the arrival rate at the edge switch can be calculated as:
-
+The arrival rate for the edge switches can be achieved similar to the virtual switch. It should be noticed that packets that are intended for destinations on the same server do not need to visit the edge switch. After a series of derivation, the arrival rate at the edge switch can be calculated by,
 \begin{equation}
 \label{eq:arr_edge}
 \begin{split}
-\lambda_{edge} &= (k/2) \cdot k_{vsw} \cdot \frac{(n - k_{vsw})}{n - 1} \cdot \alpha \\
-			   &+ (n - ((k/2) \cdot k_{vsw}) \cdot \frac{(k/2) \cdot k_{vsw}}{n - 1} \cdot \alpha 
+\lambda _{1}=\frac { { \lambda  }_{ f }\cdot k\cdot k_{ v } }{ 2(n_v-1) } (n_v-k_{ v }+\frac { (2n_v-k)\cdot k_{ v } }{ 2 } )
 \end{split}
 \end{equation}
 
-Similarily, the aggregate switch allows access to more destinations than the edge switch. However destinations that share an edge switch with the source VNF can be visited in a more efficient manner. Additionally all traffic will be balanced between each aggregate switch in the pod. The arrival rate at the aggregate switch is hence:
-
+According to the MCMR routing protocol in the datacenter network, the traffic will be balanced among aggregate switch in a pod. And the VNFs sharing the same virtual or edge switches will not reach the aggregation switches. Then arrival rate at the aggregate switch can be computed by,
 \begin{equation}
 \label{eq:arr_agg}
 \begin{split}
-\lambda_{agg} &= \Big((k/2)^2 \cdot k_{vsw} \cdot \frac{(n - k_{vsw} \cdot (k/2))}{n - 1} \cdot \alpha\\
-			  &+ (n - (k/2)^2 \cdot k_{vsw}) \cdot \frac{(k/2)^2 \cdot k_{vsw}}{n - 1} \cdot \alpha\Big) \cdot \frac{1}{k/2}
+\lambda _{ 2 }=\frac { { \lambda  }_{ f }\cdot k\cdot k_{ v } }{ 2({ n }_{ v }-1) } \left( 2{ n }_{ v }-\frac { k }{ 2 } \left( k_{ v }-\frac { k\cdot k_{ v } }{ 2 }  \right)  \right) 
 \end{split}
 \end{equation}
 
-As all VNFs are under each of the core switches the arrival rate at each core switch is the portion of traffic that must visit a core switch, split evenly between each of the core switches. Therefore the arrival rate at the core switch is:
-
+As all VNFs are connected by the core switches, the arrival rate at each core switch is the portion of traffic that their destination VNFs cannot be reached by edge or aggregation switches. Based on MCMR protocol, the traffic leaving the aggregation layer will be evenly split among different core switches. Therefore the arrival rate at the core switch is calculated by, 
 \begin{equation}
 \label{eq:arr_core}
-\lambda_{core} = p_{core} \cdot n \cdot \alpha \frac{1}{(k / 2)^2}
+\lambda _{ 3 }=\frac { { \lambda  }_{ f }\cdot p_{ o }\cdot { n }_{ v } }{ (k/2)^{ 2 } } 
 \end{equation}
 
-Finally, all VNFs will send a portion of the messages they produce to the controller. Therefore, the arrival rate at the SDN controller is:
-
+Finally, let us calculate the traffic rate for the SDN controller. It can be observed that the packets visiting the SDN controller do not change the arrival rate of higher level switches, e.g. edge or aggregation switches; and a portion of the traffic in the virtual switch will be sent to SDN controller for routing decision making. Given the number of the virtual switch ($n_v = k^2$), then the arrival rate at the SDN controller is computed by, 
 \begin{equation}
 \label{eq:arr_sdn}
-\lambda_{sdn} = n \cdot p_{sdn} \cdot \alpha
+\lambda _{ c }={ \lambda  }_{ f }\cdot p_{ c }\cdot { n }_{ v }
 \end{equation}
 
-By substituting the arrival rates (Equations \ref{eq:arr_vnf} to \ref{eq:arr_core}) and service rates ($\mu_{sw}, \mu_{vnf}, \mu_{sdn}$) of each network component into $f_w(\mu, \lambda)$ we can calculate the average waiting time at each VNF and switch: $w_{vnf}$, $w_{vsw}$, $w_{edge}$, $w_{agg}$, $w_{core}$.
+By substituting the arrival rates (Eqs. \ref{eq:arr_edge} to \ref{eq:arr_core}) and service rates of each network component into M/M/1 latency equation, we can obtain the average waiting time at VNF, and different layers of switches. To calculate the latency caused by the round-trip between virtual switches and SDN controller, two latency components should be considered, the latency in the SDN controller and the latency in the virtual switch when the packet return back from the SDN controller. So, the additional latency caused by the SDN controller could be calculated by $w_{ d }={ w }_{ c }+w_{ v }$. Through taking the probabilities of the different paths and the mean waiting time into Eq. (\ref{eq:mean_latency}), we could obtain the end to end latency for the single VNF deployment scenario. 
 
-A visit to the SDN controller requires waiting at two queues. When a packet is sent to the controller it will first wait at the controller and then at a virtual switch when it returns. The additional waiting time incurred by the SDN controller is therefore:
+\subsubsection{Multiple NFV Deployment Case} \label{multiple}
+Although there are several researches investigating the performance of NFV, existing research only considered the case of a single NFV service deployment, paying little attention to the multiple NFV deployment. Given the fact that datacenter infrastructure is always used to simultaneously support multiple services, it is necessary to investigate the performance of SND and NFV enabled datacenter network with the different scale of service deployment. In this subsection, we will extend the simplified NFV deployment scenario into multiple NFV case. 
 
+Let $N_s$ denote the number of NFV services deployed in datacenter and $K_i$ represent the length of $i$th service. Along the NFV chain, the packets will visit each VNF in sequence before arriving at the end VNF. So the VFN receives the traffic forwarded from the previous VNF, and produces and send the new packets to the next VNF. Therefore, each VNF except the last one would receive and generate packets simultaneously. From the perspective of the network transmission, the network infrastructure will receive the packets from $K_i-1$ VNFs for the $i$th service and the effective network traffic rate that $i$th service chain generates can be written as $\lambda_{i,f}^{e} = \lambda_{i,f} \cdot (K_i - 1)$, where $\lambda_{i,f}$ is the traffic rate of the $i$th service and the $\lambda_{i,f}^e$ is the effective traffic rate that the network infrastructure receives. In the abstracted analytical model, different network service would have different length of the service chain. In addition, the end-to-end latency a packet persisted in the network is dependent on both the type and service chain length of the network services. As NFV services are independent with each other, let $p_{i,s}$ denote the probability that a packet network device receives is from the $i$th service.
+The effective network traffic the network infrastructure receives could be obtained by 
 \begin{equation}
-\label{eq:wait_sdn}
-w_{sdn} = (f_w(\mu_{sdn}, \lambda_{sdn}) + w_{vsw}) \cdot p_{sdn}
+\label{eq:multip}
+\lambda _{ f }^{ e }=\sum _{ i=1 }^{ { N }_{ s } }{p_{i,s} \cdot \lambda _{ i,f }\cdot (K_{ i }-1) }
 \end{equation}
 
-By substituting the probabilities of the different paths and the mean waiting times at each component into Equation \ref{eq:mean_latency}, we can determine the average latency in the network for the case of a single pass through the network.
+Similar to the single NFV deployment case, the end-to-end latency will be the probabilistic sum of the time spent taking each path. By inserting the effective traffic rate in Eq. (\ref{eq:multip}) in to Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn}), we could calculate the effective network traffic in each network layer. Given the service rates $\mu_v$, $\mu_e$, $\mu_a$, and $\mu_s$, the latency, $w_j$ could be obtained for different network layer. After calculating the probability that a packet visits a certain network layer, the end-to-end latency can be calculated by Eqs. (\ref{latency:path}) and (\ref{eq:mean_latency}). 
+For convenience, pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}.
 
-\subsubsection{Multiple NFV Services with Different Length Chains}
-Existing research into NFV modelling has only considered the case of a single service requiring a single pass through the network. However in practice, datacentres may provide several services with different length service chains.
+\begin{algorithm}
 
-An important consequence of longer service chains is each packet persisting in the network for a longer period of time. Consider a situation where each VNF deterministically sends a packet to an adjacent VNF every second. Consider also that we have a service chains with three network functions so that packets will be required to cross the network twice. After one second all VNFs will have sent and received one packet. After two seconds all VNFs will have sent two packets, forwarding the packet received in the previous step and a new packet. It will have also received two packets, a packet with no VNFs left to visit and a packet with one VNF remaining. Every subsequent second one packet will be destroyed having completed the service, leaving one packet to be forwarded and one new packet created for each VNF. Effectively, each VNF is producing two packets per second on average.
+\caption{Calculation of Average Latency of SND and NFV-enabled MCC Datacenter Networks}
+\label{alg:avg_latency_final}
 
-We can extend this intuition to arbitrary length services. The longer the service grows, the longer messages will persist in the network leading to higher effective production rates. Following this intuition, the effective production rate for an arbitrary length service is:
-
-\begin{equation}
-\label{eq:alpha_eff_single}
-\alpha_{eff} = \alpha \cdot (len(service_i) - 1)
-\end{equation}
-
-where $len$ is the number of network functions that compose a given service and $service_i$ is the service being modelled.
-
-Furthermore, if several services of different lengths were supported by the network, the average time a packet persisted in the network is dependent on the average service chain length. As not all services may produce packets at the same rate, if a given packet has probability $p(service_i)$ of belonging to $service_i$, the expected service length determines the effective production rate:
-
-\begin{equation}
-\label{eq:alpha_eff}
-\alpha_{eff} = \alpha \cdot \sum_{i=1}^{ns} p(service_i) (len(service_i) - 1)
-\end{equation}
-
-where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(service_i) = 1$.
-
-The network must be crossed to visit each VNF in the service chain. The end-to-end latency will be the sum of the time spent taking each path. Using the derivation for the case of a single crossing of the network, the average latency for multiple services with variable length service chains is given by:
-
-\begin{equation}
-\label{eq:latency_eff}
-\begin{split}
-Latency = & Latency_{path}(\alpha_{eff}, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
-			  &\cdot \sum_{i=1}^{ns} p(service_i) (len(service_i) - 1)
-\end{split}
-\end{equation}
-
-where $Latency_{pass}$ is given by Equation \ref{eq:mean_latency} and $\alpha_{eff}$ is given by Equation \ref{eq:alpha_eff}.
-
-\vspace{0mm} % Adds a new line
+\begin{algorithmic}[1]
+%\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+%\REQUIRE $\alpha$, $k$, $k_{vm}$, $\mu_{sw/vnf/sdn}$, $p_{miss\_route}$, $p(service_i)$ 
+\STATE Calculate the effective network traffic: $\lambda_f^e$ \hfill(\textit{Eq. (\ref{eq:multip})})
+\STATE Calculate the traffic rates: $\lambda_i$ \hfill(\textit{Eqs. (\ref{eq:p_srv}-\ref{sdn})})
+\STATE Calculate the probability: $p_i$ \hfill(\textit{Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn})})
+\STATE Calculate the waiting time: $w_j$ and $w_f$ \hfill(\textit{Eq. (\ref{eq:p_latency})})
+\STATE Calculate the latency for the $i$th path: $L_i$ \hfill (\textit{Eq. (\ref{eq:latency:path})})
+\STATE Calculate the latency for the end to end transmission: $L_t$ \hfill (\textit{Eq. (\ref{eq:mean_latency})})
+\end{algorithmic}
+\end{algorithm}

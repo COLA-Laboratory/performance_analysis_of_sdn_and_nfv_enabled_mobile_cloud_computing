@@ -2,45 +2,6 @@
 
 \section{Network Architecture}
 \label{sec:preliminaries}
-With NFV a service is provided by forming several virtual network functions into a service chain where packets must pass through each of the VNFs in sequence. Service chains can be represented with Directed Acyclic Graphs (DAG), as in Figure \ref{fig:dag_nfv}, which encapsulate the dependencies between the VNFs. Different service chains may be composed of different numbers and types of VNF. Additionally many services may be provided by the datacentre simultaneously.
-
-\begin{figure}
-
-\centering
-
-\begin{tikzpicture}[
-vnf/.style={rectangle, draw=black, fill=white, minimum size = 8mm, node distance=4mm and 14mm},]
-
-\node[vnf] (S1_A) 				  {A};
-\node[vnf] (S1_B) [right=of S1_A] {B};
-\node[vnf] (S1_C) [right=of S1_B] {C};
-\node[node distance = 4mm] [left=of S1_A]  {i)};
-
-\draw[->] (S1_A.east) -- (S1_B.west);
-\draw[->] (S1_B.east) -- (S1_C.west);
-
-\node[vnf] (S2_A) [below=of S1_A] {A};
-\node[vnf] (S2_B) [right=of S2_A] {B};
-\node[vnf] (S2_C) [right=of S2_B] {C};
-\node[vnf] (S2_D) [right=of S2_C] {D};
-\node[node distance = 4mm] [left=of S2_A]  {ii)};
-
-\draw[->] (S2_A.east) -- (S2_B.west);
-\draw[->] (S2_B.east) -- (S2_C.west);
-\draw[->] (S2_C.east) -- (S2_D.west);
-
-\end{tikzpicture}
-
-\caption{Two service chains of different lengths represented with directed acyclic graphs. Packets must pass through each VNF in sequence. These and other services may exist in the network at the same time}
-\label{fig:dag_nfv}
-
-\end{figure}
-
-Service chains may be physically distributed over the datacentre. Communication between servers in the datacentre is provided by the interconnection network. The fat-tree or folded-Clos topology is currently the most common topology used for interconnection networks in datacentres \cite{Cisco18}. The fat-tree topology (see Figure \ref{fig:network_topology}) is formed of three layers of switches: Core, Aggregation and Edge. Switches at the edge layer are additionally connected to servers. In an NFV enabled datacentre each of these servers contains a virtual switch which manages one or more VNFs.
-
-The fat-tree topology is dependent upon the number of ports at each switch. We define $k$ as the number of ports for each physical switch and $k_{vsw}$ as the number of ports for each virtual switch. There are $(k/2)^2$ core switches. Each core switch connects to one switch in each of $k$ pods. Each pod contains two layers (aggregation and edge) of $k/2$ switches. Each edge switch is connected to each of the $k/2$ aggregation switches of the pod. Each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{vsw}$ VNFs. This topology results in $n=(k^3/4) \cdot k_{vsw}$ VNFs.
-
-In an SDN enabled datacentre an SDN controller provides centralised management, instructing the switches how to direct traffic to ensure it takes an efficient route to its destination. Each SDN enabled switch has a flow table maintained by the controller containing instructions on where to send received packets. This table may not be large enough to contain instructions for all possible destinations. If the local switch receives a packet that it does not have matching instructions for, it must request instructions from the controller. As a result a portion of the packets in the datacentre visit the controller. For this work we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX software \cite{VMW18}.
 
 \begin{figure}
 
@@ -228,3 +189,11 @@ vm/.style={rectangle, draw=black, fill=black},
 \label{fig:network_topology}
 
 \end{figure}
+
+Based on the general working mechanism of SDN and NFV technologies \cite{8424018}, a network architecture is abstracted in this study as shown in Fig. \ref{fig:network_topology}, where multiple NFV chains are deployed and linked by a virtualised SDN implementation. With NFV deployment, a MCC service is provided in the form of a service chain which is formed by several VNFs. The packets of MCC devices pass through each of the VNFs in sequence.  In the abstracted network architecture, multiple NFV chains can coexist and different NFV service chains have different numbers of VNFs, each of which has different packet processing capability. 
+
+When a MCC service is launched in the cloud datacenter, the cloud management orchestrator or manager analyses the performance and functional requirements, and initiate VNFs in the underlying virtualised server. Once the VNFs are deployed, the cloud management orchestrator coupled with SDN controller link the individual VNFs to form an NFV service chain to provide MCC service for end devices. During this process, SDN controller is responsible for configuring the routing table of the underlying network switches, collecting the related service parameters, and sending the collected data to cloud management orchestrator for service optimisation. Each SDN enabled switch has a flow table containing instructions on how to route the received packets. Due to the physical storage limitation, it is impossible to store the instructions for all possible destinations. Therefore, once the local switch receives a packet that doesnot match routing table, a request will be sent from switch to the controller to consult on how to process the received package. After a series of computation, SDN controller responses this request for further process. Within the abstracted network architecture, we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX solution \cite{VMW18}.
+
+According to \cite{Cisco18}, the network topology that supports the communication among different architecture components, e.g. VNFs and SND controller, is mainly based on a fat-tree structure, which is formed by three layers of switches, core, aggregation and edge switches. In the most of the modern datacenter, the switches at the edge layer are connected to Top-of-Rack (ToR) switches, and the VNFs are hosted in the VMs or containers of datacenter servers. As shown in Fig. \ref{fig:network_topology}, the fat-tree topology is defined by the number of ports at each switch. Let $k$ denote the number of ports for each physical switch and $k_{v}$ be the number of ports for each virtual switch. Each core switch connects to the switch of the pod, which contains two layers of switches, aggregation and edge respectively. Within the pod, edge switches are fully connected to aggregation switches. In addition, each edge switch is connected to $k/2$ servers. Each server contains a virtual switch connected to $k_{v}$ VNFs. Based on the connection relationship between core, aggregation, edge, virtual switches, and VNFs, a three layer $k$ pot fat-tree topology has $(k/2)^2$ core switches, $k$ pod, $k^2/2$ aggregation switches, $k^2/2$ edge switches, $k^2$ virtual switches, and $(k^3/4) \cdot k_{v}$ VNFs.
+
+Following the work of SDN and NFV performance analysis in \cite{LongoDBS15}\cite{GebertZLST16}\cite{8624508}, it is assumed that packets coming from different MCC users will be independent from each other and service time of processing a packet is also independent on earlier packets. Hence the arrival and service rates of packets in this study follow independent probability distributions. For each NFV chain, the traffic entering the MCC datacenter follows an independent Poisson process with a mean rate of $\lambda$ packets per second. Each physical/virtual node, e.g. switch, VNF and the controller, provide the services for the coming packets according to an independent Poisson process with service rates of $\mu_{s}$, $\mu_{v}$ and $\mu_{c}$ packets per second respectively. If a packet fails to match the routing table in the SDN-enabled virtual switches, the information of this packet will be forward to SDN controller for further processing. Let $p_m$ denote the probability of there is no routing entry for the incoming packet. 
