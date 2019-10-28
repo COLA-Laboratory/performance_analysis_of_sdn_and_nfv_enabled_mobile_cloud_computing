@@ -194,51 +194,22 @@ The effective network traffic the network infrastructure receives could be obtai
 \lambda _{ f }^{ e }=\sum _{ i=1 }^{ { N }_{ s } }{p_{i,s} \cdot \lambda _{ i,f }\cdot (K_{ i }-1) }
 \end{equation}
 
-<<<<<<< HEAD
 Similar to the single NFV deployment case, the end-to-end latency will be the probabilistic sum of the time spent taking each path. By inserting the effective traffic rate in Eq. (\ref{eq:multip}) in to Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn}), we could calculate the effective network traffic in each network layer. Given the service rates $\mu_v$, $\mu_e$, $\mu_a$, and $\mu_s$, the latency, $w_j$ could be obtained for different network layer. After calculating the probability that a packet visits a certain network layer, the end-to-end latency can be calculated by Eqs. (\ref{latency:path}) and (\ref{eq:mean_latency}). 
 For convenience, pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}.
 
 \begin{algorithm}
 
 \caption{Calculation of Average Latency of SND and NFV-enabled MCC Datacenter Networks}
-=======
-\noindent where $ns$ is the number of different services and $\sum_{i=1}^{ns} p(service_i) = 1$.
-
-The network must be crossed to visit each VNF in the service chain. The end-to-end latency will be the sum of the time spent taking each path. Using the derivation for the case of a single crossing of the network, the average latency for multiple services with variable length service chains is given by:
-
-\begin{equation}
-\label{eq:latency_eff}
-\begin{split}
-Latency = & Latency_{path}(\alpha_{eff}, \mu_{sw}, \mu_{vnf}, \mu_{sdn}) \\
-			  &\cdot \sum_{i=1}^{ns} p(service_i) (len(service_i) - 1)
-\end{split}
-\end{equation}
-
-\noindent where $Latency_{path}$ is given by Equation \ref{eq:mean_latency} and $\alpha_{eff}$ is given by Equation \ref{eq:alpha_eff}. For convenience, pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}.
-
-\begin{algorithm}
-
-\caption{Calculation of Average Latency}
->>>>>>> 8f5fd6adf585f1740152b2764957518d26a39aeb
 \label{alg:avg_latency_final}
 
 \begin{algorithmic}[1]
 %\renewcommand{\algorithmicrequire}{\textbf{Input:}}
 %\REQUIRE $\alpha$, $k$, $k_{vm}$, $\mu_{sw/vnf/sdn}$, $p_{miss\_route}$, $p(service_i)$ 
-<<<<<<< HEAD
 \STATE Calculate the effective network traffic: $\lambda_f^e$ \hfill(\textit{Eq. (\ref{eq:multip})})
 \STATE Calculate the traffic rates: $\lambda_i$ \hfill(\textit{Eqs. (\ref{eq:p_srv}-\ref{sdn})})
 \STATE Calculate the probability: $p_i$ \hfill(\textit{Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn})})
 \STATE Calculate the waiting time: $w_j$ and $w_f$ \hfill(\textit{Eq. (\ref{eq:p_latency})})
 \STATE Calculate the latency for the $i$th path: $L_i$ \hfill (\textit{Eq. (\ref{eq:latency:path})})
 \STATE Calculate the latency for the end to end transmission: $L_t$ \hfill (\textit{Eq. (\ref{eq:mean_latency})})
-=======
-\STATE Calculate $p_{vsw/edge/agg/core/sdn}$ \hfill(\textit{Eqs. \ref{eq:p_vm} - \ref{eq:p_sdn}})
-\STATE Calculate $\lambda_{vnf/vsw/edge/agg/core/sdn}$ \hfill(\textit{Eqs. \ref{eq:arr_vnf} - \ref{eq:arr_sdn}})
-\STATE Calculate $w_{vnf/vsw/edge/agg/core/sdn}$\hfill(\textit{Eqs. \ref{eq:mean_latency}, \ref{eq:wait_sdn}})
-\STATE Calculate effective prod. rate: $\alpha_{eff}$ \hfill(\textit{Eqs. \ref{eq:alpha_eff}})
-\STATE Calculate one path latency: $Latency_{path}$ \hfill (\textit{Eqs. \ref{eq:mean_latency}})
-\STATE Calculate average latency: $Latency$ \hfill (\textit{Eqs. \ref{eq:latency_eff}})
->>>>>>> 8f5fd6adf585f1740152b2764957518d26a39aeb
 \end{algorithmic}
 \end{algorithm}
