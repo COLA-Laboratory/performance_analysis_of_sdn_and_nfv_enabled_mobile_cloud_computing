@@ -3,7 +3,7 @@ global k; global k_vm; global p_sdn; global prob_services; global vnf_chains;
 global init_prod_rate; global srv_vm; global srv_server; global srv_tor;
 global srv_agg; global srv_core; global srv_sdn;
 
-root_dir = '~/Projects/NFV_FatTree/out/data';
+root_dir = '/media/joebillingsley/Data//projects/NFV_FatTree/out/data';
 
 %% Test
 reset();
