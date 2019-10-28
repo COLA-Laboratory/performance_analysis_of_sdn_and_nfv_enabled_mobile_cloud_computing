@@ -1,0 +1,29 @@
+\section{Performance Analysis}
+\label{sec:performance}
+Having validated its accuracy, the analytical model can now be used to deduce properties of SDN and NFV enabled networks. In particular it is useful to determine which layer will receive the most traffic so as to identify likely bottlenecks. We first determine the proportion of traffic the edge switch receives compared to the other switches and simplify the resulting expression:
+
+\begin{equation}
+\frac{\lambda_{edge}}{\lambda_{agg}} = \frac{1 - \frac{1}{k^3}(k + 2)}{1 - \frac{1}{k^3}(k + \frac{k}{2})} \geq 1
+\end{equation}
+
+\begin{equation}
+\frac{\lambda_{edge}}{\lambda_{core}} = \frac{1 - \frac{1}{k^3}(k + 2)}{1 - \frac{1}{k^3}(k^2)} \geq 1
+\end{equation}
+
+These equations show that the edge switches receives more traffic than the aggregate and core switches when the number of ports $k > 2$.
+
+Similarily from the definition of the arrival rates for the edge switches (Equation \ref{eq:arr_edge}) and the VNFs (Equation \ref{eq:arr_vnf}) it is clear that edge switches will also receive more traffic than the VNFs.
+
+The portion of traffic that visits the SDN controller is dependent on the parameter $p_{miss\_route}$. The minimum value of $p_{miss\_route}$ that will cause the SDN controller to receive a higher traffic rate than the edge switches can be found when $\lambda_{sdn} = \lambda_{edge}$. Rearranging and simplifying the equation gives:
+
+\begin{equation}
+p_{req\_sdn\_miss} = \frac{k_{vsw} \cdot k \cdot (1 - \frac{1}{k^3}(k + 2))}{1 - \frac{k_{vsw} - 1}{n - 1}}
+\end{equation}
+
+$p_{req\_sdn\_miss} > 1$ indicates that there is no setting of $p_{miss\_route}$ which can cause the SDN controller to receive more traffic than an edge switch.
+
+The same technique can be used to calculate the minimum value of $p_{miss\_route} > 1$ for a virtual switch to receive more traffic than an edge switch. 
+
+\begin{equation}
+p_{req\_vsw\_miss} = \frac{k}{n-k_{vsw}}\cdot\bigg(n-k_{vsw}\bigg(\frac{k}{4} + \frac{1}{2}\bigg)\bigg) - 2
+\end{equation}
