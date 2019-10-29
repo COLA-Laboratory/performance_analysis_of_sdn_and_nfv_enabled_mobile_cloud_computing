@@ -5,14 +5,14 @@
 
 	\begin{minipage}[b]{.49\textwidth}
 		\includegraphics[width=\linewidth]{graphs/diff_lengths}
-		\caption{Latency predicted by the model and simulation for a single service with different lengths, $K_i$.}
+		\caption{Latency predicted by the model and simulation for a single service with different lengths ($N_s=1$, $K_i={3,5,7,9}$, $k=4$, $k_v =2$, $p_m=0$).}
 		\label{fig:length_chain}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{.49\textwidth}
 		\includegraphics[width=\linewidth]{graphs/mult_services}
-		\caption{Latency predicted by the model and simulation for several services ($N_s$)
-			with different length service chains, $K_i = 2:(N_s+1)$.}
+		\caption{Latency predicted by the model and simulation for several services
+		with different length service chains ($N_s={1,3,5}$, $K_i=2:(N_s+1)$, $k=4$, $k_v=2$, $p_m=0$).}
 		\label{fig:mult_services}
 	\end{minipage}
 
@@ -20,15 +20,16 @@
 
 	\centering
 	\begin{minipage}[b]{.49\textwidth}
-		\includegraphics[width=\linewidth]{graphs/num_ports}
+		% \includegraphics[width=\linewidth]{graphs/num_ports}
+		\includegraphics[width=\linewidth]{graphs/diff_lengths}
 		\caption{Latency predicted by the model and simulation for different numbers
-			of ports, $k$.}
+		of ports ($N_s=1$, $K_i=2$, $k={4,6,8}$, $k_v=2$, $p_m=0$).}
 		\label{fig:num_ports}
 	\end{minipage}
 	\hfill
 	\begin{minipage}[b]{.49\textwidth}
 		\includegraphics[width=\linewidth]{graphs/diff_sdn}
-		\caption{Latency predicted by the model and simulation for different miss rates, $p_{m}$.}
+		\caption{Latency predicted by the model and simulation for different miss rates ($N_s=1$, $K_i=2$, $k=4$, $k_v=2$, $p_m={0.1,0.5,1.0}$).}
 		\label{fig:sdn_perc}
 	\end{minipage}
 
