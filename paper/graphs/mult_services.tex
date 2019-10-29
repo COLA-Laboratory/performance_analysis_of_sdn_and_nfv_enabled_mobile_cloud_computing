@@ -6,8 +6,8 @@
 \pagestyle{empty}
 
 \pgfplotsset{every axis/.append style={
-			xlabel=$\lambda$ (packets/second),
-			ylabel = {Latency (seconds)},
+			xlabel = Total Arrival Rate,
+			ylabel = Latency,
 			thick,
 			line width = 1pt,
 			tick style = {line width = 0.8pt},
@@ -27,13 +27,13 @@
 			legend style={font=\small},
 		]
 
-		\addplot [blue, only marks, mark = x, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_1.out};
+		\addplot [blue, only marks, mark = o, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_1.out};
 		\addplot [blue, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_1.out};
 
-		\addplot [red, only marks, mark = star, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_2.out};
+		\addplot [red, only marks, mark = triangle, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_2.out};
 		\addplot [red, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_2.out};
 
-		\addplot [black, only marks, mark = asterisk, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_4.out};
+		\addplot [black, only marks, mark = square, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_4.out};
 		\addplot [black, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_4.out};
 
 	\end{axis}
