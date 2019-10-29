@@ -5,192 +5,197 @@
 
 \begin{figure}
 
-\centering
+    \centering
 
-\begin{tikzpicture}[
-every node/.style={node distance=6mm and 1mm},
-server/.style={rectangle, draw=black, fill=black, node distance=10mm and 1mm},
-edge/.style={rectangle, draw=black, fill=black},
-agg/.style={rectangle, draw=black, fill=black},
-core/.style={rectangle, draw=black, fill=black},
-sdn/.style={rectangle, draw=black, fill=black,node distance=10mm and 1mm},
-vm/.style={rectangle, draw=black, fill=black},
-]
+    \begin{tikzpicture}[
+            every node/.style={node distance=6mm and 1mm},
+            server/.style={rectangle, draw=black, fill=black, node distance=10mm and 1mm},
+            edge/.style={rectangle, draw=black, fill=black},
+            agg/.style={rectangle, draw=black, fill=black},
+            core/.style={rectangle, draw=black, fill=black},
+            sdn/.style={rectangle, draw=black, fill=black,node distance=10mm and 1mm},
+            vm/.style={rectangle, draw=black, fill=black},
+        ]
 
-% Servers
-\node[server]      (S1)                       {};
-\node[server]      (S2)        [right=of S1]  {};
-\node[server]      (S3)        [right=of S2]  {};
-\node[server]      (S4)        [right=of S3]  {};
-\node[server]      (S5)        [right=of S4]  {};
-\node[server]      (S6)        [right=of S5]  {};
-\node[server]      (S7)        [right=of S6]  {};
-\node[server]      (S8)        [right=of S7]  {};
-\node[server]      (S9)        [right=of S8]  {};
-\node[server]      (S10)       [right=of S9]  {};
-\node[server]      (S11)       [right=of S10] {};
-\node[server]      (S12)       [right=of S11] {};
-\node[server]      (S13)       [right=of S12] {};
-\node[server]      (S14)       [right=of S13] {};
-\node[server]      (S15)       [right=of S14] {};
-\node[server]      (S16)       [right=of S15] {};
+        % Servers
+        \node[server]      (S1)                       {};
+        \node[server]      (S2)        [right=of S1]  {};
+        \node[server]      (S3)        [right=of S2]  {};
+        \node[server]      (S4)        [right=of S3]  {};
+        \node[server]      (S5)        [right=of S4]  {};
+        \node[server]      (S6)        [right=of S5]  {};
+        \node[server]      (S7)        [right=of S6]  {};
+        \node[server]      (S8)        [right=of S7]  {};
+        \node[server]      (S9)        [right=of S8]  {};
+        \node[server]      (S10)       [right=of S9]  {};
+        \node[server]      (S11)       [right=of S10] {};
+        \node[server]      (S12)       [right=of S11] {};
+        \node[server]      (S13)       [right=of S12] {};
+        \node[server]      (S14)       [right=of S13] {};
+        \node[server]      (S15)       [right=of S14] {};
+        \node[server]      (S16)       [right=of S15] {};
 
-\node[text width=2cm] at (-1.4, 0)  {SDN Enabled V.Switches};
+        \node[text width=2cm] at (-1.4, 0)  {\small V.Switches};
 
-% VMs
-\node[vm]      (V1)        [below=of S1]  {};
-\node[vm]      (V2)        [below=of S1, left=of V1]  {};
-\node[vm]      (V3)        [below=of S1, right=of V1]  {};
+        % VMs
+        \node[vm]      (V1)        [below=of S1]  {};
+        \node[vm]      (V2)        [below=of S1, left=of V1]  {};
+        \node[vm]      (V3)        [below=of S1, right=of V1]  {};
 
-\node[vm]      (V4)        [below=of S8]  {};
-\node[vm]      (V5)        [below=of S8, left=of V4]  {};
-\node[vm]      (V6)        [below=of S8, right=of V4]  {};
+        \node[vm]      (V4)        [below=of S8]  {};
+        \node[vm]      (V5)        [below=of S8, left=of V4]  {};
+        \node[vm]      (V6)        [below=of S8, right=of V4]  {};
 
-\node[vm]      (V7)        [below=of S15]  {};
-\node[vm]      (V8)        [below=of S15, left=of V7]  {};
-\node[vm]      (V9)        [below=of S15, right=of V7]  {};
+        \node[vm]      (V7)        [below=of S15]  {};
+        \node[vm]      (V8)        [below=of S15, left=of V7]  {};
+        \node[vm]      (V9)        [below=of S15, right=of V7]  {};
 
-\node[text width=0.8cm] at (-2, -.86)  {VNFs};
-\node [between=V1 and V4] {\large ...};
-\node [between=V6 and V7] {\large ...};
+        \node[text width=0.8cm] at (-2, -.86)  {\small VNFs};
+        \node [between=V1 and V4] {\large ...};
+        \node [between=V6 and V7] {\large ...};
 
-% SDN Controller
-\node[text width=2cm] at (-1.4, 1.2)  {SDN Controller};
-\node[sdn]      (SC1)      	 [above left=of S1] {};
+        % SDN Controller
+        \node[text width=2cm] at (-1.4, 1.2)  {\small Controller};
+        \node[sdn]      (SC1)      	 [above left=of S1] {};
 
-% Edge/ToR
-% This weird hack stops Tikz from placing the points at the same level as the SDN Controller
-%\node[bug_example]      (test)      [above=of SC1, between=S15 and S16] {};
+        % Edge/ToR
+        % This weird hack stops Tikz from placing the points at the same level as the SDN Controller
+        %\node[bug_example]      (test)      [above=of SC1, between=S15 and S16] {};
 
-\node[text width=0.8cm] at (-2, 2.15)  {Edge};
-\node[] 		 (H1) 		 [above=of SC1] {};
-\node[] 		 (H2) 		 [between=S1 and S2] {};
-\node[] 		 (H3) 		 [between=S3 and S4] {};
-\node[] 		 (H4) 		 [between=S5 and S6] {};
-\node[] 		 (H5) 		 [between=S7 and S8] {};
-\node[] 		 (H6) 		 [between=S9 and S10] {};
-\node[] 		 (H7) 		 [between=S11 and S12] {};
-\node[] 		 (H8) 		 [between=S13 and S14] {};
-\node[] 		 (H9) 		 [between=S15 and S16] {};
+        \node[text width=0.8cm] at (-2, 2.15)  {\small Edge};
+        \node[] 		 (H1) 		 [above=of SC1] {};
+        \node[] 		 (H2) 		 [between=S1 and S2] {};
+        \node[] 		 (H3) 		 [between=S3 and S4] {};
+        \node[] 		 (H4) 		 [between=S5 and S6] {};
+        \node[] 		 (H5) 		 [between=S7 and S8] {};
+        \node[] 		 (H6) 		 [between=S9 and S10] {};
+        \node[] 		 (H7) 		 [between=S11 and S12] {};
+        \node[] 		 (H8) 		 [between=S13 and S14] {};
+        \node[] 		 (H9) 		 [between=S15 and S16] {};
 
-\node[edge]      (E1)        [at = (H1 -| H2)] {};
-\node[edge]      (E2)        [at = (H1 -| H3)] {};
-\node[edge]      (E3)        [at = (H1 -| H4)] {};
-\node[edge]      (E4)        [at = (H1 -| H5)] {};
-\node[edge]      (E5)        [at = (H1 -| H6)] {};
-\node[edge]      (E6)        [at = (H1 -| H7)] {};
-\node[edge]      (E7)        [at = (H1 -| H8)] {};
-\node[edge]      (E8)        [at = (H1 -| H9)] {};
+        \node[edge]      (E1)        [at = (H1 -| H2)] {};
+        \node[edge]      (E2)        [at = (H1 -| H3)] {};
+        \node[edge]      (E3)        [at = (H1 -| H4)] {};
+        \node[edge]      (E4)        [at = (H1 -| H5)] {};
+        \node[edge]      (E5)        [at = (H1 -| H6)] {};
+        \node[edge]      (E6)        [at = (H1 -| H7)] {};
+        \node[edge]      (E7)        [at = (H1 -| H8)] {};
+        \node[edge]      (E8)        [at = (H1 -| H9)] {};
 
-% Aggregate
-\node[text width=0.8cm] at (-2, 2.95)  {Aggregation};
-\node[agg]      (A1)        [above=of E1] {};
-\node[agg]      (A2)        [above=of E2] {};
-\node[agg]      (A3)        [above=of E3] {};
-\node[agg]      (A4)        [above=of E4] {};
-\node[agg]      (A5)        [above=of E5] {};
-\node[agg]      (A6)        [above=of E6] {};
-\node[agg]      (A7)        [above=of E7] {};
-\node[agg]      (A8)        [above=of E8] {};
+        % Aggregate
+        \draw[thick, densely dotted] (-0.05,1.85) rectangle (1.1,3.17);
+        \draw[thick, densely dotted] (1.36,1.85) rectangle (2.47,3.17);
+        \draw[thick, densely dotted] (2.74,1.85) rectangle (3.88,3.17);
+        \draw[thick, densely dotted] (4.13,1.85) rectangle (5.26,3.17);
 
-% Core
-\node[text width=0.8cm] at (-2, 3.75)  {Core};
-\node[core]      (C1)        [above=of A1,  between=A1 and A2]  {};
-\node[core]      (C2)        [above=of A3,  between=A3 and A4]  {};
-\node[core]      (C3)        [above=of A5,  between=A5 and A6]  {};
-\node[core]      (C4)        [above=of A7,  between=A7 and A8]  {};
+        \node[text width=0.8cm] at (-2, 2.95)  {\small Aggregation};
+        \node[agg]      (A1)        [above=of E1] {};
+        \node[agg]      (A2)        [above=of E2] {};
+        \node[agg]      (A3)        [above=of E3] {};
+        \node[agg]      (A4)        [above=of E4] {};
+        \node[agg]      (A5)        [above=of E5] {};
+        \node[agg]      (A6)        [above=of E6] {};
+        \node[agg]      (A7)        [above=of E7] {};
+        \node[agg]      (A8)        [above=of E8] {};
 
-%Lines
-\draw[-] (V1.north)  -- (S1.south);
-\draw[-] (V2.north)  -- (S1.south);
-\draw[-] (V3.north)  -- (S1.south);
+        % Core
+        \node[text width=0.8cm] at (-2, 3.75)  {\small Core};
+        \node[core]      (C1)        [above=of A1,  between=A1 and A2]  {};
+        \node[core]      (C2)        [above=of A3,  between=A3 and A4]  {};
+        \node[core]      (C3)        [above=of A5,  between=A5 and A6]  {};
+        \node[core]      (C4)        [above=of A7,  between=A7 and A8]  {};
 
-\draw[-] (V4.north)  -- (S8.south);
-\draw[-] (V5.north)  -- (S8.south);
-\draw[-] (V6.north)  -- (S8.south);
+        %Lines
+        \draw[-] (V1.north)  -- (S1.south);
+        \draw[-] (V2.north)  -- (S1.south);
+        \draw[-] (V3.north)  -- (S1.south);
 
-\draw[-] (V7.north)  -- (S15.south);
-\draw[-] (V8.north)  -- (S15.south);
-\draw[-] (V9.north)  -- (S15.south);
+        \draw[-] (V4.north)  -- (S8.south);
+        \draw[-] (V5.north)  -- (S8.south);
+        \draw[-] (V6.north)  -- (S8.south);
 
-\draw[-] (S1.north)  -- (E1.south);
-\draw[-] (S2.north)  -- (E1.south);
-\draw[-] (S3.north)  -- (E2.south);
-\draw[-] (S4.north)  -- (E2.south);
-\draw[-] (S5.north)  -- (E3.south);
-\draw[-] (S6.north)  -- (E3.south);
-\draw[-] (S7.north)  -- (E4.south);
-\draw[-] (S8.north)  -- (E4.south);
-\draw[-] (S9.north)  -- (E5.south);
-\draw[-] (S10.north) -- (E5.south);
-\draw[-] (S11.north) -- (E6.south);
-\draw[-] (S12.north) -- (E6.south);
-\draw[-] (S13.north) -- (E7.south);
-\draw[-] (S14.north) -- (E7.south);
-\draw[-] (S15.north) -- (E8.south);
-\draw[-] (S16.north) -- (E8.south);
+        \draw[-] (V7.north)  -- (S15.south);
+        \draw[-] (V8.north)  -- (S15.south);
+        \draw[-] (V9.north)  -- (S15.south);
 
-\draw[-] (S1.north)  -- (SC1.south east);
-\draw[-] (S2.north)  -- (SC1.south east);
-\draw[-] (S3.north)  -- (SC1.south east);
-\draw[-] (S4.north)  -- (SC1.south east);
-\draw[-] (S5.north)  -- (SC1.south east);
-\draw[-] (S6.north)  -- (SC1.south east);
-\draw[-] (S7.north)  -- (SC1.south east);
-\draw[-] (S8.north)  -- (SC1.south east);
-\draw[-] (S9.north)  -- (SC1.south east);
-\draw[-] (S10.north) -- (SC1.south east);
-\draw[-] (S11.north) -- (SC1.south east);
-\draw[-] (S12.north) -- (SC1.south east);
-\draw[-] (S13.north) -- (SC1.south east);
-\draw[-] (S14.north) -- (SC1.south east);
-\draw[-] (S15.north) -- (SC1.south east);
-\draw[-] (S16.north) -- (SC1.south east);
+        \draw[-] (S1.north)  -- (E1.south);
+        \draw[-] (S2.north)  -- (E1.south);
+        \draw[-] (S3.north)  -- (E2.south);
+        \draw[-] (S4.north)  -- (E2.south);
+        \draw[-] (S5.north)  -- (E3.south);
+        \draw[-] (S6.north)  -- (E3.south);
+        \draw[-] (S7.north)  -- (E4.south);
+        \draw[-] (S8.north)  -- (E4.south);
+        \draw[-] (S9.north)  -- (E5.south);
+        \draw[-] (S10.north) -- (E5.south);
+        \draw[-] (S11.north) -- (E6.south);
+        \draw[-] (S12.north) -- (E6.south);
+        \draw[-] (S13.north) -- (E7.south);
+        \draw[-] (S14.north) -- (E7.south);
+        \draw[-] (S15.north) -- (E8.south);
+        \draw[-] (S16.north) -- (E8.south);
 
-\draw[-] (E1.north)  -- (A1.south);
-\draw[-] (E2.north)  -- (A2.south);
-\draw[-] (E3.north)  -- (A3.south);
-\draw[-] (E4.north)  -- (A4.south);
-\draw[-] (E5.north)  -- (A5.south);
-\draw[-] (E6.north)  -- (A6.south);
-\draw[-] (E7.north)  -- (A7.south);
-\draw[-] (E8.north)  -- (A8.south);
+        \draw[-] (S1.north)  -- (SC1.south east);
+        \draw[-] (S2.north)  -- (SC1.south east);
+        \draw[-] (S3.north)  -- (SC1.south east);
+        \draw[-] (S4.north)  -- (SC1.south east);
+        \draw[-] (S5.north)  -- (SC1.south east);
+        \draw[-] (S6.north)  -- (SC1.south east);
+        \draw[-] (S7.north)  -- (SC1.south east);
+        \draw[-] (S8.north)  -- (SC1.south east);
+        \draw[-] (S9.north)  -- (SC1.south east);
+        \draw[-] (S10.north) -- (SC1.south east);
+        \draw[-] (S11.north) -- (SC1.south east);
+        \draw[-] (S12.north) -- (SC1.south east);
+        \draw[-] (S13.north) -- (SC1.south east);
+        \draw[-] (S14.north) -- (SC1.south east);
+        \draw[-] (S15.north) -- (SC1.south east);
+        \draw[-] (S16.north) -- (SC1.south east);
 
-\draw[-] (E1.north)  -- (A2.south);
-\draw[-] (E2.north)  -- (A1.south);
-\draw[-] (E3.north)  -- (A4.south);
-\draw[-] (E4.north)  -- (A3.south);
-\draw[-] (E5.north)  -- (A6.south);
-\draw[-] (E6.north)  -- (A5.south);
-\draw[-] (E7.north)  -- (A8.south);
-\draw[-] (E8.north)  -- (A7.south);
+        \draw[-] (E1.north)  -- (A1.south);
+        \draw[-] (E2.north)  -- (A2.south);
+        \draw[-] (E3.north)  -- (A3.south);
+        \draw[-] (E4.north)  -- (A4.south);
+        \draw[-] (E5.north)  -- (A5.south);
+        \draw[-] (E6.north)  -- (A6.south);
+        \draw[-] (E7.north)  -- (A7.south);
+        \draw[-] (E8.north)  -- (A8.south);
 
-\draw[-] (A1.north)  -- (C1.south);
-\draw[-] (A1.north)  -- (C3.south);
-\draw[-] (A2.north)  -- (C2.south);
-\draw[-] (A2.north)  -- (C4.south);
-\draw[-] (A3.north)  -- (C1.south);
-\draw[-] (A3.north)  -- (C3.south);
-\draw[-] (A4.north)  -- (C2.south);
-\draw[-] (A4.north)  -- (C4.south);
-\draw[-] (A5.north)  -- (C1.south);
-\draw[-] (A5.north)  -- (C3.south);
-\draw[-] (A6.north)  -- (C2.south);
-\draw[-] (A6.north)  -- (C4.south);
-\draw[-] (A7.north)  -- (C1.south);
-\draw[-] (A7.north)  -- (C3.south);
-\draw[-] (A8.north)  -- (C2.south);
-\draw[-] (A8.north)  -- (C4.south);
+        \draw[-] (E1.north)  -- (A2.south);
+        \draw[-] (E2.north)  -- (A1.south);
+        \draw[-] (E3.north)  -- (A4.south);
+        \draw[-] (E4.north)  -- (A3.south);
+        \draw[-] (E5.north)  -- (A6.south);
+        \draw[-] (E6.north)  -- (A5.south);
+        \draw[-] (E7.north)  -- (A8.south);
+        \draw[-] (E8.north)  -- (A7.south);
 
-\end{tikzpicture}
+        \draw[-] (A1.north)  -- (C1.south);
+        \draw[-] (A1.north)  -- (C3.south);
+        \draw[-] (A2.north)  -- (C2.south);
+        \draw[-] (A2.north)  -- (C4.south);
+        \draw[-] (A3.north)  -- (C1.south);
+        \draw[-] (A3.north)  -- (C3.south);
+        \draw[-] (A4.north)  -- (C2.south);
+        \draw[-] (A4.north)  -- (C4.south);
+        \draw[-] (A5.north)  -- (C1.south);
+        \draw[-] (A5.north)  -- (C3.south);
+        \draw[-] (A6.north)  -- (C2.south);
+        \draw[-] (A6.north)  -- (C4.south);
+        \draw[-] (A7.north)  -- (C1.south);
+        \draw[-] (A7.north)  -- (C3.south);
+        \draw[-] (A8.north)  -- (C2.south);
+        \draw[-] (A8.north)  -- (C4.south);
 
-\caption{An example SDN and NFV enabled fat-tree network with 4 ports for each hardware switch and 3 for the virtual switches.}
+    \end{tikzpicture}
 
-\label{fig:network_topology}
+    \caption{An example SDN and NFV enabled fat-tree network with 4 ports for each hardware switch and 3 for the virtual switches.}
+
+    \label{fig:network_topology}
 
 \end{figure}
 
-Based on the general working mechanism of SDN and NFV technologies \cite{FarrisTKS19}, a network architecture is abstracted in this study as shown in Fig. \ref{fig:network_topology}, where multiple NFV chains are deployed and linked by a virtualised SDN implementation. With NFV deployment, a MCC service is provided in the form of a service chain which is formed by several VNFs. The packets of MCC devices pass through each of the VNFs in sequence.  In the abstracted network architecture, multiple NFV chains can coexist and different NFV service chains have different numbers of VNFs, each of which has different packet processing capability. 
+Based on the general working mechanism of SDN and NFV technologies \cite{FarrisTKS19}, a network architecture is abstracted in this study as shown in Fig. \ref{fig:network_topology}, where multiple NFV chains are deployed and linked by a virtualised SDN implementation. With NFV deployment, a MCC service is provided in the form of a service chain which is formed by several VNFs. The packets of MCC devices pass through each of the VNFs in sequence.  In the abstracted network architecture, multiple NFV chains can coexist and different NFV service chains have different numbers of VNFs, each of which has different packet processing capability.
 
 When a MCC service is launched in the cloud datacenter, the cloud management orchestrator or manager analyses the performance and functional requirements, and initiate VNFs in the underlying virtualised server. Once the VNFs are deployed, the cloud management orchestrator coupled with SDN controller link the individual VNFs to form an NFV service chain to provide MCC service for end devices. During this process, SDN controller is responsible for configuring the routing table of the underlying network switches, collecting the related service parameters, and sending the collected data to cloud management orchestrator for service optimisation. Each SDN enabled switch has a flow table containing instructions on how to route the received packets. Due to the physical storage limitation, it is impossible to store the instructions for all possible destinations. Therefore, once the local switch receives a packet that doesnot match routing table, a request will be sent from switch to the controller to consult on how to process the received package. After a series of computation, SDN controller responses this request for further process. Within the abstracted network architecture, we consider an SDN architecture where only the virtual switches connect to the SDN controller. This architecture is representative of those used in industry, most notably a comparable architecture is used in VMWare's NSX solution \cite{VMW18}.
 
