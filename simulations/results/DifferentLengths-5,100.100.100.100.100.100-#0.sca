@@ -1,19 +1,19 @@
 version 2
-run DifferentLengths-405-20180404-14:20:41-32561
+run DifferentLengths-45-20191029-14:51:37-16881
 attr configname DifferentLengths
-attr datetime 20180404-14:20:41
+attr datetime 20191029-14:51:37
 attr experiment DifferentLengths
 attr inifile omnetpp.ini
 attr iterationvars "$0=5, $1=\"100.100.100.100.100.100\""
 attr iterationvarsf 5,100.100.100.100.100.100-
 attr measurement "$0=5, $1=\"100.100.100.100.100.100\""
 attr network FatTree
-attr processid 32561
+attr processid 16881
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 405
-attr seedset 405
+attr runnumber 45
+attr seedset 45
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
@@ -27,7 +27,7 @@ param FatTree.vms[*].production_rate 5
 param FatTree.vnf_chains "\"100.100.100.100.100.100\""
 param FatTree.prob_service "\"EQUAL\""
 
-scalar FatTree Time_In_System:mean 45463.019572284
+scalar FatTree Time_In_System:mean 3.5514215697337
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

@@ -1,19 +1,20 @@
 % Default
 global k; global k_vm; global p_sdn; global prob_services; global vnf_chains;
 global init_prod_rate; global srv_vm; global srv_server; global srv_tor;
-global srv_agg; global srv_core; global srv_sdn;
+global srv_agg; global srv_core; global srv_sdn; global capacity;
 
-root_dir = '/media/joebillingsley/Data//projects/NFV_FatTree/out/data';
+root_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/data';
 
 %% Test
 reset();
-for j = 0 : 0.1 : 5
-    k = 2;
+for i = 0 : 0.1 : 25
+    k = 4;
     k_vm = 2;
-    init_prod_rate = 2;    
+    init_prod_rate = 5;
     p_sdn = 0;
+    vnf_chains = {zeros(1, 4) + 1};
     
-    [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);   
+    [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
 end
 
 %% IncreasingNumPorts
@@ -26,9 +27,9 @@ for i = 2 : 2 : 12
     
     k = i;
     
-    for j = 0 : 0.1 : 5
+    for j = 0 : 0.1 : 25
         init_prod_rate = j;
-        [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+        [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
         if(feasible)
             fprintf(file, '%f %f\n', init_prod_rate, latency);
@@ -48,9 +49,9 @@ for i = 0 : 10 : 100
     
     p_sdn = i / 100;
     
-    for j = 0 : 0.1 : 5
+    for j = 0 : 0.1 : 25
         init_prod_rate = j;
-        [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+        [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
         if(feasible)
             fprintf(file, '%f %f\n', init_prod_rate, latency);
@@ -70,9 +71,9 @@ for i = 0 : 20 : 100
     
     vnf_chains = {[1, i/100]};
     
-    for j = 0 : 0.1 : 5
+    for j = 0 : 0.1 : 25
         init_prod_rate = j;
-        [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+        [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
         if(feasible)
             fprintf(file, '%f %f\n', init_prod_rate, latency);
@@ -92,9 +93,9 @@ for i = 1 : 8
     
     vnf_chains = {zeros(1, i) + 1};
     
-    for j = 0 : 0.1 : 5
+    for j = 0 : 0.1 : 25
         init_prod_rate = j;
-        [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+        [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
         if(feasible)
             fprintf(file, '%f %f\n', init_prod_rate, latency);
@@ -119,9 +120,9 @@ for i = 1 : 5
         vnf_chains{j} = zeros(1, j) + 1;
     end
     
-    for j = 0 : 0.1 : 5
+    for j = 0 : 0.1 : 25
         init_prod_rate = j;
-        [feasible, latency] = mm1_model(k, k_vm, p_sdn, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
+        [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
         if(feasible)
             fprintf(file, '%f %f\n', init_prod_rate, latency);
@@ -136,10 +137,12 @@ function reset()
 global k; global k_vm; global p_sdn; global prob_services;
 global vnf_chains; global srv_vm; global srv_server;
 global srv_tor; global srv_agg; global srv_core; global srv_sdn;
+global capacity;
 
 k = 4;
 k_vm = 2;
 p_sdn = 0;
+capacity = 1;
 
 vnf_chains = {1};
 prob_services = 1;

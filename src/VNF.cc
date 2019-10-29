@@ -30,16 +30,15 @@ void VNF::initialize() {
 
     cStringTokenizer tokenizer_chains(network->par("vnf_chains"));
 
-    while(tokenizer_chains.hasMoreTokens()) {
+    while (tokenizer_chains.hasMoreTokens()) {
         cStringTokenizer tokenizer_vnfs(tokenizer_chains.nextToken(), ".");
-        vnf_chains.push_back(
-                tokenizer_vnfs.asIntVector());
+        vnf_chains.push_back(tokenizer_vnfs.asIntVector());
     }
 
     std::string prob_service_par = network->par("prob_service");
 
     if (prob_service_par == "EQUAL") {
-        for(int i = 0; i < vnf_chains.size(); i++)
+        for (int i = 0; i < vnf_chains.size(); i++)
             prob_service.push_back(100 * (1.0 / ((double) vnf_chains.size())));
     } else {
         cStringTokenizer tokenizer_services(network->par("prob_service"));
@@ -53,10 +52,10 @@ void VNF::initialize() {
     received_cnt_signal = registerSignal("vnf_received_count");
     processed_signal = registerSignal("vnf_msg_processed");
 
-    double par_prod = par("production_rate"),
-           par_service = par("service_rate");
+    double par_prod = par("production_rate"), par_service = par("service_rate");
 
-    if(par_prod == 0) return;
+    if (par_prod == 0)
+        return;
 
     inter_production_time = SimTime(1 / par_prod);
     inter_service_time = SimTime(1 / par_service);
@@ -81,37 +80,44 @@ void VNF::handleMessage(cMessage *msg) {
         int p_sum = 0;
         for (int i = 0; i < prob_service.size(); i++) {
             p_sum += prob_service[i];
-            if(rng <= p_sum) {
+            if (rng <= p_sum) {
                 v_idx = i;
                 break;
             }
         }
 
         auto vnf_chain = vnf_chains[v_idx];
+        rng = intuniform(0, vnf_chain.size());
 
-        dmsg->setVnfChainArraySize(vnf_chain.size());
+        if (rng == 0) {
 
-        for (int i = 0; i < vnf_chain.size(); i++)
-            dmsg->setVnfChain(i, vnf_chain[i]);
+            dmsg->setVnfChainArraySize(vnf_chain.size());
 
-        dmsg->setPathArraySize(vnf_chain.size());
-        dmsg->setVisitsSDNArraySize(vnf_chain.size());
+            for (int i = 0; i < vnf_chain.size(); i++)
+                dmsg->setVnfChain(i, vnf_chain[i]);
 
-        for(int i = 0; i < vnf_chain.size(); i++) {
-            int prev_target = i == 0 ? getIndex() : dmsg->getPath(i-1);
-            int target = prev_target;
+            dmsg->setPathArraySize(vnf_chain.size());
+            dmsg->setVisitsSDNArraySize(vnf_chain.size());
 
-            while (target == prev_target)
-                target = intuniform(0, num_vms - 1);
+            for (int i = 0; i < vnf_chain.size(); i++) {
+                int prev_target = i == 0 ? getIndex() : dmsg->getPath(i - 1);
+                int target = prev_target;
 
-            dmsg->setPath(i, target);
-            dmsg->setVisitsSDN(i, false);
+                while (target == prev_target)
+                    target = intuniform(0, num_vms - 1);
 
-            if(intuniform(0, 99) < p_sdn)
-                dmsg->setVisitsSDN(i, true);
+                dmsg->setPath(i, target);
+                dmsg->setVisitsSDN(i, false);
+
+                if (intuniform(0, 99) < p_sdn)
+                    dmsg->setVisitsSDN(i, true);
+            }
+
+            send(dmsg, "gate$o");
+
+        } else {
+            delete dmsg;
         }
-
-        send(dmsg, "gate$o");
 
         simtime_t production_rate = exponential(inter_production_time);
         cMessage *send_msg_evt = new cMessage("send", 1);
@@ -150,7 +156,7 @@ void VNF::handleMessage(cMessage *msg) {
 
                 int rng = intuniform(1, 100);
 
-                if(ratio >= 100 || rng < ratio) {
+                if (ratio >= 100 || rng < ratio) {
                     auto new_msg = dmsg->dup();
                     send(new_msg, "gate$o");
                 }

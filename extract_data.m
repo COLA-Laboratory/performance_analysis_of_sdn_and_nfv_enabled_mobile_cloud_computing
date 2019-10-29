@@ -1,8 +1,10 @@
+addpath('.');
+
 in_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/simulations/results';
-out_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/out/data';
+out_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/data';
 
 cd (out_dir);
-%delete SIMULATION_*.out
+delete SIMULATION_*.out
 
 cd (in_dir);
 
@@ -26,30 +28,32 @@ mean_ptrn = '(?<=scalar FatTree Time_In_System:mean )([0-9.]*|-nan|nan)';
 for i = 1 : length(test_groups)
     test_group = test_groups{i};
     test_files = dir([test_group, '*']);
+    test_files = natsortfiles({test_files.name});
    
-    for j = 1 : size(test_files, 1)
+    for j = 1 : size(test_files, 2)
         
         test_file = test_files(j);
-        arr_rate = extract_arrival_rate(test_file.name);
+        test_file = test_file{1};
+        arr_rate = extract_arrival_rate(test_file);
         
         if strcmp(test_group, 'DifferentLengths')
             
-            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            [num_services, lengths, vnfs] = extract_services(test_file);
             out_fname = [test_group '_' num2str(lengths(1))];
             
         elseif strcmp(test_group, 'FilteringVNFs')
             
-            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            [num_services, lengths, vnfs] = extract_services(test_file);
             out_fname = [test_group '_' num2str(vnfs(end))];
             
         elseif strcmp(test_group, 'IncreasingNumPorts') || strcmp(test_group, 'IncreasingSDN')
             
-            comma_pos = strfind(test_file.name, ',');
+            comma_pos = strfind(test_file, ',');
             
             if isempty(comma_pos)
                 par = 4;
             else
-                par = extract_parameter(test_file.name);
+                par = extract_parameter(test_file);
             end
                 
             out_fname = [test_group '_' num2str(par)];
@@ -61,14 +65,14 @@ for i = 1 : length(test_groups)
             
         elseif strcmp(test_group, 'MultipleServices')
             
-            [num_services, lengths, vnfs] = extract_services(test_file.name);
+            [num_services, lengths, vnfs] = extract_services(test_file);
             out_fname = [test_group '_' num2str(num_services)];
             
         else
             error("No match for test group %s", test_group);
         end
         
-        fread = fullfile(in_dir, test_files(j).name);
+        fread = fullfile(in_dir, test_file);
         fread = fileread(fread);
                 
         mean = regexp(fread, mean_ptrn, 'match');
@@ -85,7 +89,6 @@ for i = 1 : length(test_groups)
         
         fclose(fwrite);
     end
-    
 end
 
 function arrival_rate = extract_arrival_rate(str)

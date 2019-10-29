@@ -1,19 +1,19 @@
 version 2
-run FilteringVNFs-185-20180403-20:11:17-28934
+run FilteringVNFs-23-20191029-13:52:37-14683
 attr configname FilteringVNFs
-attr datetime 20180403-20:11:17
+attr datetime 20191029-13:52:37
 attr experiment FilteringVNFs
 attr inifile omnetpp.ini
 attr iterationvars "$0=3, $1=\"100.0\""
 attr iterationvarsf 3,100.0-
 attr measurement "$0=3, $1=\"100.0\""
 attr network FatTree
-attr processid 28934
+attr processid 14683
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 185
-attr seedset 185
+attr runnumber 23
+attr seedset 23
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40

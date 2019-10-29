@@ -1,19 +1,19 @@
 version 2
-run FilteringVNFs-61-20180403-16:03:09-28934
+run FilteringVNFs-7-20191029-13:47:17-14683
 attr configname FilteringVNFs
-attr datetime 20180403-16:03:09
+attr datetime 20191029-13:47:17
 attr experiment FilteringVNFs
 attr inifile omnetpp.ini
 attr iterationvars "$0=1, $1=\"100.80\""
 attr iterationvarsf 1,100.80-
 attr measurement "$0=1, $1=\"100.80\""
 attr network FatTree
-attr processid 28934
+attr processid 14683
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 61
-attr seedset 61
+attr runnumber 7
+attr seedset 7
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
@@ -27,7 +27,7 @@ param FatTree.vms[*].production_rate 1
 param FatTree.vnf_chains "\"100.80\""
 param FatTree.prob_service "\"EQUAL\""
 
-scalar FatTree Time_In_System:mean 0.54319174062879
+scalar FatTree Time_In_System:mean 0.44866229619542
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

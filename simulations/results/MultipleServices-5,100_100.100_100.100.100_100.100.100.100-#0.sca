@@ -1,19 +1,19 @@
 version 2
-run MultipleServices-253-20180404-22:55:28-3856
+run MultipleServices-28-20191029-15:57:02-20630
 attr configname MultipleServices
-attr datetime 20180404-22:55:28
+attr datetime 20191029-15:57:02
 attr experiment MultipleServices
 attr inifile omnetpp.ini
 attr iterationvars "$0=5, $1=\"100 100.100 100.100.100 100.100.100.100\""
 attr iterationvarsf 5,100_100.100_100.100.100_100.100.100.100-
 attr measurement "$0=5, $1=\"100 100.100 100.100.100 100.100.100.100\""
 attr network FatTree
-attr processid 3856
+attr processid 20630
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 253
-attr seedset 253
+attr runnumber 28
+attr seedset 28
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
@@ -27,7 +27,7 @@ param FatTree.vms[*].production_rate 5
 param FatTree.vnf_chains "\"100 100.100 100.100.100 100.100.100.100\""
 param FatTree.prob_service "\"EQUAL\""
 
-scalar FatTree Time_In_System:mean 27119.233367958
+scalar FatTree Time_In_System:mean 0.84930067789517
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"
