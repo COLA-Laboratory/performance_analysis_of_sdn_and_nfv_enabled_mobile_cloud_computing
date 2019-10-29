@@ -1,19 +1,19 @@
 version 2
-run LowNumPorts-0-20191029-17:30:15-28800
+run LowNumPorts-1-20191029-17:30:15-28800
 attr configname LowNumPorts
 attr datetime 20191029-17:30:15
 attr experiment LowNumPorts
 attr inifile omnetpp.ini
-attr iterationvars $0=0
-attr iterationvarsf 0-
-attr measurement $0=0
+attr iterationvars $0=0.2
+attr iterationvarsf 0.2-
+attr measurement $0=0.2
 attr network FatTree
 attr processid 28800
 attr repetition 0
 attr replication #0
 attr resultdir results
-attr runnumber 0
-attr seedset 0
+attr runnumber 1
+attr seedset 1
 param FatTree.vms[*].service_rate 20
 param FatTree.servers[*].service_rate 40
 param FatTree.edge[*].service_rate 40
@@ -23,11 +23,11 @@ param FatTree.sdn.service_rate 40
 param FatTree.vm_k 2
 param FatTree.p_sdn 0
 param FatTree.vnf_chains "\"100\""
-param FatTree.vms[*].production_rate 0
+param FatTree.vms[*].production_rate 0.2
 param FatTree.k 2
 param FatTree.prob_service "\"EQUAL\""
 
-scalar FatTree Time_In_System:mean -nan
+scalar FatTree Time_In_System:mean 0.1760641755536
 attr interpolationmode none
 attr source completed
 attr title "Time in System, mean"

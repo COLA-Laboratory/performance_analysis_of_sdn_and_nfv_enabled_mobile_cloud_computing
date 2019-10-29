@@ -21,7 +21,7 @@
 	\begin{axis}[
 			restrict y to domain=0:1000,
 			legend pos = north west,
-			legend entries = {1 Service,, 2 Services,, 4 Services, Simulation},
+			legend entries = {1 Service,, 3 Services,, 5 Services, Simulation},
 			clip marker paths=true,
 			legend cell align={left},
 			legend style={font=\small},
@@ -30,11 +30,11 @@
 		\addplot [blue, only marks, mark = o, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_1.out};
 		\addplot [blue, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_1.out};
 
-		\addplot [red, only marks, mark = triangle, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_2.out};
-		\addplot [red, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_2.out};
+		\addplot [red, only marks, mark = triangle, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_3.out};
+		\addplot [red, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_3.out};
 
-		\addplot [black, only marks, mark = square, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_4.out};
-		\addplot [black, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_4.out};
+		\addplot [black, only marks, mark = square, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_MultipleServices_5.out};
+		\addplot [black, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_MultipleServices_5.out};
 
 	\end{axis}
 \end{tikzpicture}
