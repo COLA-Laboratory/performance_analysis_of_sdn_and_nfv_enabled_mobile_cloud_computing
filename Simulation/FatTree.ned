@@ -61,7 +61,7 @@ network FatTree
         
     types:
         channel Channel extends ned.DelayChannel {
-            delay = 0ms;
+            delay = 0s;
         }
 
     submodules:

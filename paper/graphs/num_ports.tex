@@ -6,8 +6,8 @@
 \pagestyle{empty}
 
 \pgfplotsset{every axis/.append style={
-			xlabel = Total Arrival Rate,
-			ylabel = End-to-End Latency,
+			xlabel = Arrival Rate (packets/s),
+			ylabel = End-to-End Latency (s),
 			thick,
 			line width = 1pt,
 			tick style = {line width = 0.8pt},
@@ -21,7 +21,7 @@
 	\begin{axis}[
 			restrict y to domain=0:1000,
 			legend pos = north west,
-			legend entries = {$k=4$,, $k=6$,, $k=8$, Simulation},
+			legend entries = {$k=8$,, $k=16$,, $k=24$, Simulation},
 			clip marker paths=true,
 			legend cell align={left},
 			legend style={font=\small},

@@ -3,7 +3,7 @@
 \section{Analytical Model Derivation}
 \label{sec:analytical_model}
 
-In this section, we derive an analytical model of an SDN and NFV enabled MCC datacenter. The model is capable of analysing the end-to-end service performance of multiple coexisting service chains, each of which can have different numbers of VNFs. The impact of the centralised SDN controller on the end-to-end performance provisioning is also considered. Pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}. With the aim of increasing the readability of the model derivation, we first consider a scenario with a single service with only two VNFs. We then extend the simplified model into the realistic scenario of multiple NFV service chains with varying length.
+In this section, we derive an analytical model of an SDN and NFV enabled MCC datacenter. The model is capable of analysing the end-to-end service performance of multiple coexisting service chains, each of which can have different numbers of VNFs. The impact of the centralised SDN controller on the end-to-end performance provisioning is also considered. With the aim of increasing the readability of the model derivation, we first consider a scenario with a single service with only two VNFs. We then extend the simplified model into the realistic scenario of multiple NFV service chains with varying length.
 
 \subsubsection{Simple NFV Deployment Scenario}
 Following the work on SDN and NFV performance analysis in \cite{LongoDBS15, GebertZLST16, MiaoMWHZWL19}, our models assume that packets will arrive independently from each other and the expected time to process a packet is not dependent on earlier packets. Hence the arrival and service rates of packets in this study follow independent probability distributions. For each service, we assume the traffic entering the MCC datacenter follows an independent Poisson process with a mean rate of $\lambda_i$ packets per second. Each physical/virtual node, e.g. switch, VNF and the controller, service incoming packets according to an independent Poisson process with service rates $\mu_{s}$, $\mu_{v}$ and $\mu_{c}$ packets per second respectively. If a packet fails to match the routing table in the SDN-enabled virtual switches, routing information for the packet will be requested from the SDN controller. Let $p_m$ denote the probability there is no routing entry for an incoming packet.
@@ -43,23 +43,6 @@ In the fat-tree topology, the higher layer switches connect more VNFs. The proba
     \label{eq:p_edge}
     p_{1} = \frac{\left(\frac{k}{2}-1\right) \cdot k_v}{n_v - 1}
 \end{equation}
-
-\begin{algorithm}[t]
-
-    \caption{Calculation of Average Latency of SDN and NFV-enabled MCC Datacenter Networks}
-    \label{alg:avg_latency_final}
-
-    \begin{algorithmic}[1]
-        \STATE Calculate the effective network traffic: $\lambda_f^e$ \hfill(\textit{Eq. (\ref{eq:effective_arrival})})
-        \STATE Calculate the traffic rates: $\lambda_i$ \hfill(\textit{Eqs. (\ref{eq:p_vm}-\ref{eq:p_sdn})})
-        \STATE Calculate the probabilities: $p_i$ \hfill(\textit{Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn})})
-        \STATE Calculate the waiting times: $w_i$, $w_v$ and $w_{vs}$ \hfill(\textit{Eq. (\ref{eq:p_latency})})
-        \STATE Calculate the latency for each path: $L_i$ \hfill (\textit{Eq. (\ref{eq:latency_path})})
-        \STATE Calculate the latency for a single hop: $L_v$ \hfill (\textit{Eq. (\ref{eq:mean_latency})})
-        \STATE Calculate the end-to-end latency: $L_t$ \hfill (\textit{Eq. (\ref{eq:total_network_latency})})
-    \end{algorithmic}
-\end{algorithm}
-
 
 Using the same method the probability of visiting the aggregate and core layers can be calculated with,
 
@@ -136,3 +119,21 @@ Similar to the simple NFV deployment case, the expected end-to-end latency is th
     \label{eq:total_network_latency}
     L_t = L_v \sum_i^{N_s} K_i \cdot \frac{\lambda_i}{\sum_j^{N_s} \lambda_j}
 \end{equation}
+
+For convenience, pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}.
+
+\begin{algorithm}
+
+    \caption{Calculation of Average Latency of SDN and NFV-enabled MCC Datacenter Networks}
+    \label{alg:avg_latency_final}
+
+    \begin{algorithmic}[1]
+        \STATE Calculate the effective network traffic: $\lambda_f^e$ \hfill(\textit{Eq. (\ref{eq:effective_arrival})})
+        \STATE Calculate the traffic rates: $\lambda_i$ \hfill(\textit{Eqs. (\ref{eq:p_vm}-\ref{eq:p_sdn})})
+        \STATE Calculate the probabilities: $p_i$ \hfill(\textit{Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn})})
+        \STATE Calculate the waiting times: $w_i$, $w_v$ and $w_{vs}$ \hfill(\textit{Eq. (\ref{eq:p_latency})})
+        \STATE Calculate the latency for each path: $L_i$ \hfill (\textit{Eq. (\ref{eq:latency_path})})
+        \STATE Calculate the latency for a single hop: $L_v$ \hfill (\textit{Eq. (\ref{eq:mean_latency})})
+        \STATE Calculate the end-to-end latency: $L_t$ \hfill (\textit{Eq. (\ref{eq:total_network_latency})})
+    \end{algorithmic}
+\end{algorithm}
