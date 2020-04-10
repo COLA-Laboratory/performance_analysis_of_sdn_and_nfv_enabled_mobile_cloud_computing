@@ -40,6 +40,8 @@ void AggregateSwitch::initialize() {
     queue = cQueue();
 
     double par_service = par("service_rate");
+    par_service = par_service * num_ports;
+
     inter_service_time = SimTime(1 / par_service);
 }
 

@@ -1,5 +1,10 @@
 function [feasible, waiting_time] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_edge, srv_agg, srv_core, srv_sdn)
 
+srv_server = srv_server* k;
+srv_edge = srv_edge * k;
+srv_agg = srv_agg * k;
+srv_core = srv_core * k;
+
 avg_num_vnfs = 0;
 
 for i = 1:length(vnf_chains)
