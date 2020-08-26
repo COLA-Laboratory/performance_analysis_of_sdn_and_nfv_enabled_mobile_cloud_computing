@@ -15,7 +15,7 @@ for i = 4 : 4 : 24
     
     k = i;
     
-    for j = 0:.25:100
+    for j = 0:100
         init_prod_rate = j;
         [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
@@ -30,14 +30,14 @@ end
 %% IncreasingSDN
 reset();
 
-for i = 0 : 10 : 100
+for i = 0 : 5 : 100
     
     file_path = fullfile(root_dir, ['MODEL_SDN_' int2str(i) '.out']);
     file = fopen(file_path, 'w');
     
     p_sdn = i / 100;
     
-    for j = 0:.25:100
+    for j = 0:100
         init_prod_rate = j;
         [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
@@ -59,7 +59,7 @@ for i = 0 : 20 : 100
     
     vnf_chains = {[1, i/100]};
     
-    for j = 0:.25:100
+    for j = 0:100
         init_prod_rate = j;
         [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
@@ -81,7 +81,7 @@ for i = 1 : 8
     
     vnf_chains = {zeros(1, i) + 1};
     
-    for j = 0:.25:100
+    for j = 0:100
         init_prod_rate = j;
         [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         
@@ -105,10 +105,10 @@ for i = 1 : 5
     vnf_chains = cell(1, i);
     
     for j = 1:i
-        vnf_chains{j} = zeros(1, j) + 1;
+        vnf_chains{j} = zeros(1, 3) + 1;
     end
     
-    for j = 0:.25:100
+    for j = 0:100
         init_prod_rate = j;
         [feasible, latency] = mm1_model(k, k_vm, p_sdn, capacity, prob_services, vnf_chains, init_prod_rate, srv_vm, srv_server, srv_tor, srv_agg, srv_core, srv_sdn);
         

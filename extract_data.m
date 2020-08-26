@@ -1,7 +1,7 @@
 addpath('.');
 
-in_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/simulations/results';
-out_dir = '/media/joebillingsley/Data/projects/NFV_FatTree/data';
+in_dir = 'D:\Research\NFV_FatTree\Simulation\results';
+out_dir = 'D:\Research\NFV_FatTree\data';
 
 cd (out_dir);
 delete SIMULATION_*.out
@@ -95,12 +95,7 @@ function arrival_rate = extract_arrival_rate(str)
 dash_pos = strfind(str, '-');
 comma_pos = strfind(str, ',');
 
-if comma_pos > 0
-    arrival_rate = str(dash_pos(1)+1:comma_pos(1)-1);
-else
-    arrival_rate = str(dash_pos(1)+1:dash_pos(2)-1);
-end
-
+arrival_rate = str(comma_pos(end)+1 : dash_pos(end)-1);
 arrival_rate = str2double(arrival_rate);
 end
 
@@ -109,7 +104,7 @@ function [num_services, lengths, vnfs] = extract_services(str)
 dash_pos = strfind(str, '-');
 comma_pos = strfind(str, ',');
 
-services = str(comma_pos(1)+1:dash_pos(2)-1);
+services = str(dash_pos(1)+1 : comma_pos(1)-1);
 services = strsplit(services, '_');
 
 num_services = length(services);
@@ -130,7 +125,7 @@ function parameter = extract_parameter(str)
 dash_pos = strfind(str, '-');
 comma_pos = strfind(str, ',');
 
-parameter = str(comma_pos(1)+1:dash_pos(2)-1);
+parameter = str(dash_pos(1)+1 : comma_pos(1)-1);
 parameter = str2double(parameter);
 
 end

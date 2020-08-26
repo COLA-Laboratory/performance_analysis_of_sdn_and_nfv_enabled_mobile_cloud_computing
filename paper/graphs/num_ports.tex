@@ -12,14 +12,12 @@
 			line width = 1pt,
 			tick style = {line width = 0.8pt},
 			ymin = 0,
-			ymax = 10,
-			xmin = 0.1,
-			xmax = 12,
+			ymax = 1,
 		}}
 
 \begin{tikzpicture}
 	\begin{axis}[
-			restrict y to domain=0:1000,
+			restrict y to domain=0:20,
 			legend pos = north west,
 			legend entries = {$k=8$,, $k=16$,, $k=24$, Simulation},
 			clip marker paths=true,
@@ -27,14 +25,16 @@
 			legend style={font=\small},
 		]
 
-		\addplot [blue, only marks, mark = o, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_4.out};
-		\addplot [blue, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_4.out};
 
-		\addplot [red, only marks, mark = triangle, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_6.out};
-		\addplot [red, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_6.out};
+		\addplot [blue, only marks, mark = triangle, mark size = 2pt, mark repeat=2] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_8.out};
+		\addplot [blue, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_8.out};
 
-		\addplot [black, only marks, mark = square, mark size = 2pt] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_8.out};
-		\addplot [black, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_8.out};
+		\addplot [red, only marks, mark = square, mark size = 2pt, mark repeat=2] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_16.out};
+		\addplot [red, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_16.out};
+
+		\addplot [black, only marks, mark = square, mark size = 2pt, mark repeat=2] table[x index = 0, y index = 1] {../../data/MODEL_IncreasingNumPorts_24.out};
+		\addplot [black, mark = none] table[x index = 0, y index = 1] {../../data/SIMULATION_IncreasingNumPorts_24.out};
+
 
 	\end{axis}
 \end{tikzpicture}

@@ -6,9 +6,9 @@
 In this section, we derive an analytical model of an SDN and NFV enabled MCC datacenter. The model is capable of analysing the end-to-end service performance of multiple coexisting service chains, each of which can have different numbers of VNFs. The impact of the centralised SDN controller on the end-to-end performance provisioning is also considered. Pseudocode for the entire process is given in Algorithm \ref{alg:avg_latency_final}. With the aim of increasing the readability of the model derivation, we first consider a scenario with a single service with only two VNFs. We then extend the simplified model into the realistic scenario of multiple NFV service chains with varying length.
 
 \subsubsection{Simple NFV Deployment Scenario}
-Following the work on SDN and NFV performance analysis in \cite{LongoDBS15, GebertZLST16, MiaoMWHZWL19}, our models assume that packets will arrive independently from each other and the expected time to process a packet is not dependent on earlier packets. Hence the arrival and service rates of packets in this study follow independent probability distributions. For each service, we assume the traffic entering the MCC datacenter follows an independent Poisson process with a mean rate of $\lambda_i$ packets per second. Each physical/virtual node, e.g. switch, VNF and the controller, service incoming packets according to an independent Poisson process with service rates $\mu_{s}$, $\mu_{v}$ and $\mu_{c}$ packets per second respectively. If a packet fails to match the routing table in the SDN-enabled virtual switches, routing information for the packet will be requested from the SDN controller. Let $p_m$ denote the probability there is no routing entry for an incoming packet.
+Following the work on SDN and NFV performance analysis in \cite{LongoDBS15, GebertZLST16, MiaoMWHZWL19}, our models assume that packets will arrive independently from each other and the expected time to process a packet is not dependent on earlier packets. Hence the arrival and service rates of packets in this study follow independent probability distributions. For each service, we assume that the traffic entering the MCC datacenter follows an independent Poisson process with a mean rate of $\lambda_i$ packets per second. Each physical/virtual node, e.g. switch, VNF and the controller, service incoming packets according to an independent Poisson process with service rates $\mu_{s}$, $\mu_{v}$ and $\mu_{c}$ packets per second respectively. If a packet fails to match the routing table in the SDN-enabled virtual switches, routing information for the packet will be requested from the SDN controller. Let $p_m$ denote the probability there is no routing entry for an incoming packet.
 
-Further, in this work we assume no knowledge of the placement of VNFs in the network. Therefore we assume that all VMs may contain a VNF and that traffic leaving a VM can be intended for any other VM. However, in an actual placement of VNFs only the first VNF creates packets and the final VNF in a service chain does not create or forward any packets. Hence the effective traffic rate leaving each VNF in the model must be lower than the actual traffic rate for the service. In the case of a service with only two VNFs we would expect half of the used VNFs to be final VNFs hence the effective arrival rate, $\lambda^e = \lambda / 2$.
+Further, in this work we assume we have no knowledge of the placement of VNFs in the network. Therefore we assume that all VMs may contain a VNF and that traffic leaving a VM can be intended for any other VM. However, in an actual placement of VNFs only the first VNF creates packets and the final VNF in a service chain does not create or forward any packets. Hence the effective traffic rate leaving each VNF in the model must be lower than the actual traffic rate for the service. In the case of a service with only two VNFs we would expect half of the used VNFs to be final VNFs hence the effective arrival rate, $\lambda^e = \lambda / 2$.
 
 For the SDN and NFV enabled fat-tree network established in Section \ref{sec:preliminaries}, the end-to-end latency of a service is dependent on the probability that a packet will visit each layer of switches. If we apply the widely used Equal-Cost Multi-Path (ECMP) \cite{ChiesaKS17} routing protocol to this network, the expected arrival rate and hence the expected waiting time is the same for every component on each layer. For this case of a service with two VNFs, packets will only need to cross the network once and hence the expected latency depends on the expected level the packets must utilise to reach the other VNF. The latency from one VNF to another can then be written as,
 
@@ -44,6 +44,8 @@ In the fat-tree topology, the higher layer switches connect more VNFs. The proba
     p_{1} = \frac{\left(\frac{k}{2}-1\right) \cdot k_v}{n_v - 1}
 \end{equation}
 
+\floatstyle{spaceruled}% Select new float style
+\restylefloat{algorithm}% Apply spaceruled float style to algorithm
 \begin{algorithm}[t]
 
     \caption{Calculation of Average Latency of SDN and NFV-enabled MCC Datacenter Networks}
@@ -93,6 +95,7 @@ Next we calculate the arrival rate at the VNFs, SDN controller and each layer of
 \end{equation}
 
 The arrival rate for the edge switches can be calculated similar to the virtual switch. Importantly, packets that are intended for destinations on the same server do not need to visit the edge switch. The arrival rate at the edge switch can hence be calculated by,
+
 \begin{equation}
     \label{eq:arr_edge}
     \lambda_1^e = \frac{k \cdot k_v \cdot \lambda^e}{2(n_v - 1)}\left(2n_v - k_v \left(\frac{k}{2} + 1 \right)\right)
@@ -111,6 +114,7 @@ As all VNFs are connected by the core switches, the arrival rate at each core sw
 \end{equation}
 
 Finally, let us calculate the traffic rate for the SDN controller. Given the number of VNFs $n_v = (k^3 / 4) \cdot k_v$ the arrival rate at the SDN controller is computed by,
+
 \begin{equation}
     \label{eq:arr_sdn}
     \lambda_c = \lambda \cdot n_v \cdot p_c
@@ -130,7 +134,7 @@ Let $N_s$ denote the number of NFV services deployed in the datacenter, $K_i$ re
     \lambda^e = \sum_i^{N_s} \lambda_i^e \cdot \frac{\lambda_i}{\sum_j^{N_s} \lambda_j}
 \end{equation}
 
-Similar to the simple NFV deployment case, the expected end-to-end latency is the sum time spent taking each path. By substituting the effective traffic rate in Eq. (\ref{eq:effective_arrival}) into Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn}), we can calculate the effective network traffic in each network layer. Given the service rates $\mu_v$, $\mu_e$, $\mu_a$, and $\mu_s$, the latency, $w_j$ can then be obtained for each network layer. After calculating the probability that a packet visits a certain network layer, the expected latency between two VNFs can be calculated by Eq (\ref{eq:mean_latency}). Finally, as longer services require visiting several VNFs the total latency is given by the expected latency between two VNFs times the expected length of the service,
+Similarly to the simple NFV deployment case, the expected end-to-end latency is the sum time spent taking each path. By substituting the effective traffic rate in Eq. (\ref{eq:effective_arrival}) into Eqs. (\ref{eq:arr_srv}-\ref{eq:arr_sdn}), we can calculate the effective network traffic in each network layer. Given the service rates $\mu_v$, $\mu_e$, $\mu_a$, and $\mu_s$, the latency, $w_j$ can then be obtained for each network layer. After calculating the probability that a packet visits a certain network layer, the expected latency between two VNFs can be calculated by Eq (\ref{eq:mean_latency}). Finally, as longer services require visiting several VNFs the total latency is given by the expected latency between two VNFs times the expected length of the service,
 
 \begin{equation}
     \label{eq:total_network_latency}
